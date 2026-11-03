@@ -29,10 +29,14 @@ export function DevMissionControl() {
   const {
     projects,
     activeLogProjectId,
+    systemMetrics,
+    isLocal,
     setActiveLogProjectId,
     startServer,
     stopServer,
     restartServer,
+    syncWithDaemon,
+    fetchProjectLogs,
     saveProjectEnv,
     addProject,
   } = useDevStore();
@@ -58,6 +62,24 @@ export function DevMissionControl() {
   const [portStatuses, setPortStatuses] = useState<Record<number, PortHealth>>({});
   const [isPinging, setIsPinging] = useState(false);
 
+  // Periodic daemon & system sync
+  useEffect(() => {
+    syncWithDaemon();
+    const interval = setInterval(syncWithDaemon, 4000);
+    return () => clearInterval(interval);
+  }, [syncWithDaemon]);
+
+  // Periodic logs stream for active project
+  useEffect(() => {
+    if (activeLogProjectId) {
+      fetchProjectLogs(activeLogProjectId);
+      const interval = setInterval(() => {
+        fetchProjectLogs(activeLogProjectId);
+      }, 2500);
+      return () => clearInterval(interval);
+    }
+  }, [activeLogProjectId, fetchProjectLogs]);
+
   const pingAllPorts = async () => {
     setIsPinging(true);
     const results: Record<number, PortHealth> = {};
@@ -79,7 +101,12 @@ export function DevMissionControl() {
     setPassphrase('');
     setRawEnv('');
     setVaultStatus(null);
-    setIsUnlocked(false);
+    // If project has no encrypted vault yet, open directly into create mode!
+    if (!project.encryptedEnv) {
+      setIsUnlocked(true);
+    } else {
+      setIsUnlocked(false);
+    }
   };
 
   const handleUnlockVault = async (e: React.FormEvent) => {
@@ -88,7 +115,7 @@ export function DevMissionControl() {
 
     if (!vaultProject.encryptedEnv) {
       setIsUnlocked(true);
-      setVaultStatus('New vault ready. Please enter your .env variables.');
+      setVaultStatus('Brankas baru siap. Silakan masukkan variabel .env.');
       return;
     }
 
@@ -101,9 +128,9 @@ export function DevMissionControl() {
       );
       setRawEnv(decrypted);
       setIsUnlocked(true);
-      setVaultStatus('Successfully decrypted with Web Crypto AES-GCM 256-bit.');
+      setVaultStatus('Berhasil didekripsi dengan Web Crypto AES-GCM 256-bit.');
     } catch {
-      setVaultStatus('Incorrect passphrase or corrupted payload.');
+      setVaultStatus('Kata sandi (passphrase) salah atau data rusak.');
     }
   };
 
@@ -113,7 +140,7 @@ export function DevMissionControl() {
 
     const encrypted = await encryptVault(rawEnv, passphrase);
     saveProjectEnv(vaultProjectId, encrypted);
-    setVaultStatus('Saved and securely encrypted on the client side!');
+    setVaultStatus('Tersimpan dan terenkripsi aman secara lokal di browser!');
     setTimeout(() => {
       setVaultProjectId(null);
       setIsUnlocked(false);
@@ -155,15 +182,17 @@ export function DevMissionControl() {
             </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-1">
-            Personal Engine · Windows/Node v20+ · {runningServers} active listening sockets
+            {isLocal
+              ? `Local Runner · Windows Engine · ${runningServers} active listening sockets`
+              : 'Cloud Mode (Standby) · Jalankan di http://localhost:3000 untuk kontrol proses lokal'}
           </p>
         </div>
 
         {/* Quick Pill Controls */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 bg-surface-container-low px-3.5 py-1.5 rounded-full border border-outline/20 text-xs text-on-surface font-medium">
-            <Radio className="w-3.5 h-3.5 text-primary-container animate-pulse" />
-            <span>Live Daemon</span>
+            <Radio className={`w-3.5 h-3.5 ${isLocal ? 'text-emerald-500 animate-pulse' : 'text-zinc-400'}`} />
+            <span>{isLocal ? 'Local Engine Active' : 'Cloud Standby'}</span>
           </div>
 
           <button
@@ -223,14 +252,17 @@ export function DevMissionControl() {
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
-                4.8 <span className="text-xs text-on-surface-variant font-normal">/ 16 GB</span>
+                {systemMetrics ? systemMetrics.usedGB : '4.8'} <span className="text-xs text-on-surface-variant font-normal">/ {systemMetrics ? systemMetrics.totalGB : '16'} GB</span>
               </span>
               <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
-                Optimal
+                {systemMetrics ? `${systemMetrics.usedPercent}%` : 'Optimal'}
               </span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2.5 overflow-hidden">
-              <div className="bg-primary-container h-full rounded-full" style={{ width: '30%' }} />
+              <div
+                className="bg-primary-container h-full rounded-full transition-all duration-500"
+                style={{ width: `${systemMetrics ? systemMetrics.usedPercent : 30}%` }}
+              />
             </div>
           </div>
         </div>
@@ -462,7 +494,9 @@ export function DevMissionControl() {
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-primary-container" />
                 <h3 className="font-bold text-sm text-on-surface">
-                  Client .env Vault: {vaultProject.name}
+                  {vaultProject.encryptedEnv && !isUnlocked
+                    ? `Unlock .env Vault: ${vaultProject.name}`
+                    : `Configure .env Vault: ${vaultProject.name}`}
                 </h3>
               </div>
               <button
@@ -475,7 +509,9 @@ export function DevMissionControl() {
             </div>
 
             <p className="text-xs text-on-surface-variant">
-              Encrypted locally with <strong>Web Crypto AES-GCM 256-bit</strong>. Encryption key is never sent to the server.
+              {vaultProject.encryptedEnv && !isUnlocked
+                ? 'Brankas terenkripsi aman secara lokal di browser dengan Web Crypto AES-GCM 256-bit. Masukkan passphrase Anda untuk membuka.'
+                : 'Simpan konfigurasi .env dengan enkripsi lokal AES-GCM 256-bit. Kunci enkripsi tidak pernah dikirim ke server.'}
             </p>
 
             {vaultStatus && (
@@ -488,12 +524,12 @@ export function DevMissionControl() {
               <form onSubmit={handleUnlockVault} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Decryption Passphrase
+                    Master Passphrase
                   </label>
                   <input
                     type="password"
                     required
-                    placeholder="Enter master passphrase..."
+                    placeholder="Masukkan master passphrase brankas..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
@@ -505,13 +541,13 @@ export function DevMissionControl() {
                     onClick={() => setVaultProjectId(null)}
                     className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                   >
-                    Cancel
+                    Batal
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                   >
-                    Unlock Vault
+                    Buka Brankas
                   </button>
                 </div>
               </form>
@@ -519,23 +555,26 @@ export function DevMissionControl() {
               <form onSubmit={handleSaveVault} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Environment Configuration (.env)
+                    Variabel Konfigurasi (.env)
                   </label>
                   <textarea
                     rows={8}
                     value={rawEnv}
                     onChange={(e) => setRawEnv(e.target.value)}
-                    placeholder="DATABASE_URL=postgres://...&#10;API_KEY=secret_xyz"
+                    placeholder="DATABASE_URL=postgres://...&#10;NEXT_PUBLIC_API_KEY=secret_xyz"
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-3 text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container resize-none"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Confirm Passphrase for Encryption
+                    {vaultProject.encryptedEnv
+                      ? 'Konfirmasi Passphrase untuk Enkripsi Ulang'
+                      : 'Tentukan Master Passphrase Baru'}
                   </label>
                   <input
                     type="password"
                     required
+                    placeholder="Masukkan kata sandi brankas..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
@@ -547,13 +586,13 @@ export function DevMissionControl() {
                     onClick={() => setVaultProjectId(null)}
                     className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                   >
-                    Close
+                    Tutup
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                   >
-                    Encrypt &amp; Save
+                    Enkripsi &amp; Simpan
                   </button>
                 </div>
               </form>
