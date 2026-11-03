@@ -341,7 +341,7 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalIncome.toLocaleString('id-ID')}`}
+              Rp {totalIncome.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -362,7 +362,7 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalExpense.toLocaleString('id-ID')}`}
+              Rp {totalExpense.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -693,7 +693,7 @@ export function FinanceManager() {
                     }`}
                   >
                     {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
-                    {isPrivacyMode ? 'Rp ••••••' : `Rp ${tx.amount.toLocaleString('id-ID')}`}
+                    Rp {tx.amount.toLocaleString('id-ID')}
                   </span>
                   <span className="text-[10px] text-on-surface-variant font-mono uppercase">
                     {tx.wallet_id.replace('w-', '')}
@@ -767,7 +767,7 @@ export function FinanceManager() {
                     <div className="text-right flex items-center gap-3">
                       <div>
                         <span className="font-bold text-on-surface block">
-                          {isPrivacyMode ? 'Rp ••••••' : `Rp ${sub.cost.toLocaleString('id-ID')}`}
+                          Rp {sub.cost.toLocaleString('id-ID')}
                         </span>
                         <span
                           className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
