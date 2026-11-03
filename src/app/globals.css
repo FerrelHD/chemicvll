@@ -8,10 +8,16 @@
 }
 
 body {
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--foreground);
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure inputs, buttons, and form controls inherit Plus Jakarta Sans */
+input, button, select, textarea {
+  font-family: inherit;
 }
 
 /* Tabular figures for all financial & date metrics */

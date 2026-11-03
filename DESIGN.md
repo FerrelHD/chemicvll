@@ -44,9 +44,16 @@ Personal OS menggabungkan ergonomi visual fintech modern dengan efisiensi workst
 
 ## 3. Typography (Plus Jakarta Sans)
 
-Font tunggal untuk konsistensi geometris dan humanist aperture yang ramah:
+Font tunggal yang digunakan pada seluruh desain Personal OS ini adalah **Plus Jakarta Sans** (khususnya variasi bobot Regular 400, Medium 500, SemiBold 600, dan Bold 700).
+
+### Alasan Pemilihan:
+1. **Karakter Modern & Geometrik Bersih:** Menghadirkan kesan tech & fintech kontemporer yang elegan mirip referensi MoneyBoard.
+2. **Keterbacaan Tinggi (High Legibility):** Sangat tajam dan mudah dibaca baik untuk angka finansial (metrik saldo & KPI), teks kode terminal berbobot kecil, hingga tampilan mobile 390px.
+3. **Kesesuaian Warm Bento:** Padu padan kurva hurufnya serasi dengan sudut kartu membulat (`rounded-3xl` / pill buttons).
+
+### Aturan Tipografi:
 - **Font Utama:** `Plus Jakarta Sans`
-- **Font Monospace (Kode & Data Port):** `SF Mono`, `IBM Plex Mono`, atau `Menlo`
+- **Font Monospace (Snippet Kode & Port Listening):** `SF Mono`, `IBM Plex Mono`, `Menlo`, `Consolas`
 - **Numerics:** Wajib `font-variant-numeric: tabular-nums` pada saldo, tanggal, dan metrik uang agar tidak bergeser horizontal.
 
 ### Type Scale
