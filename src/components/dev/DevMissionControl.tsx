@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
+import { checkPortHealth, PortHealth } from '@/lib/port-checker';
 import {
   Terminal,
   Play,
@@ -53,6 +54,25 @@ export function DevMissionControl() {
   const vaultProject = projects.find((p) => p.id === vaultProjectId);
 
   const runningServers = projects.filter((p) => p.serverState === 'running').length;
+
+  const [portStatuses, setPortStatuses] = useState<Record<number, PortHealth>>({});
+  const [isPinging, setIsPinging] = useState(false);
+
+  const pingAllPorts = async () => {
+    setIsPinging(true);
+    const results: Record<number, PortHealth> = {};
+    for (const p of projects) {
+      results[p.default_port] = await checkPortHealth(p.default_port, 1000);
+    }
+    setPortStatuses(results);
+    setIsPinging(false);
+  };
+
+  useEffect(() => {
+    pingAllPorts();
+    const interval = setInterval(pingAllPorts, 30000);
+    return () => clearInterval(interval);
+  }, [projects]);
 
   const handleOpenVault = (project: DevProject) => {
     setVaultProjectId(project.id);
@@ -145,6 +165,16 @@ export function DevMissionControl() {
             <Radio className="w-3.5 h-3.5 text-primary-container animate-pulse" />
             <span>Live Daemon</span>
           </div>
+
+          <button
+            type="button"
+            onClick={pingAllPorts}
+            className="flex items-center gap-1.5 bg-surface-container-low hover:bg-surface-container-high px-3.5 py-1.5 rounded-full border border-outline/20 text-xs text-on-surface font-medium transition"
+            title="Ping semua port sekarang"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-primary-container ${isPinging ? 'animate-spin' : ''}`} />
+            <span>Ping Ports</span>
+          </button>
 
           <button
             type="button"
@@ -285,6 +315,24 @@ export function DevMissionControl() {
                         <span className="font-mono text-xs text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-md font-semibold">
                           :{proj.default_port}
                         </span>
+                        {portStatuses[proj.default_port] && (
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                              portStatuses[proj.default_port] === 'healthy'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'bg-zinc-100 text-zinc-500'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                portStatuses[proj.default_port] === 'healthy'
+                                  ? 'bg-emerald-500 animate-pulse'
+                                  : 'bg-zinc-400'
+                              }`}
+                            />
+                            <span>{portStatuses[proj.default_port] === 'healthy' ? 'Active' : 'Standby'}</span>
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-on-surface-variant mt-1 font-mono truncate max-w-sm">
                         {proj.start_command}

@@ -123,13 +123,13 @@
 3. Update the visual badge next to each project (`Healthy` with green pulse dot / `Down` with gray dot) in real time without page reload.
 
 **Steps:**
-- [ ] Write unit test in `src/lib/__tests__/port-checker.test.ts` mocking fetch success and abort timeout.
-- [ ] Run test with `npx tsx src/lib/__tests__/port-checker.test.ts` and confirm failure.
-- [ ] Implement `src/lib/port-checker.ts` with timeout safeguards.
-- [ ] Run test with `npx tsx src/lib/__tests__/port-checker.test.ts` and verify it passes.
-- [ ] Integrate port health-check state and periodic polling hook into `src/components/dev/DevMissionControl.tsx`.
-- [ ] Verify compilation with `npx tsc --noEmit`.
-- [ ] Commit changes: `feat(dev): implement automated port health-check polling and status badges`.
+- [x] Write unit test in `src/lib/__tests__/port-checker.test.ts` mocking fetch success and abort timeout.
+- [x] Run test with `npx tsx src/lib/__tests__/port-checker.test.ts` and confirm failure.
+- [x] Implement `src/lib/port-checker.ts` with timeout safeguards.
+- [x] Run test with `npx tsx src/lib/__tests__/port-checker.test.ts` and verify it passes.
+- [x] Integrate port health-check state and periodic polling hook into `src/components/dev/DevMissionControl.tsx`.
+- [x] Verify compilation with `npx tsc --noEmit`.
+- [x] Commit changes: `feat(dev): implement automated port health-check polling and status badges`.
 
 ---
 
@@ -153,3 +153,4 @@
 - [ ] Run `npm run build` and verify clean static site generation.
 - [ ] Update `README.md` documenting the Automation Engine.
 - [ ] Commit changes: `docs(core): document in-app automation engine and finalize test suite`.
+
