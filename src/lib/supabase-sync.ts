@@ -26,6 +26,8 @@ let isInitialized = false;
 let isSyncingDown = false;
 let syncTimeout: NodeJS.Timeout | null = null;
 
+const SYNC_TIMEOUT_MS = 4000;
+
 export async function pullFromCloud(): Promise<boolean> {
   const supabase = createBrowserClient();
   if (!supabase) {
@@ -37,52 +39,53 @@ export async function pullFromCloud(): Promise<boolean> {
     useSyncStore.getState().setStatus('syncing');
     isSyncingDown = true;
 
-    // 1. Fetch Career Pipelines
-    const { data: remoteCareer, error: careerErr } = await supabase
-      .from('career_pipelines')
-      .select('*');
+    // Parallel fetch with strict 4s timeout to prevent hanging
+    const [careerRes, walletRes, txRes, subRes, taskRes] = await Promise.race([
+      Promise.all([
+        supabase.from('career_pipelines').select('*'),
+        supabase.from('wallets').select('*'),
+        supabase.from('transactions').select('*'),
+        supabase.from('subscriptions').select('*'),
+        supabase.from('tasks').select('*'),
+      ]),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Sync timeout')), SYNC_TIMEOUT_MS)
+      ),
+    ]);
 
-    // 2. Fetch Wallets, Transactions, Subscriptions
-    const { data: remoteWallets, error: walletErr } = await supabase
-      .from('wallets')
-      .select('*');
-    const { data: remoteTx, error: txErr } = await supabase
-      .from('transactions')
-      .select('*');
-    const { data: remoteSubs, error: subErr } = await supabase
-      .from('subscriptions')
-      .select('*');
+    const hasError =
+      careerRes.error ||
+      walletRes.error ||
+      txRes.error ||
+      subRes.error ||
+      taskRes.error;
 
-    // 3. Fetch Tasks
-    const { data: remoteTasks, error: taskErr } = await supabase
-      .from('tasks')
-      .select('*');
-
-    if (careerErr || walletErr || txErr || subErr || taskErr) {
+    if (hasError) {
       console.warn('Supabase fetch error, fallback to local cache:', {
-        careerErr,
-        walletErr,
-        txErr,
-        subErr,
-        taskErr,
+        careerErr: careerRes.error,
+        walletErr: walletRes.error,
+        txErr: txRes.error,
+        subErr: subRes.error,
+        taskErr: taskRes.error,
       });
       useSyncStore.getState().setStatus('offline');
       isSyncingDown = false;
       return false;
     }
 
-    const careerStore = useCareerStore.getState();
-    const financeStore = useFinanceStore.getState();
-    const taskStore = useTaskStore.getState();
+    const remoteCareer = careerRes.data;
+    const remoteWallets = walletRes.data;
+    const remoteTx = txRes.data;
+    const remoteSubs = subRes.data;
+    const remoteTasks = taskRes.data;
 
-    // Check if cloud has data
+    // Check if cloud already has stored data
     const hasRemoteData =
       (remoteCareer && remoteCareer.length > 0) ||
       (remoteWallets && remoteWallets.length > 0) ||
       (remoteTasks && remoteTasks.length > 0);
 
     if (hasRemoteData) {
-      // Hydrate local stores from Cloud
       if (remoteCareer && remoteCareer.length > 0) {
         useCareerStore.setState({ items: remoteCareer });
       }
@@ -98,24 +101,26 @@ export async function pullFromCloud(): Promise<boolean> {
       }
     } else {
       // First time cloud initialization: push existing local data to cloud
-      await pushAllToCloud();
+      await pushAllToCloud(true);
     }
 
     useSyncStore.getState().setStatus('synced');
-    useSyncStore.getState().setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+    useSyncStore.getState().setLastSyncedAt(
+      new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    );
     isSyncingDown = false;
     return true;
   } catch (err) {
-    console.error('Failed to sync from cloud:', err);
+    console.warn('Failed to sync from cloud (timeout/network):', err);
     useSyncStore.getState().setStatus('offline');
     isSyncingDown = false;
     return false;
   }
 }
 
-export async function pushAllToCloud(): Promise<void> {
+export async function pushAllToCloud(force = false): Promise<void> {
   const supabase = createBrowserClient();
-  if (!supabase || isSyncingDown) return;
+  if (!supabase || (!force && isSyncingDown)) return;
 
   try {
     useSyncStore.getState().setStatus('syncing');
@@ -124,55 +129,70 @@ export async function pushAllToCloud(): Promise<void> {
     const { wallets, transactions, subscriptions } = useFinanceStore.getState();
     const tasks = useTaskStore.getState().tasks;
 
+    const upserts = [];
+
     if (careerItems.length > 0) {
-      await supabase.from('career_pipelines').upsert(
-        careerItems.map((item) => ({
-          ...item,
-          user_id: 'ferrel',
-        }))
+      upserts.push(
+        supabase.from('career_pipelines').upsert(
+          careerItems.map((item) => ({ ...item, user_id: 'ferrel' }))
+        )
       );
     }
 
     if (wallets.length > 0) {
-      await supabase.from('wallets').upsert(
-        wallets.map((w) => ({
-          ...w,
-          user_id: 'ferrel',
-        }))
+      upserts.push(
+        supabase.from('wallets').upsert(
+          wallets.map((w) => ({ ...w, user_id: 'ferrel' }))
+        )
       );
     }
 
     if (transactions.length > 0) {
-      await supabase.from('transactions').upsert(
-        transactions.map((tx) => ({
-          ...tx,
-          user_id: 'ferrel',
-        }))
+      upserts.push(
+        supabase.from('transactions').upsert(
+          transactions.map((tx) => ({ ...tx, user_id: 'ferrel' }))
+        )
       );
     }
 
     if (subscriptions.length > 0) {
-      await supabase.from('subscriptions').upsert(
-        subscriptions.map((sub) => ({
-          ...sub,
-          user_id: 'ferrel',
-        }))
+      upserts.push(
+        supabase.from('subscriptions').upsert(
+          subscriptions.map((sub) => ({ ...sub, user_id: 'ferrel' }))
+        )
       );
     }
 
     if (tasks.length > 0) {
-      await supabase.from('tasks').upsert(
-        tasks.map((task) => ({
-          ...task,
-          user_id: 'ferrel',
-        }))
+      upserts.push(
+        supabase.from('tasks').upsert(
+          tasks.map((task) => ({ ...task, user_id: 'ferrel' }))
+        )
       );
     }
 
+    if (upserts.length > 0) {
+      const results = await Promise.race([
+        Promise.all(upserts),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Push timeout')), SYNC_TIMEOUT_MS)
+        ),
+      ]);
+
+      const anyError = results.find((r) => r && r.error);
+      if (anyError) {
+        console.warn('Supabase push error:', anyError.error);
+        useSyncStore.getState().setStatus('offline');
+        return;
+      }
+    }
+
     useSyncStore.getState().setStatus('synced');
-    useSyncStore.getState().setLastSyncedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+    useSyncStore.getState().setLastSyncedAt(
+      new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    );
   } catch (err) {
-    console.error('Failed to push to cloud:', err);
+    console.warn('Failed to push to cloud:', err);
     useSyncStore.getState().setStatus('offline');
   }
 }
@@ -205,4 +225,3 @@ export function initSupabaseSync(): void {
     if (!isSyncingDown) debouncePushToCloud();
   });
 }
-
