@@ -272,7 +272,7 @@ export function DevMissionControl() {
               ? `Supabase Relay Online · Connected to ${daemonMachine || 'Windows PC'} · ${runningServers} active sockets`
               : isLocal
               ? `Local Runner · Windows Engine · ${runningServers} active listening sockets`
-              : 'Supabase Relay Standby · Buka run-daemon.bat di laptop untuk mengontrol server'}
+              : 'Supabase Relay Standby · Buka run-daemon.command (Mac) atau run-daemon.bat (Windows)'}
           </p>
         </div>
 
@@ -326,7 +326,7 @@ export function DevMissionControl() {
             <div>
               <p className="font-semibold text-on-surface">Jembatan Laptop Belum Terkoneksi</p>
               <p className="text-[11px] text-on-surface-variant">
-                Klik 2x file <strong>run-daemon.bat</strong> di folder project laptop Anda agar tombol Start/Stop dan terminal dapat mengontrol laptop langsung dari Vercel.
+                Klik 2x file <strong>run-daemon.command</strong> (Mac) atau <strong>run-daemon.bat</strong> (Windows) di folder project laptop Anda agar tombol Start/Stop dan terminal dapat mengontrol laptop langsung dari Vercel.
               </p>
             </div>
           </div>
