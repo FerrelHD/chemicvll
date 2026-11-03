@@ -16,3 +16,4 @@ assert.strictEqual(validatePin('1234', '2026'), false, 'Invalid PIN should fail'
 assert.strictEqual(validatePin(' 2026 ', '2026'), true, 'Whitespace should be trimmed');
 
 console.log('All Master PIN validation tests passed successfully!');
+

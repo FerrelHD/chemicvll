@@ -205,3 +205,4 @@ export function initSupabaseSync(): void {
     if (!isSyncingDown) debouncePushToCloud();
   });
 }
+
