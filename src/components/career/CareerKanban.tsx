@@ -104,9 +104,9 @@ export function CareerKanban() {
   };
 
   const showEmailTemplate = () => {
-    const sample = `Halo [Nama Rekruter],\n\nSaya Ferrel. Saya ingin menanyakan kelanjutan berkas lamaran saya untuk posisi [Nama Posisi] yang diajukan pada [Tanggal]. Saya sangat antusias untuk berdiskusi lebih lanjut.\n\nTerima kasih,\nFerrel`;
+    const sample = `Hi [Recruiter Name],\n\nI hope you are doing well.\n\nI am writing to follow up on my application for the [Role Name] position submitted on [Date]. I remain very interested in the role and would welcome the chance to discuss how I can contribute to your team.\n\nThank you,\nFerrel`;
     navigator.clipboard.writeText(sample);
-    setTemplateNotice('Template email follow-up disalin ke clipboard!');
+    setTemplateNotice('Follow-up email template copied to clipboard!');
     setTimeout(() => setTemplateNotice(null), 3500);
   };
 
@@ -122,13 +122,13 @@ export function CareerKanban() {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-semibold tracking-wider uppercase">
               <span className="inline-flex w-2 h-2 rounded-full bg-primary-container animate-pulse" />
-              <span>Personal OS • Karir &amp; Magang</span>
+              <span>Personal OS • Career &amp; Internship</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-              Pelacak Lamaran Kerja &amp; Magang
+              Career &amp; Internship Pipeline
             </h1>
             <p className="text-xs text-on-surface-variant">
-              Pantau progress lamaran, alur rekrutmen, versi CV, dan jadwal follow-up berkala.
+              Track job applications, recruitment stages, CV versions, and follow-up schedules.
             </p>
           </div>
 
@@ -149,7 +149,7 @@ export function CareerKanban() {
               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface text-white hover:bg-black shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Catat Lamaran</span>
+              <span>+ Record Application</span>
             </button>
           </div>
         </div>
@@ -164,7 +164,7 @@ export function CareerKanban() {
 
           <div className="hidden lg:flex items-center gap-2 bg-surface-container-lowest px-4 py-1.5 rounded-full border border-outline/30 shadow-sm text-xs text-on-surface-variant">
             <RefreshCw className="w-3.5 h-3.5 text-primary-container" />
-            <span>Terakhir disinkron: Hari ini, {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
+            <span>Last synced: Today, {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
           </div>
         </div>
       </div>
@@ -176,9 +176,9 @@ export function CareerKanban() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
-                Status Lamaran
+                Application Status
               </span>
-              <span className="text-base font-bold text-on-surface">Lamaran Aktif</span>
+              <span className="text-base font-bold text-on-surface">Active Applications</span>
             </div>
             <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
               <Briefcase className="w-5 h-5" />
@@ -190,7 +190,7 @@ export function CareerKanban() {
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
               <TrendingUp className="w-3.5 h-3.5 text-primary-container" />
-              Aktif di pipeline
+              Active in pipeline
             </span>
           </div>
         </div>
@@ -200,7 +200,7 @@ export function CareerKanban() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
-                Tindakan Cepat
+                Action Required
               </span>
               <span className="text-base font-bold text-on-surface">Daily Focus</span>
             </div>
@@ -210,10 +210,10 @@ export function CareerKanban() {
           </div>
           <div className="flex items-baseline justify-between mt-4">
             <span className="text-3xl font-bold text-on-surface leading-none font-sans">
-              {urgentFollowUpCount} Prioritas
+              {urgentFollowUpCount} Priorities
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
-              Follow-up segera
+              Follow up now
             </span>
           </div>
         </div>
@@ -223,9 +223,9 @@ export function CareerKanban() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
-                Sinkronisasi Kas
+                Cash Sync
               </span>
-              <span className="text-base font-bold text-on-surface">Saldo Dompet</span>
+              <span className="text-base font-bold text-on-surface">Wallet Balance</span>
             </div>
             <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
               <Wallet className="w-5 h-5" />
@@ -240,13 +240,13 @@ export function CareerKanban() {
                 type="button"
                 onClick={togglePrivacyMode}
                 className="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
-                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+                title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-              Terhubung Live
+              Live Synced
             </span>
           </div>
         </div>
@@ -278,7 +278,7 @@ export function CareerKanban() {
                   type="button"
                   onClick={() => handleOpenAdd(col.stage)}
                   className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
-                  title={`Tambah ke ${col.label}`}
+                  title={`Add to ${col.label}`}
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -289,17 +289,17 @@ export function CareerKanban() {
                 {colItems.length === 0 ? (
                   <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-surface-container-lowest/60 border border-dashed border-outline/30 text-center gap-2 my-auto">
                     <span className="text-xs font-semibold text-on-surface">
-                      Belum ada di {col.label}
+                      No applications in {col.label}
                     </span>
                     <span className="text-[11px] text-on-surface-variant">
-                      Tambahkan berkas atau target perusahaan baru ke tahap ini.
+                      Add a new application or target company to this stage.
                     </span>
                     <button
                       type="button"
                       onClick={() => handleOpenAdd(col.stage)}
                       className="mt-1 px-3 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition"
                     >
-                      + Tambah Lamaran
+                      + Add Application
                     </button>
                   </div>
                 ) : (
@@ -327,10 +327,10 @@ export function CareerKanban() {
           </div>
           <div className="flex flex-col">
             <span className="text-xs md:text-sm font-bold text-on-surface">
-              Tips Sukses Karir Personal OS
+              Career Pipeline Pro-Tip
             </span>
             <p className="text-xs text-on-surface-variant">
-              Selalu sesuaikan kata kunci CV dengan deskripsi lowongan ATS sebelum submit, dan kirimkan follow-up sopan setelah 5-7 hari kerja.
+              Always align CV keywords with the ATS job description before submitting, and send a polite follow-up after 5-7 business days.
             </p>
           </div>
         </div>
@@ -341,7 +341,7 @@ export function CareerKanban() {
             onClick={showEmailTemplate}
             className="px-4 py-2 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
           >
-            Salin Template Email Follow-up
+            Copy Follow-up Email Template
           </button>
         </div>
       </div>

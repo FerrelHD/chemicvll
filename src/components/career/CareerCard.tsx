@@ -59,7 +59,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
               : 'bg-primary-container text-white'
           }`}
         >
-          {isInternship ? 'Magang' : item.category === 'job' ? 'Full-Time' : item.category}
+          {isInternship ? 'Internship' : item.category === 'job' ? 'Full-time' : item.category}
         </span>
 
         {item.platform_source && (
@@ -82,7 +82,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
               target="_blank"
               rel="noopener noreferrer"
               className="text-on-surface-variant hover:text-primary-container p-0.5 transition"
-              title="Buka Link Lowongan"
+              title="Open Job Link"
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
@@ -105,7 +105,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
           <div className="flex justify-between items-center text-on-surface-variant">
             <span>Applied:</span>
             <span className="text-on-surface font-medium">
-              {new Date(item.applied_date).toLocaleDateString('id-ID', {
+              {new Date(item.applied_date).toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -131,7 +131,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
 
         {item.stipend_or_salary && (
           <div className="flex justify-between items-center text-on-surface-variant">
-            <span>Gaji/Uang Saku:</span>
+            <span>Compensation:</span>
             <span className="text-on-surface font-medium truncate max-w-[170px]">
               {item.stipend_or_salary}
             </span>
@@ -142,7 +142,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
           <div className="flex justify-between items-center text-on-surface-variant">
             <span>Deadline:</span>
             <span className="text-on-surface font-medium">
-              {new Date(item.deadline).toLocaleDateString('id-ID', {
+              {new Date(item.deadline).toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'short',
               })}
@@ -166,12 +166,12 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
             {draftCopied ? (
               <>
                 <Check className="w-3 h-3 text-emerald-400" />
-                <span>Disalin!</span>
+                <span>Copied!</span>
               </>
             ) : (
               <>
                 <Send className="w-3 h-3" />
-                <span>Salin Draf</span>
+                <span>Copy Draft</span>
               </>
             )}
           </button>
@@ -220,19 +220,19 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
             type="button"
             onClick={() => onEdit(item)}
             className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
-            title="Edit Lamaran"
+            title="Edit Application"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
             onClick={() => {
-              if (confirm(`Hapus lamaran ${item.role_or_program} di ${item.entity_name}?`)) {
+              if (confirm(`Delete application for ${item.role_or_program} at ${item.entity_name}?`)) {
                 onDelete(item.id);
               }
             }}
             className="w-7 h-7 rounded-full hover:bg-red-50 hover:text-error flex items-center justify-center text-on-surface-variant transition-colors"
-            title="Hapus Lamaran"
+            title="Delete Application"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

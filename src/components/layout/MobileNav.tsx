@@ -11,9 +11,9 @@ interface MobileNavProps {
 export function MobileNav({ activeTab, onTabChange }: MobileNavProps) {
   const tabs = [
     { id: 'dashboard', label: 'Dash', icon: LayoutDashboard },
-    { id: 'career', label: 'Karir', icon: Briefcase },
-    { id: 'tasks', label: 'Tugas', icon: CheckCircle2 },
-    { id: 'finance', label: 'Uang', icon: Wallet },
+    { id: 'career', label: 'Career', icon: Briefcase },
+    { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
+    { id: 'finance', label: 'Vault', icon: Wallet },
     { id: 'dev', label: 'Dev', icon: Terminal },
   ];
 

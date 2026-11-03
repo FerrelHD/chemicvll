@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
 
 export default function NotFound() {
   return (
@@ -19,12 +19,12 @@ export default function NotFound() {
             404
           </h1>
           <h2 className="text-base font-bold text-on-surface">
-            Halaman Tidak Ditemukan
+            Page Not Found
           </h2>
         </div>
 
         <p className="text-xs text-on-surface-variant leading-relaxed">
-          Rute atau modul yang Anda tuju tidak tersedia atau telah dipindahkan ke direktori lain dalam Personal OS.
+          The route or module you are looking for is unavailable or has been moved to another path in Personal OS.
         </p>
 
         {/* Action Button */}
@@ -34,7 +34,7 @@ export default function NotFound() {
             className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition-all"
           >
             <Home className="w-4 h-4" />
-            <span>Kembali ke Dashboard Utama</span>
+            <span>Back to Main Dashboard</span>
           </Link>
         </div>
 

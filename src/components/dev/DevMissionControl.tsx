@@ -88,7 +88,7 @@ export function DevMissionControl() {
 
     if (!vaultProject.encryptedEnv) {
       setIsUnlocked(true);
-      setVaultStatus('Vault baru siap digunakan. Silakan ketik variabel .env Anda.');
+      setVaultStatus('New vault ready. Please enter your .env variables.');
       return;
     }
 
@@ -101,9 +101,9 @@ export function DevMissionControl() {
       );
       setRawEnv(decrypted);
       setIsUnlocked(true);
-      setVaultStatus('Berhasil didekripsi dengan Web Crypto AES-GCM 256-bit.');
+      setVaultStatus('Successfully decrypted with Web Crypto AES-GCM 256-bit.');
     } catch {
-      setVaultStatus('Passphrase salah atau payload rusak.');
+      setVaultStatus('Incorrect passphrase or corrupted payload.');
     }
   };
 
@@ -113,7 +113,7 @@ export function DevMissionControl() {
 
     const encrypted = await encryptVault(rawEnv, passphrase);
     saveProjectEnv(vaultProjectId, encrypted);
-    setVaultStatus('Tersimpan dan terenkripsi secara aman di sisi klien!');
+    setVaultStatus('Saved and securely encrypted on the client side!');
     setTimeout(() => {
       setVaultProjectId(null);
       setIsUnlocked(false);
@@ -170,7 +170,7 @@ export function DevMissionControl() {
             type="button"
             onClick={pingAllPorts}
             className="flex items-center gap-1.5 bg-surface-container-low hover:bg-surface-container-high px-3.5 py-1.5 rounded-full border border-outline/20 text-xs text-on-surface font-medium transition"
-            title="Ping semua port sekarang"
+            title="Ping all ports now"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-primary-container ${isPinging ? 'animate-spin' : ''}`} />
             <span>Ping Ports</span>
@@ -290,7 +290,7 @@ export function DevMissionControl() {
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface">Service Stack</h3>
             <span className="text-xs text-on-surface-variant font-medium">
-              {projects.length} Layanan Terkonfigurasi
+              {projects.length} Services Configured
             </span>
           </div>
 
@@ -345,7 +345,7 @@ export function DevMissionControl() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-on-surface-variant hover:text-primary-container p-1 transition"
-                        title="Buka di Browser"
+                        title="Open in Browser"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -442,14 +442,14 @@ export function DevMissionControl() {
               ))
             ) : (
               <div className="text-zinc-500 py-8 text-center">
-                Pilih layanan dan tekan Start untuk mulai streaming log HTTP &amp; database.
+                Select a service and press Start to stream HTTP &amp; database logs.
               </div>
             )}
           </div>
 
           <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500">
             <span>Daemon: Localhost (127.0.0.1)</span>
-            <span className="text-zinc-400">Ctrl+C untuk menghentikan port</span>
+            <span className="text-zinc-400">Ctrl+C to terminate port</span>
           </div>
         </div>
       </div>
@@ -475,7 +475,7 @@ export function DevMissionControl() {
             </div>
 
             <p className="text-xs text-on-surface-variant">
-              Terenkripsi secara lokal dengan <strong>Web Crypto AES-GCM 256-bit</strong>. Kunci tidak pernah dikirim ke server.
+              Encrypted locally with <strong>Web Crypto AES-GCM 256-bit</strong>. Encryption key is never sent to the server.
             </p>
 
             {vaultStatus && (
@@ -488,12 +488,12 @@ export function DevMissionControl() {
               <form onSubmit={handleUnlockVault} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Passphrase Dekripsi
+                    Decryption Passphrase
                   </label>
                   <input
                     type="password"
                     required
-                    placeholder="Masukkan passphrase master..."
+                    placeholder="Enter master passphrase..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
@@ -505,13 +505,13 @@ export function DevMissionControl() {
                     onClick={() => setVaultProjectId(null)}
                     className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                   >
-                    Batal
+                    Cancel
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                   >
-                    Buka Vault
+                    Unlock Vault
                   </button>
                 </div>
               </form>
@@ -519,7 +519,7 @@ export function DevMissionControl() {
               <form onSubmit={handleSaveVault} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Konfigurasi Environment (.env)
+                    Environment Configuration (.env)
                   </label>
                   <textarea
                     rows={8}
@@ -531,7 +531,7 @@ export function DevMissionControl() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Konfirmasi Passphrase untuk Enkripsi
+                    Confirm Passphrase for Encryption
                   </label>
                   <input
                     type="password"
@@ -547,13 +547,13 @@ export function DevMissionControl() {
                     onClick={() => setVaultProjectId(null)}
                     className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                   >
-                    Tutup
+                    Close
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                   >
-                    Enkripsi &amp; Simpan
+                    Encrypt &amp; Save
                   </button>
                 </div>
               </form>
@@ -579,11 +579,11 @@ export function DevMissionControl() {
 
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Nama Layanan *</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Service Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Misal: Go Gin API, AI Sandbox"
+                  placeholder="e.g. Go Gin API, AI Sandbox"
                   value={projName}
                   onChange={(e) => setProjName(e.target.value)}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -614,7 +614,7 @@ export function DevMissionControl() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Path Folder</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Folder Path</label>
                 <input
                   type="text"
                   placeholder="E:/College Stuff/Career/..."
@@ -630,13 +630,13 @@ export function DevMissionControl() {
                   onClick={() => setIsAddProjOpen(false)}
                   className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                 >
-                  Daftarkan Port
+                  Register Port
                 </button>
               </div>
             </form>

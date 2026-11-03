@@ -76,7 +76,7 @@ export function DropzonePanel() {
             <span className="text-[11px] font-semibold text-primary-container">Active Session</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-            Dropzone <span className="text-primary-container">&amp; Berkas Sementara</span>
+            Dropzone <span className="text-primary-container">&amp; Staging Vault</span>
           </h1>
         </div>
 
@@ -84,20 +84,20 @@ export function DropzonePanel() {
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface-variant text-xs font-medium">
             <Timer className="w-3.5 h-3.5 text-primary-container" />
-            <span>Auto-purge: <strong className="text-on-surface">24 Jam</strong></span>
+            <span>Auto-purge: <strong className="text-on-surface">24 Hours</strong></span>
           </div>
 
           <button
             type="button"
             onClick={() => {
-              if (confirm('Bersihkan semua berkas sementara yang tidak disematkan?')) {
+              if (confirm('Clear all unpinned temporary stash items?')) {
                 items.filter((i) => !i.is_pinned).forEach((i) => deleteItem(i.id));
               }
             }}
             className="flex items-center gap-1.5 bg-surface-container-lowest hover:bg-surface-container-high text-on-surface px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-xs font-semibold transition"
           >
             <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-            <span>Bersihkan Cache</span>
+            <span>Purge Stash</span>
           </button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export function DropzonePanel() {
         {/* Metric 1: Storage Capacity */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Kapasitas Stash</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Stash Capacity</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <FolderArchive className="w-4 h-4" />
             </div>
@@ -125,7 +125,7 @@ export function DropzonePanel() {
               <div className="bg-primary-container h-full rounded-full" style={{ width: '12%' }} />
             </div>
             <span className="text-xs text-on-surface-variant mt-1">
-              {items.length} berkas &amp; catatan tersimpan
+              {items.length} items &amp; snippets stored
             </span>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function DropzonePanel() {
         {/* Metric 2: Active Links */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Tautan Sinkronisasi</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Sync Links</span>
             <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
               <Share2 className="w-4 h-4" />
             </div>
@@ -149,7 +149,7 @@ export function DropzonePanel() {
               </span>
             </div>
             <span className="text-xs text-on-surface-variant mt-1">
-              Lintas PC dan Smartphone (PWA)
+              Cross-device PC &amp; Smartphone (PWA)
             </span>
           </div>
         </div>
@@ -157,7 +157,7 @@ export function DropzonePanel() {
         {/* Metric 3: Expiring Soon */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Segera Hangus</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Expiring Soon</span>
             <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
               <Flame className="w-4 h-4" />
             </div>
@@ -168,11 +168,11 @@ export function DropzonePanel() {
                 {items.filter((i) => !i.is_pinned).length}
               </span>
               <span className="bg-rose-50 text-rose-600 text-[11px] px-2 py-0.5 rounded-full font-semibold">
-                &lt; 24 Jam
+                &lt; 24 Hours
               </span>
             </div>
             <span className="text-xs text-on-surface-variant mt-1">
-              Sematkan pin agar tidak terhapus otomatis
+              Pin items to prevent auto-purge
             </span>
           </div>
         </div>
@@ -180,7 +180,7 @@ export function DropzonePanel() {
         {/* Metric 4: Code Snippets */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Klip Kode / Snippet</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Code Snippets</span>
             <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
               <Code className="w-4 h-4" />
             </div>
@@ -191,11 +191,11 @@ export function DropzonePanel() {
                 {items.filter((i) => i.type === 'code').length}
               </span>
               <span className="bg-surface-container-high px-2 py-0.5 rounded-full text-[11px] text-on-surface font-semibold">
-                Tersimpan
+                Saved
               </span>
             </div>
             <span className="text-xs text-on-surface-variant mt-1">
-              1-klik salin ke terminal
+              1-click copy to terminal
             </span>
           </div>
         </div>
@@ -214,7 +214,7 @@ export function DropzonePanel() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ketik atau tempel teks, URL, perintah cURL, atau cuplikan kode..."
+                placeholder="Type or paste text, URLs, cURL commands, or code snippets..."
                 className="flex-1 px-4 py-2.5 rounded-2xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
               <button
@@ -222,7 +222,7 @@ export function DropzonePanel() {
                 className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm active:scale-95"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Simpan</span>
+                <span>Save</span>
               </button>
             </form>
           </div>
@@ -240,7 +240,7 @@ export function DropzonePanel() {
                     : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                {tab === 'all' ? 'Semua Stash' : tab === 'code' ? 'Kode / Snippet' : 'Tautan Link'}
+                {tab === 'all' ? 'All Stash' : tab === 'code' ? 'Code / Snippets' : 'Links'}
               </button>
             ))}
           </div>
@@ -249,7 +249,7 @@ export function DropzonePanel() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {sortedItems.length === 0 ? (
               <div className="col-span-2 p-8 text-center bg-surface-container-lowest rounded-3xl border border-dashed border-outline/30 text-xs text-on-surface-variant">
-                Dropzone kosong. Tempelkan tautan atau cuplikan teks di atas.
+                Dropzone is empty. Paste links or snippets above.
               </div>
             ) : (
               sortedItems.map((item) => {
@@ -283,7 +283,7 @@ export function DropzonePanel() {
                             className={`p-1 rounded-full hover:bg-surface-container-high transition ${
                               item.is_pinned ? 'text-primary-container' : 'text-on-surface-variant'
                             }`}
-                            title={item.is_pinned ? 'Lepas Pin' : 'Sematkan ke atas'}
+                            title={item.is_pinned ? 'Unpin' : 'Pin to top'}
                           >
                             <Pin className="w-3.5 h-3.5 fill-current" />
                           </button>
@@ -291,7 +291,7 @@ export function DropzonePanel() {
                             type="button"
                             onClick={() => deleteItem(item.id)}
                             className="p-1 rounded-full text-on-surface-variant hover:text-error hover:bg-surface-container-high transition"
-                            title="Hapus"
+                            title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -332,12 +332,12 @@ export function DropzonePanel() {
                         {isCopied ? (
                           <>
                             <Check className="w-3 h-3 text-emerald-600" />
-                            <span className="text-emerald-600 font-bold">Disalin</span>
+                            <span className="text-emerald-600 font-bold">Copied</span>
                           </>
                         ) : (
                           <>
                             <Copy className="w-3 h-3" />
-                            <span>Salin</span>
+                            <span>Copy</span>
                           </>
                         )}
                       </button>
@@ -357,7 +357,7 @@ export function DropzonePanel() {
               <h3 className="text-sm font-bold text-on-surface">Quick Code Scratchpad</h3>
             </div>
             <p className="text-xs text-on-surface-variant">
-              Snippet perintah developer harian. Klik untuk langsung menyalin ke clipboard.
+              Daily developer command snippets. Click to copy directly to clipboard.
             </p>
 
             <div className="space-y-2.5">
@@ -374,7 +374,7 @@ export function DropzonePanel() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-on-surface">{snip.title}</span>
                     <span className="text-[10px] text-on-surface-variant font-mono group-hover:text-primary-container transition">
-                      {copiedId === snip.title ? 'Disalin!' : 'Klik salin'}
+                      {copiedId === snip.title ? 'Copied!' : 'Click to copy'}
                     </span>
                   </div>
                   <div className="mt-1 text-[11px] font-mono text-on-surface-variant truncate">

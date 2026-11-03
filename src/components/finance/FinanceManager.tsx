@@ -188,7 +188,7 @@ export function FinanceManager() {
     const maxVal = Math.max(inc, exp, 1);
 
     return {
-      label: `Pekan ${weekNum}`,
+      label: `Week ${weekNum}`,
       inVal: inc > 0 ? Math.max(10, Math.round((inc / maxVal) * 100)) : 0,
       outVal: exp > 0 ? Math.max(10, Math.round((exp / maxVal) * 100)) : 0,
       inRp: `Rp ${inc.toLocaleString('id-ID')}`,
@@ -204,7 +204,7 @@ export function FinanceManager() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-              Keuangan &amp; Arus Kas
+              Financial Vault &amp; Cashflow
             </h1>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
@@ -212,7 +212,7 @@ export function FinanceManager() {
             </span>
           </div>
           <p className="text-xs text-on-surface-variant">
-            Kelola saldo rekening, alokasi tabungan, dan pantau cashflow bulanan Ferrel secara real-time.
+            Track bank accounts, savings allocations, and real-time monthly cashflow.
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export function FinanceManager() {
             className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Catat Transaksi</span>
+            <span>Record Transaction</span>
           </button>
         </div>
       </div>
@@ -239,13 +239,13 @@ export function FinanceManager() {
         {/* Tile 1: Saldo Utama */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Saldo Utama (Net)</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Net Balance</span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={togglePrivacyMode}
                 className="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
-                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+                title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -262,9 +262,9 @@ export function FinanceManager() {
               {transactions.length === 0 ? (
                 <>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold">
-                    0% pekan ini
+                    0% this week
                   </span>
-                  <span className="text-[11px] text-on-surface-variant">Belum ada mutasi</span>
+                  <span className="text-[11px] text-on-surface-variant">No transactions yet</span>
                 </>
               ) : (
                 <>
@@ -275,7 +275,7 @@ export function FinanceManager() {
                       ? Math.round((Math.abs(totalIncome - totalExpense) / totalExpense) * 100)
                       : 100}% net
                   </span>
-                  <span className="text-[11px] text-on-surface-variant">Arus kas aktif</span>
+                  <span className="text-[11px] text-on-surface-variant">Active cashflow</span>
                 </>
               )}
             </div>
@@ -285,7 +285,7 @@ export function FinanceManager() {
         {/* Tile 2: Total Tabungan */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Total Tabungan</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Total Savings</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <PiggyBank className="w-4 h-4" />
             </div>
@@ -296,9 +296,9 @@ export function FinanceManager() {
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                Alokasi Kas
+                Cash Allocation
               </span>
-              <span className="text-[11px] text-on-surface-variant">Siap diisi</span>
+              <span className="text-[11px] text-on-surface-variant">Ready to allocate</span>
             </div>
           </div>
         </div>
@@ -306,7 +306,7 @@ export function FinanceManager() {
         {/* Tile 3: Pemasukan Bulan Ini */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Pemasukan Bulan Ini</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Monthly Income</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <ArrowDownLeft className="w-4 h-4 text-emerald-600" />
             </div>
@@ -317,9 +317,9 @@ export function FinanceManager() {
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                Total Arus Masuk
+                Total Inflow
               </span>
-              <span className="text-[11px] text-on-surface-variant">Aktif</span>
+              <span className="text-[11px] text-on-surface-variant">Active</span>
             </div>
           </div>
         </div>
@@ -327,7 +327,7 @@ export function FinanceManager() {
         {/* Tile 4: Pengeluaran Bulan Ini */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Pengeluaran Bulan Ini</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Monthly Expenses</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <ArrowUpRight className="w-4 h-4 text-rose-500" />
             </div>
@@ -338,9 +338,9 @@ export function FinanceManager() {
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                Total Arus Keluar
+                Total Outflow
               </span>
-              <span className="text-[11px] text-on-surface-variant">Terkontrol</span>
+              <span className="text-[11px] text-on-surface-variant">Controlled</span>
             </div>
           </div>
         </div>
@@ -362,7 +362,7 @@ export function FinanceManager() {
               type="button"
               onClick={handleOpenAddWallet}
               className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container-high transition"
-              title="Tambah Rekening / Kartu Baru"
+              title="Add New Account / Card"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -489,7 +489,7 @@ export function FinanceManager() {
 
           {/* Quick Switcher Indicator */}
           <div className="flex items-center justify-between pt-4 mt-2">
-            <span className="text-[11px] text-on-surface-variant font-medium">Default untuk Quick-Transfer</span>
+            <span className="text-[11px] text-on-surface-variant font-medium">Default for Quick-Transfer</span>
             <div className="flex items-center gap-1.5">
               {wallets.map((w) => (
                 <button
@@ -513,12 +513,12 @@ export function FinanceManager() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-on-surface-variant font-medium">Total Arus Kas Keluar</span>
+                <span className="text-xs text-on-surface-variant font-medium">Total Cash Outflow</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
-                <span className="text-xs text-on-surface-variant">Bulan Berjalan</span>
+                <span className="text-xs text-on-surface-variant">Current Month</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight mt-0.5">
-                Rp {totalExpense.toLocaleString('id-ID')}<span className="text-xs text-on-surface-variant font-normal"> / bln</span>
+                Rp {totalExpense.toLocaleString('id-ID')}<span className="text-xs text-on-surface-variant font-normal"> / mo</span>
               </div>
             </div>
 
@@ -533,7 +533,7 @@ export function FinanceManager() {
                       : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
-                  Mingguan
+                  Weekly
                 </button>
                 <button
                   type="button"
@@ -544,7 +544,7 @@ export function FinanceManager() {
                       : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
-                  Bulanan
+                  Monthly
                 </button>
               </div>
             </div>
@@ -558,9 +558,9 @@ export function FinanceManager() {
                   <BarChart3 className="w-5 h-5 text-on-surface-variant" />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-sm font-bold text-on-surface">Belum ada riwayat transaksi</p>
+                  <p className="text-sm font-bold text-on-surface">No transaction history yet</p>
                   <p className="text-xs text-on-surface-variant max-w-sm">
-                    Arus kas mingguan dan bulanan akan otomatis terhitung secara proporsional saat Anda mencatat transaksi pemasukan atau pengeluaran.
+                    Weekly and monthly cashflow will automatically calculate as you record income or expense transactions.
                   </p>
                 </div>
                 <button
@@ -568,7 +568,7 @@ export function FinanceManager() {
                   onClick={() => setIsLoggingOpen(true)}
                   className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition"
                 >
-                  Catat Mutasi Pertama
+                  Record First Transaction
                 </button>
               </div>
             ) : (
@@ -601,11 +601,11 @@ export function FinanceManager() {
                 <div className="flex items-center justify-center gap-6 mt-4 pt-2 border-t border-outline/20 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#a387f6]" />
-                    <span className="text-on-surface-variant font-medium">Pemasukan (Cash In)</span>
+                    <span className="text-on-surface-variant font-medium">Income (Cash In)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-primary-container" />
-                    <span className="text-on-surface-variant font-medium">Pengeluaran (Cash Out)</span>
+                    <span className="text-on-surface-variant font-medium">Expenses (Cash Out)</span>
                   </div>
                 </div>
               </>
@@ -619,9 +619,9 @@ export function FinanceManager() {
         {/* Riwayat Mutasi Terkini */}
         <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-on-surface">Mutasi Terkini</h3>
+            <h3 className="text-sm font-bold text-on-surface">Recent Transactions</h3>
             <span className="text-xs text-on-surface-variant font-medium">
-              {transactions.length} Transaksi
+              {transactions.length} Transactions
             </span>
           </div>
 
@@ -680,11 +680,11 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-on-surface">Radar Langganan</h3>
-              <p className="text-xs text-on-surface-variant">Peringatan otomatis H-3 sebelum auto-debit</p>
+              <h3 className="text-sm font-bold text-on-surface">Subscription Radar</h3>
+              <p className="text-xs text-on-surface-variant">Auto-alert 3 days before scheduled debit</p>
             </div>
             <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
-              {subscriptions.length} Layanan
+              {subscriptions.length} Services
             </span>
           </div>
 
@@ -708,7 +708,7 @@ export function FinanceManager() {
                     <div>
                       <span className="font-semibold text-on-surface block">{sub.name}</span>
                       <span className="text-[11px] text-on-surface-variant">
-                        Siklus: {sub.billing_cycle}
+                        Cycle: {sub.billing_cycle}
                       </span>
                     </div>
                   </div>
@@ -725,7 +725,7 @@ export function FinanceManager() {
                             : 'bg-surface-container-high text-on-surface-variant'
                         }`}
                       >
-                        {isUrgent ? `H-${diffDays} tagihan` : `${diffDays} hari lagi`}
+                        {diffDays <= 0 ? 'Due today' : `Due in ${diffDays} days`}
                       </span>
                     </div>
 
@@ -733,7 +733,7 @@ export function FinanceManager() {
                       type="button"
                       onClick={() => deleteSubscription(sub.id)}
                       className="text-on-surface-variant hover:text-error p-1 transition"
-                      title="Hapus langganan"
+                      title="Delete subscription"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -750,7 +750,7 @@ export function FinanceManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
           <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
-              <h3 className="font-bold text-base text-on-surface">Catat Transaksi Cepat</h3>
+              <h3 className="font-bold text-base text-on-surface">Record Transaction</h3>
               <button
                 type="button"
                 onClick={() => setIsLoggingOpen(false)}
@@ -774,19 +774,19 @@ export function FinanceManager() {
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
                   >
-                    {t === 'expense' ? 'Pengeluaran' : t === 'income' ? 'Pemasukan' : 'Transfer'}
+                    {t === 'expense' ? 'Expense' : t === 'income' ? 'Income' : 'Transfer'}
                   </button>
                 ))}
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">
-                  Jumlah (Rp) *
+                  Amount (Rp) *
                 </label>
                 <input
                   type="number"
                   required
-                  placeholder="Misal: 50000"
+                  placeholder="e.g. 50000"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
@@ -794,7 +794,7 @@ export function FinanceManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Kategori</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Category</label>
                 <input
                   type="text"
                   value={category}
@@ -804,7 +804,7 @@ export function FinanceManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Sumber Rekening</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Source Account</label>
                 <select
                   value={walletId}
                   onChange={(e) => setWalletId(e.target.value)}
@@ -820,7 +820,7 @@ export function FinanceManager() {
 
               {txType === 'transfer' && (
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1">Rekening Tujuan</label>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">Destination Account</label>
                   <select
                     value={toWalletId}
                     onChange={(e) => setToWalletId(e.target.value)}
@@ -838,10 +838,10 @@ export function FinanceManager() {
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Catatan</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Note</label>
                 <input
                   type="text"
-                  placeholder="Keterangan transaksi..."
+                  placeholder="Transaction description..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -854,13 +854,13 @@ export function FinanceManager() {
                   onClick={() => setIsLoggingOpen(false)}
                   className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
                 >
-                  Simpan Transaksi
+                  Save Transaction
                 </button>
               </div>
             </form>
@@ -874,7 +874,7 @@ export function FinanceManager() {
           <div className="bg-surface-container-lowest border border-outline/30 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-2 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">
-                {editingWallet ? 'Edit Rekening / Kartu' : 'Tambah Rekening / Kartu Baru'}
+                {editingWallet ? 'Edit Account / Card' : 'Add New Account / Card'}
               </h3>
               <button
                 type="button"
@@ -888,12 +888,12 @@ export function FinanceManager() {
             <form onSubmit={handleSaveWallet} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">
-                  Nama Bank / Dompet *
+                  Bank / Wallet Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Misal: Bank BCA, Jenius, Bank Jago"
+                  placeholder="e.g. Bank BCA, Jenius, Bank Jago"
                   value={walletForm.name}
                   onChange={(e) => setWalletForm({ ...walletForm, name: e.target.value })}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -903,7 +903,7 @@ export function FinanceManager() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Jenis Akun
+                    Account Type
                   </label>
                   <select
                     value={walletForm.type}
@@ -912,17 +912,17 @@ export function FinanceManager() {
                   >
                     <option value="bank">Bank</option>
                     <option value="ewallet">E-Wallet</option>
-                    <option value="cash">Tunai (Cash)</option>
-                    <option value="investment">Investasi</option>
+                    <option value="cash">Cash</option>
+                    <option value="investment">Investment</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Label Kartu
+                    Card Label
                   </label>
                   <input
                     type="text"
-                    placeholder="Misal: Kantong Utama"
+                    placeholder="e.g. Main Pocket"
                     value={walletForm.card_label}
                     onChange={(e) => setWalletForm({ ...walletForm, card_label: e.target.value })}
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -933,7 +933,7 @@ export function FinanceManager() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    4 Digit Nomor
+                    Last 4 Digits
                   </label>
                   <input
                     type="text"
@@ -946,7 +946,7 @@ export function FinanceManager() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
-                    Pemilik
+                    Holder Name
                   </label>
                   <input
                     type="text"
@@ -972,7 +972,7 @@ export function FinanceManager() {
 
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">
-                  Saldo Akun (Rp) *
+                  Account Balance (Rp) *
                 </label>
                 <input
                   type="number"
@@ -985,7 +985,7 @@ export function FinanceManager() {
 
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1.5">
-                  Tema Warna Kartu
+                  Card Theme Color
                 </label>
                 <div className="flex items-center gap-2">
                   {[
@@ -1017,7 +1017,7 @@ export function FinanceManager() {
                     className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-rose-600 hover:bg-rose-50 transition"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Hapus</span>
+                    <span>Delete</span>
                   </button>
                 ) : (
                   <div />
@@ -1028,13 +1028,13 @@ export function FinanceManager() {
                     onClick={() => setIsWalletModalOpen(false)}
                     className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high"
                   >
-                    Batal
+                    Cancel
                   </button>
                   <button
                     type="submit"
                     className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
                   >
-                    {editingWallet ? 'Simpan Perubahan' : 'Tambah Rekening'}
+                    {editingWallet ? 'Save Changes' : 'Add Account'}
                   </button>
                 </div>
               </div>

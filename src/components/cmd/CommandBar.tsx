@@ -71,34 +71,34 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
         contact_person: null,
         next_follow_up_date: null,
         portal_url: null,
-        notes: 'Ditambahkan via Command Bar ⌘K',
+        notes: 'Added via Command Bar ⌘K',
       });
-      onShowNotice?.(`Lamaran ${parsed.entity} (${parsed.role}) berhasil dicatat.`);
+      onShowNotice?.(`Application for ${parsed.entity} (${parsed.role}) recorded.`);
       close();
     } else if (parsed.type === 'nav') {
       onNavigate?.(parsed.target);
-      onShowNotice?.(`Berpindah ke halaman ${parsed.target}`);
+      onShowNotice?.(`Navigated to ${parsed.target}`);
       close();
     } else if (parsed.type === 'task') {
       window.dispatchEvent(new CustomEvent('quick-add-task', { detail: parsed }));
-      onShowNotice?.(`Tugas "${parsed.title}" ditambahkan ke Inbox.`);
+      onShowNotice?.(`Task "${parsed.title}" added to Inbox.`);
       close();
     } else if (parsed.type === 'expense') {
       window.dispatchEvent(new CustomEvent('quick-add-expense', { detail: parsed }));
-      onShowNotice?.(`Pengeluaran Rp ${parsed.amount.toLocaleString('id-ID')} dicatat.`);
+      onShowNotice?.(`Expense Rp ${parsed.amount.toLocaleString('id-ID')} recorded.`);
       close();
     } else {
-      setFeedback(`Perintah tidak dikenal. Coba gunakan /apply, /task, atau /exp.`);
+      setFeedback(`Unknown command. Try /apply, /task, or /exp.`);
     }
   };
 
   const suggestions = [
-    { cmd: '/apply GoTo - Frontend Intern #internship', desc: 'Catat lamaran magang kilat' },
-    { cmd: '/task Review feedback HR !high', desc: 'Tambah prioritas harian P1' },
-    { cmd: '/exp 35000 Makan Siang #bca', desc: 'Catat pengeluaran instan' },
-    { cmd: 'karir', desc: 'Lompat ke Pelacak Karir' },
-    { cmd: 'keuangan', desc: 'Buka Manajemen Finansial' },
-    { cmd: 'dropzone', desc: 'Buka Staging Dropzone' },
+    { cmd: '/apply GoTo - Frontend Intern #internship', desc: 'Quick record internship application' },
+    { cmd: '/task Review feedback HR !high', desc: 'Add P1 daily focus task' },
+    { cmd: '/exp 35000 Lunch Bento #bca', desc: 'Record instant expense' },
+    { cmd: 'career', desc: 'Jump to Career Pipeline' },
+    { cmd: 'finance', desc: 'Open Financial Vault' },
+    { cmd: 'dropzone', desc: 'Open Staging Dropzone' },
   ];
 
   return (
@@ -118,7 +118,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
               setInput(e.target.value);
               setFeedback(null);
             }}
-            placeholder="Ketik perintah atau shortcut... (contoh: /apply Google - SWE)"
+            placeholder="Type a command or shortcut... (e.g. /apply Google - SWE)"
             className="flex-1 bg-transparent text-xs text-on-surface focus:outline-none placeholder:text-on-surface-variant font-sans"
           />
           <button
@@ -147,7 +147,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
         {/* Suggestion List */}
         <div className="p-3.5 space-y-1 max-h-64 overflow-y-auto">
           <div className="px-3 py-1 text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
-            Saran &amp; Perintah Cepat
+            Quick Actions &amp; Suggestions
           </div>
           {suggestions.map((item, idx) => (
             <button
@@ -172,7 +172,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
 
         {/* Bottom footer hint */}
         <div className="px-5 py-2.5 bg-surface-container-low border-t border-outline/20 flex items-center justify-between text-[11px] text-on-surface-variant">
-          <span>Tekan Esc untuk menutup</span>
+          <span>Press Esc to close</span>
           <span className="font-mono">Personal OS chemicv11</span>
         </div>
 

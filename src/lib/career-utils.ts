@@ -10,9 +10,9 @@ export function getDaysElapsed(appliedDate: string | null, referenceDate = new D
   const msPerDay = 1000 * 60 * 60 * 24;
   const diffDays = Math.floor((referenceDate.getTime() - applied.getTime()) / msPerDay);
 
-  if (diffDays < 0) return 'Mendatang';
-  if (diffDays === 0) return 'Hari ini';
-  return `${diffDays} hari lalu`;
+  if (diffDays < 0) return 'Upcoming';
+  if (diffDays === 0) return 'Today';
+  return `${diffDays}d ago`;
 }
 
 export function getFollowUpStatus(
@@ -31,14 +31,14 @@ export function getFollowUpStatus(
   const diffDays = Math.round((targetDay.getTime() - refDay.getTime()) / msPerDay);
 
   if (diffDays < 0) {
-    return { isDue: true, label: `Follow-up lewat (${Math.abs(diffDays)}d lalu)` };
+    return { isDue: true, label: `Follow-up overdue (${Math.abs(diffDays)}d ago)` };
   }
   if (diffDays === 0) {
-    return { isDue: true, label: 'Follow-up: Hari ini' };
+    return { isDue: true, label: 'Follow-up: Today' };
   }
   if (diffDays === 1) {
-    return { isDue: true, label: 'Follow-up: Besok' };
+    return { isDue: true, label: 'Follow-up: Tomorrow' };
   }
-  return { isDue: false, label: `Follow-up: ${diffDays} hari lagi` };
+  return { isDue: false, label: `Follow-up in ${diffDays}d` };
 }
 

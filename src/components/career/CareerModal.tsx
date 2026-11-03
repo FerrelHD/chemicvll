@@ -113,10 +113,10 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
             </div>
             <div>
               <h3 className="font-bold text-base text-on-surface">
-                {initialData ? 'Edit Data Lamaran' : 'Catat Lamaran Baru'}
+                {initialData ? 'Edit Application Details' : 'Record New Application'}
               </h3>
               <p className="text-xs text-on-surface-variant">
-                Kelola alur rekrutmen, versi berkas CV, dan timeline follow-up
+                Manage recruitment pipeline, CV versions, and follow-up timeline
               </p>
             </div>
           </div>
@@ -133,7 +133,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         {/* Recruitment Pipeline Stepper */}
         <div className="px-6 py-3 bg-surface-container-low/60 border-b border-outline/20">
           <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider block mb-2">
-            Alur Tahapan Rekrutmen
+            Recruitment Pipeline Stages
           </span>
           <div className="flex items-center justify-between">
             {steps.map((step, idx) => {
@@ -180,13 +180,13 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Perusahaan / Organisasi *
+                Company / Organization *
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder="Misal: Tokopedia, Traveloka, BCA"
+                  placeholder="e.g. Tokopedia, Traveloka, BCA"
                   value={formData.entity_name}
                   onChange={(e) => setFormData({ ...formData, entity_name: e.target.value })}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -196,12 +196,12 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Posisi Lowongan *
+                Role / Position *
               </label>
               <input
                 type="text"
                 required
-                placeholder="Misal: Software Engineer Intern"
+                placeholder="e.g. Software Engineer Intern"
                 value={formData.role_or_program}
                 onChange={(e) => setFormData({ ...formData, role_or_program: e.target.value })}
                 className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -213,21 +213,21 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Kategori
+                Category
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as CareerCategory })}
                 className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               >
-                <option value="internship">Magang</option>
+                <option value="internship">Internship</option>
                 <option value="job">Full-time</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Tipe Kerja
+                Work Type
               </label>
               <select
                 value={formData.work_type}
@@ -242,7 +242,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Sumber / Platform
+                Source / Platform
               </label>
               <input
                 type="text"
@@ -258,12 +258,12 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Versi CV yang Dikirim
+                Submitted Resume Version
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Misal: CV-SE-v2.pdf, CV-Backend-Go.pdf"
+                  placeholder="e.g. CV-SE-v2.pdf, CV-Backend-Go.pdf"
                   value={formData.resume_version}
                   onChange={(e) => setFormData({ ...formData, resume_version: e.target.value })}
                   className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -273,11 +273,11 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Gaji / Uang Saku
+                Estimated Salary / Stipend
               </label>
               <input
                 type="text"
-                placeholder="Misal: Rp 4.500.000 / bln"
+                placeholder="e.g. Rp 4.500.000 / mo"
                 value={formData.stipend_or_salary}
                 onChange={(e) => setFormData({ ...formData, stipend_or_salary: e.target.value })}
                 className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -289,7 +289,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Tanggal Apply
+                Applied Date
               </label>
               <input
                 type="date"
@@ -301,7 +301,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Deadline Assessment
+                Assessment Deadline
               </label>
               <input
                 type="date"
@@ -313,7 +313,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Jadwal Follow-up
+                Follow-up Schedule
               </label>
               <input
                 type="date"
@@ -328,7 +328,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Link Lowongan / Meet
+                Job Listing / Meet Link
               </label>
               <input
                 type="url"
@@ -341,11 +341,11 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
-                Kontak Rekruter / HR
+                Recruiter / HR Contact
               </label>
               <input
                 type="text"
-                placeholder="Nama HR atau email..."
+                placeholder="HR name or email..."
                 value={formData.contact_person}
                 onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
                 className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
@@ -356,11 +356,11 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           {/* Row 6: Notes */}
           <div>
             <label className="block text-xs font-semibold text-on-surface mb-1">
-              Catatan & Pertanyaan Interview
+              Notes &amp; Interview Preparation
             </label>
             <textarea
               rows={3}
-              placeholder="Catatan stack, progress take-home challenge, tips interview..."
+              placeholder="Stack notes, take-home challenge progress, interview tips..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container resize-none"
@@ -374,13 +374,13 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
               onClick={onClose}
               className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
             >
-              Batal
+              Cancel
             </button>
             <button
               type="submit"
               className="px-6 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
             >
-              Simpan Lamaran
+              Save Application
             </button>
           </div>
         </form>

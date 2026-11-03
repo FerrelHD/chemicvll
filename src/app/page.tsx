@@ -67,8 +67,8 @@ export default function HomePage() {
         onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* 2. Main Layout Container (Offset by Sidebar on lg screens) */}
-      <div className="lg:pl-64 flex flex-col min-h-screen">
+      {/* 2. Main Layout Container (Offset by Collapsed Sidebar on lg screens) */}
+      <div className="lg:pl-[72px] flex flex-col min-h-screen">
         
         {/* Sticky Header Bar */}
         <Header

@@ -25,7 +25,7 @@ export function DailyBriefingModal({
 
   if (!isOpen) return null;
 
-  const todayStr = new Date().toLocaleDateString('id-ID', {
+  const todayStr = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -48,7 +48,7 @@ export function DailyBriefingModal({
             </div>
             <div>
               <h3 className="font-bold text-base text-on-surface">
-                Selamat Pagi, Ferrel
+                Good Morning, Ferrel
               </h3>
               <p className="text-xs text-on-surface-variant font-medium">
                 {todayStr} • Cockpit Briefing
@@ -69,7 +69,7 @@ export function DailyBriefingModal({
           <div className="p-3 rounded-2xl bg-primary-fixed/40 border border-primary-container/20 flex items-center gap-2.5 text-xs text-on-surface">
             <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse flex-shrink-0" />
             <p>
-              <strong>{rolledOverCount} tugas P1</strong> dari hari sebelumnya otomatis di-rollover ke <em>Daily Focus</em> hari ini.
+              <strong>{rolledOverCount} priority tasks</strong> from yesterday were automatically rolled over into today&apos;s <em>Daily Focus</em>.
             </p>
           </div>
         )}
@@ -90,10 +90,10 @@ export function DailyBriefingModal({
               </div>
               <div>
                 <span className="font-semibold text-xs text-on-surface block">
-                  {activeFocusTasks.length} Prioritas Fokus Hari Ini
+                  {activeFocusTasks.length} Daily Focus Priorities
                 </span>
                 <span className="text-[11px] text-on-surface-variant">
-                  {activeFocusTasks.length > 0 ? activeFocusTasks[0].title : 'Belum ada target tugas'}
+                  {activeFocusTasks.length > 0 ? activeFocusTasks[0].title : 'No target tasks yet'}
                 </span>
               </div>
             </div>
@@ -114,12 +114,12 @@ export function DailyBriefingModal({
               </div>
               <div>
                 <span className="font-semibold text-xs text-on-surface block">
-                  {interviewItems.length} Agenda Interview
+                  {interviewItems.length} Scheduled Interviews
                 </span>
                 <span className="text-[11px] text-on-surface-variant">
                   {interviewItems.length > 0
                     ? `${interviewItems[0].entity_name} • ${interviewItems[0].role_or_program}`
-                    : 'Tidak ada interview terjadwal'}
+                    : 'No interviews scheduled'}
                 </span>
               </div>
             </div>
@@ -158,7 +158,7 @@ export function DailyBriefingModal({
             onClick={onDismiss}
             className="w-full py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-md transition active:scale-95"
           >
-            Mulai Deep Work Hari Ini
+            Start Deep Work Session
           </button>
         </div>
 

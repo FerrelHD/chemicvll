@@ -18,7 +18,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-surface/90 backdrop-blur-xl border-b border-outline/70 z-30 flex items-center justify-between px-4 md:px-6 shadow-[0_1px_8px_rgba(24,24,27,0.03)]">
+    <header className="fixed top-0 left-0 lg:left-[72px] right-0 h-16 bg-surface/90 backdrop-blur-xl border-b border-outline/70 z-30 flex items-center justify-between px-4 md:px-6 shadow-[0_1px_8px_rgba(24,24,27,0.03)]">
       {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
       <div className="flex items-center gap-3">
         <button
@@ -38,7 +38,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         >
           <Search className="w-3.5 h-3.5 text-on-surface-variant" />
           <span className="text-xs text-on-surface-variant pr-4">
-            Cari sistem, berkas, perintah...
+            Search system, files, commands...
           </span>
           <kbd className="bg-surface-container-high text-on-surface text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold">
             ⌘K
@@ -52,14 +52,14 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         <div className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs">
           <div className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
           <span className="font-semibold text-on-surface text-xs">Cloud Sync</span>
-          <span className="text-on-surface-variant hidden md:inline text-[11px]">Aktif</span>
+          <span className="text-on-surface-variant hidden md:inline text-[11px]">Active</span>
         </div>
 
         {/* Notifications Icon Button */}
         <button
           type="button"
-          aria-label="Notifikasi"
-          onClick={() => alert('Tidak ada notifikasi baru.')}
+          aria-label="Notifications"
+          onClick={() => alert('No new notifications.')}
           className="w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
         >
           <Bell className="w-4 h-4 text-on-surface-variant" />

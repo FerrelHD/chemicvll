@@ -16,7 +16,7 @@ export function getRadarStatus(item: CareerPipeline, refDate = new Date()): Rada
     if (diffHours > 0 && diffHours <= 48) {
       return {
         urgency: 'assessment_urgent',
-        label: `Deadline ${Math.round(diffHours)}j lagi!`,
+        label: `Deadline in ${Math.round(diffHours)}h!`,
         isUrgent: true,
       };
     }
@@ -29,7 +29,7 @@ export function getRadarStatus(item: CareerPipeline, refDate = new Date()): Rada
     if (diffDays >= 5) {
       return {
         urgency: 'follow_up_due',
-        label: `Waktunya Follow-up (${diffDays}h lalu)`,
+        label: `Follow-up Due (${diffDays}d ago)`,
         isUrgent: true,
       };
     }
@@ -42,31 +42,33 @@ export function generateFollowUpDraft(
   item: CareerPipeline,
   channel: 'email' | 'whatsapp' = 'email'
 ): string {
-  const recruiter = item.contact_person || 'Tim Rekruter';
+  const recruiter = item.contact_person || 'Hiring Team';
   const role = item.role_or_program;
   const company = item.entity_name;
   const appliedDate = item.applied_date
-    ? new Date(item.applied_date).toLocaleDateString('id-ID', {
+    ? new Date(item.applied_date).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
       })
-    : 'beberapa hari lalu';
+    : 'a few days ago';
 
   if (channel === 'whatsapp') {
-    return `Halo ${recruiter}, perkenalkan saya Ferrel yang melamar untuk posisi ${role} di ${company}. Izin menanyakan apakah ada update terkait tahapan seleksi berkas saya yang diajukan pada ${appliedDate}? Terima kasih banyak sebelumnya.`;
+    return `Hi ${recruiter}, I am writing to politely follow up on my application for the ${role} position at ${company}, submitted on ${appliedDate}. Looking forward to hearing any updates regarding the next steps. Thank you!`;
   }
 
-  return `Subjek: Follow-up Lamaran - ${role} - Ferrel
+  return `Subject: Following up on ${role} Application - Ferrel
 
-Halo ${recruiter} ${company},
+Dear ${recruiter} at ${company},
 
-Saya Ferrel. Saya ingin menindaklanjuti berkas lamaran saya untuk posisi ${role} yang telah saya ajukan pada ${appliedDate}.
+I hope this email finds you well.
 
-Saya sangat antusias dengan kesempatan ini dan siap apabila ada dokumen atau informasi teknis tambahan yang diperlukan.
+I am writing to follow up on my application for the ${role} position submitted on ${appliedDate}. I remain very enthusiastic about this opportunity and would welcome the chance to discuss how my background and skills could contribute to ${company}.
 
-Terima kasih atas waktu dan perhatiannya.
+Please let me know if there are any additional materials or details needed from my end.
 
-Salam,
+Thank you very much for your time and consideration.
+
+Best regards,
 Ferrel`;
 }

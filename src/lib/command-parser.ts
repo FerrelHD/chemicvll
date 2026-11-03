@@ -25,7 +25,7 @@ export function parseCommand(input: string): ParsedCommand {
       title = raw.replace('!low', '').trim();
     }
 
-    return { type: 'task', title: title || 'Tugas Baru', priority };
+    return { type: 'task', title: title || 'New Task', priority };
   }
 
   // 2. Career: /apply Google - Software Engineer #internship
@@ -43,13 +43,13 @@ export function parseCommand(input: string): ParsedCommand {
     }
 
     const parts = clean.split('-').map((s) => s.trim());
-    const entity = parts[0] || 'Perusahaan';
+    const entity = parts[0] || 'Company';
     const role = parts.slice(1).join(' - ') || 'Applicant';
 
     return { type: 'apply', entity, role, category };
   }
 
-  // 3. Expense: /exp 25000 Kopi Susu #gopay
+  // 3. Expense: /exp 25000 Coffee #gopay
   if (text.startsWith('/exp ')) {
     const raw = text.slice(5).trim();
     let walletName: string | null = null;
@@ -64,7 +64,7 @@ export function parseCommand(input: string): ParsedCommand {
     const match = clean.match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
     if (match) {
       const amount = parseFloat(match[1]);
-      const note = match[2].trim() || 'Pengeluaran';
+      const note = match[2].trim() || 'Expense';
       return { type: 'expense', amount, note, walletName };
     }
   }

@@ -97,14 +97,14 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-1">
-            Personal OS Cockpit — Sinkronisasi cloud, karir, dan produktivitas hari ini.
+            Personal OS Cockpit — Cloud sync, career pipeline, and daily productivity.
           </p>
         </div>
 
         <div className="flex items-center flex-wrap gap-2.5">
           <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full border border-outline shadow-sm text-xs text-on-surface font-medium">
             <Calendar className="w-3.5 h-3.5 text-primary-container" />
-            <span>Hari ini</span>
+            <span>Today</span>
           </div>
 
           <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full border border-outline shadow-sm text-xs text-on-surface font-medium">
@@ -133,7 +133,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Pipeline Karir
+              Career Pipeline
             </span>
             <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
               <Briefcase className="w-4 h-4" />
@@ -143,18 +143,18 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           <div className="my-3">
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-on-surface">{activeCareerCount}</span>
-              <span className="text-xs text-on-surface-variant font-medium">Lamaran Aktif</span>
+              <span className="text-xs text-on-surface-variant font-medium">Active Applications</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-mono text-[10px] font-bold">
                 {interviewCount} Interview
               </span>
-              <span className="text-[11px] text-on-surface-variant">tahap lanjut</span>
+              <span className="text-[11px] text-on-surface-variant">advanced stage</span>
             </div>
           </div>
 
           <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px] truncate">Buka Kanban Pelacak</span>
+            <span className="text-[11px] truncate">Open Pipeline Kanban</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -166,7 +166,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Total Saldo Terpantau
+              Total Tracked Balance
             </span>
             <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
               <Wallet className="w-4 h-4" />
@@ -196,23 +196,23 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   togglePrivacyMode();
                 }}
                 className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
-                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+                title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold">
-                {wallets.length} Dompet Aktif
+                {wallets.length} Active Wallets
               </span>
               <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5">
-                <TrendingUp className="w-3 h-3" /> Likuid
+                <TrendingUp className="w-3 h-3" /> Liquid
               </span>
             </div>
           </div>
 
           <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Buka Mutasi & Radar</span>
+            <span className="text-[11px]">Open Ledger & Radar</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -224,7 +224,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Target Tugas Harian
+              Daily Task Target
             </span>
             <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
               <CheckCircle2 className="w-4 h-4" />
@@ -236,7 +236,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <span className="text-2xl font-bold text-on-surface">
                 {completedTasks}/{totalTasks}
               </span>
-              <span className="text-xs text-on-surface-variant font-medium">Tuntas</span>
+              <span className="text-xs text-on-surface-variant font-medium">Completed</span>
             </div>
             <div className="mt-2">
               <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
@@ -249,7 +249,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">{taskRatioPercent}% Selesai hari ini</span>
+            <span className="text-[11px]">{taskRatioPercent}% Completed today</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -286,7 +286,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Buka Console & Runner</span>
+            <span className="text-[11px]">Open Console & Runner</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -300,9 +300,9 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <div className="lg:col-span-7 bg-surface-container-lowest rounded-3xl p-6 border border-outline shadow-bento space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-on-surface">Arus Kas Bulanan (Capsule Chart)</h3>
+              <h3 className="text-sm font-bold text-on-surface">Monthly Cashflow (Capsule Chart)</h3>
               <p className="text-xs text-on-surface-variant mt-0.5">
-                Perbandingan Pemasukan (Oranye) vs Pengeluaran (Arang) dalam juta Rupiah.
+                Comparison of Income (Orange) vs Expenses (Charcoal) in million IDR.
               </p>
             </div>
             <div className="flex items-center gap-3 text-xs font-medium">
@@ -324,9 +324,9 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 <BarChart3 className="w-5 h-5 text-on-surface-variant" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-sm font-bold text-on-surface">Belum ada riwayat transaksi</p>
+                <p className="text-sm font-bold text-on-surface">No transaction history yet</p>
                 <p className="text-xs text-on-surface-variant max-w-sm">
-                  Grafik arus kas akan otomatis terisi secara proporsional saat Anda mencatat transaksi pemasukan atau pengeluaran.
+                  Cashflow chart will automatically populate as you record income or expense transactions.
                 </p>
               </div>
               <button
@@ -334,7 +334,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 onClick={() => onNavigate('finance')}
                 className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition"
               >
-                Catat Transaksi Pertama
+                Record First Transaction
               </button>
             </div>
           ) : (
@@ -372,7 +372,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Module B: Active Debit Card & Quick Action (Col span 5) */}
         <div className="lg:col-span-5 bg-surface-container-lowest rounded-3xl p-6 border border-outline shadow-bento space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-on-surface">Kartu Aktif (Wallet Stack)</h3>
+            <h3 className="text-sm font-bold text-on-surface">Active Card (Wallet Stack)</h3>
             <span className="text-[10px] font-mono uppercase bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant font-semibold">
               Primary Card
             </span>
@@ -397,7 +397,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div className="pt-2 flex items-center justify-between">
               <div>
                 <span className="text-[10px] text-white/80 font-mono block uppercase">
-                  {activeWallet?.card_label || 'SALDO UTAMA'}
+                  {activeWallet?.card_label || 'MAIN BALANCE'}
                 </span>
                 <span className="text-xl font-bold font-mono tracking-tight text-white block">
                   {isPrivacyMode ? 'Rp •••••••' : `Rp ${(activeWallet?.balance || 0).toLocaleString('id-ID')}`}
@@ -407,7 +407,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 type="button"
                 onClick={togglePrivacyMode}
                 className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition focus:outline-none"
-                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+                title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -427,7 +427,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-semibold transition"
             >
               <Send className="w-3.5 h-3.5 text-primary-container" />
-              <span>Kirim Saldo</span>
+              <span>Transfer</span>
             </button>
             <button
               type="button"
@@ -435,7 +435,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-semibold transition"
             >
               <PlusCircle className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Top Up Kas</span>
+              <span>Top Up</span>
             </button>
           </div>
         </div>
@@ -447,7 +447,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-            <h3 className="text-sm font-bold text-on-surface">Timeline & Agenda Terdekat Hari Ini</h3>
+            <h3 className="text-sm font-bold text-on-surface">Today&apos;s Schedule &amp; Up Next</h3>
           </div>
           <span className="text-xs text-on-surface-variant font-mono">WIB Timezone</span>
         </div>
@@ -462,7 +462,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold">
-                        INTERVIEW TAHAP LANJUT
+                        ADVANCED INTERVIEW
                       </span>
                       {interviewItem.next_follow_up_date && (
                         <span className="text-xs text-on-surface-variant font-mono">
@@ -474,7 +474,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       {interviewItem.entity_name} • {interviewItem.role_or_program}
                     </h4>
                     <p className="text-xs text-on-surface-variant">
-                      {interviewItem.notes || 'Persiapan interview teknis & CV screening'}
+                      {interviewItem.notes || 'Technical interview & CV screening prep'}
                     </p>
                   </div>
                   {interviewItem.portal_url && (
@@ -485,7 +485,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition flex-shrink-0"
                     >
                       <Video className="w-3 h-3" />
-                      <span>Buka Meet</span>
+                      <span>Open Meet</span>
                     </a>
                   )}
                 </div>
@@ -495,10 +495,10 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-semibold text-on-surface block">
-                  Belum ada jadwal interview
+                  No interviews scheduled
                 </span>
                 <span className="text-[11px] text-on-surface-variant">
-                  Catat lamaran atau update status ke tahap interview.
+                  Record new applications or update pipeline status to interview.
                 </span>
               </div>
               <button
@@ -506,7 +506,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 onClick={() => onNavigate('career')}
                 className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
               >
-                + Lamaran
+                + Application
               </button>
             </div>
           )}
@@ -522,17 +522,17 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
                         P{activeTask.priority} DEEP WORK
                       </span>
-                      <span className="text-xs text-on-surface-variant font-mono">Prioritas Harian</span>
+                      <span className="text-xs text-on-surface-variant font-mono">Daily Priority</span>
                     </div>
                     <h4 className="text-sm font-semibold text-on-surface">{activeTask.title}</h4>
-                    <p className="text-xs text-on-surface-variant">Fokus sprint 25 menit tanpa distraksi</p>
+                    <p className="text-xs text-on-surface-variant">25-minute sprint with zero distraction</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => onNavigate('tasks')}
                     className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition flex-shrink-0"
                   >
-                    Mulai Timer
+                    Start Timer
                   </button>
                 </div>
               );
@@ -541,10 +541,10 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-semibold text-on-surface block">
-                  Tidak ada tugas fokus berjalan
+                  No active focus tasks running
                 </span>
                 <span className="text-[11px] text-on-surface-variant">
-                  Tambahkan target tugas baru di modul Tugas &amp; Fokus.
+                  Add today&apos;s priority target in the Tasks &amp; Focus module.
                 </span>
               </div>
               <button
@@ -552,7 +552,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 onClick={() => onNavigate('tasks')}
                 className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
               >
-                + Tugas
+                + Task
               </button>
             </div>
           )}

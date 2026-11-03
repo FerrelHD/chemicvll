@@ -10,8 +10,8 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ activeFilter, counts, onFilterChange }: CategoryFilterProps) {
   const filters: { id: 'all' | 'internship' | 'job'; label: string; count: number }[] = [
-    { id: 'all', label: 'Semua', count: counts.all },
-    { id: 'internship', label: 'Magang', count: counts.internship },
+    { id: 'all', label: 'All', count: counts.all },
+    { id: 'internship', label: 'Internship', count: counts.internship },
     { id: 'job', label: 'Full-time', count: counts.job },
   ];
 

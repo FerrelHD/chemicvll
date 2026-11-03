@@ -54,10 +54,10 @@ export function NotesAndContentStudio() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
           <h2 className="text-base font-semibold tracking-tight text-appleText-primary">
-            Second Brain & Content Studio
+            Second Brain &amp; Content Studio
           </h2>
           <p className="text-xs text-appleText-secondary mt-0.5">
-            Penyimpanan catatan, snippet kode, prompt AI, dan studio pembuatan konten.
+            Notes repository, code snippets, AI prompts, and content creation studio.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export function NotesAndContentStudio() {
                 : 'text-appleText-muted hover:text-appleText-primary'
             }`}
           >
-            Catatan & Snippet ({notes.length})
+            Notes &amp; Snippets ({notes.length})
           </button>
           <button
             type="button"
@@ -98,7 +98,7 @@ export function NotesAndContentStudio() {
                 required
                 value={noteTitle}
                 onChange={(e) => setNoteTitle(e.target.value)}
-                placeholder="Judul catatan / snippet..."
+                placeholder="Note / snippet title..."
                 className="sm:col-span-3 px-3 py-1.5 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none"
               />
               <select
@@ -106,9 +106,9 @@ export function NotesAndContentStudio() {
                 onChange={(e) => setNoteType(e.target.value as any)}
                 className="px-2 py-1.5 rounded-lg border border-appleBorder bg-subtle text-appleText-secondary focus:outline-none"
               >
-                <option value="note">Catatan</option>
-                <option value="snippet">Snippet Kode</option>
-                <option value="prompt">Prompt AI</option>
+                <option value="note">Note</option>
+                <option value="snippet">Code Snippet</option>
+                <option value="prompt">AI Prompt</option>
                 <option value="bookmark">Bookmark</option>
               </select>
             </div>
@@ -116,7 +116,7 @@ export function NotesAndContentStudio() {
               rows={2}
               value={noteContent}
               onChange={(e) => setNoteContent(e.target.value)}
-              placeholder="Isi catatan atau potongan kode..."
+              placeholder="Note content or code snippet..."
               className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none font-mono text-xs"
             ></textarea>
             <div className="flex justify-end">
@@ -124,7 +124,7 @@ export function NotesAndContentStudio() {
                 type="submit"
                 className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition text-xs"
               >
-                Simpan Catatan
+                Save Note
               </button>
             </div>
           </form>
@@ -180,7 +180,7 @@ export function NotesAndContentStudio() {
                 required
                 value={contentTitle}
                 onChange={(e) => setContentTitle(e.target.value)}
-                placeholder="Judul / Topik Video / Artikel..."
+                placeholder="Title / Video or Article Topic..."
                 className="sm:col-span-2 px-3 py-1.5 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none"
               />
               <select
@@ -198,14 +198,14 @@ export function NotesAndContentStudio() {
               type="text"
               value={contentHook}
               onChange={(e) => setContentHook(e.target.value)}
-              placeholder="Hook 3 detik pertama (kalimat pembuka yang memikat)..."
+              placeholder="First 3-second hook (captivating opening line)..."
               className="w-full px-3 py-1.5 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none"
             />
             <textarea
               rows={2}
               value={contentScript}
               onChange={(e) => setContentScript(e.target.value)}
-              placeholder="Poin-poin isi script atau caption..."
+              placeholder="Script bullet points or caption..."
               className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none text-xs"
             ></textarea>
             <div className="flex justify-end">
@@ -213,7 +213,7 @@ export function NotesAndContentStudio() {
                 type="submit"
                 className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition text-xs"
               >
-                Simpan Ide Konten
+                Save Content Idea
               </button>
             </div>
           </form>

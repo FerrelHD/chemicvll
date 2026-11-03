@@ -87,7 +87,7 @@ export function TaskManager() {
           <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider">
             <span>Personal OS</span>
             <span>•</span>
-            <span className="text-primary-container">Tugas &amp; Fokus</span>
+            <span className="text-primary-container">Tasks &amp; Focus</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
             Deep Work &amp; Productivity Cockpit
@@ -98,7 +98,7 @@ export function TaskManager() {
         <div className="flex items-center flex-wrap gap-2">
           <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium">
             <Calendar className="w-3.5 h-3.5 text-primary-container" />
-            <span>Hari ini</span>
+            <span>Today</span>
           </div>
 
           <div className="flex items-center gap-1 bg-surface-container-high p-1 rounded-full shadow-inner text-xs font-semibold">
@@ -113,7 +113,7 @@ export function TaskManager() {
                     : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                {mode === 'all' ? 'Semua' : mode.toUpperCase()}
+                {mode === 'all' ? 'All' : mode.toUpperCase()}
               </button>
             ))}
           </div>
@@ -125,7 +125,7 @@ export function TaskManager() {
         {/* Metric 1: Pomodoro Sessions */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Sesi Fokus Hari Ini</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Today&apos;s Focus Sessions</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container">
               <Timer className="w-4 h-4" />
             </div>
@@ -135,10 +135,10 @@ export function TaskManager() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {sessionsCompleted}
               </span>
-              <span className="text-xs text-on-surface-variant font-medium">Sesi</span>
+              <span className="text-xs text-on-surface-variant font-medium">Sessions</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>{sessionsCompleted * 25} Menit deep work</span>
+              <span>{sessionsCompleted * 25} Mins deep work</span>
               <span className="font-semibold text-on-surface">Target: 6</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
@@ -153,7 +153,7 @@ export function TaskManager() {
         {/* Metric 2: P1 Tasks */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Prioritas Mendesak (P1)</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Urgent Priorities (P1)</span>
             <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
               <AlertTriangle className="w-4 h-4" />
             </div>
@@ -163,11 +163,11 @@ export function TaskManager() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {p1Remaining}
               </span>
-              <span className="text-xs text-rose-600 font-semibold">Tersisa</span>
+              <span className="text-xs text-rose-600 font-semibold">Remaining</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
               <span>Do First</span>
-              <span className="font-semibold text-rose-600">Tinggi</span>
+              <span className="font-semibold text-rose-600">High</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
               <div
@@ -181,7 +181,7 @@ export function TaskManager() {
         {/* Metric 3: Weekly Completion Rate */}
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Penyelesaian Task</span>
+            <span className="text-xs font-semibold text-on-surface-variant">Task Completion</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-emerald-600">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -194,7 +194,7 @@ export function TaskManager() {
               <span className="text-xs text-emerald-600 font-semibold">+6%</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>{completedTasks} dari {totalTasks} selesai</span>
+              <span>{completedTasks} of {totalTasks} completed</span>
               <span className="font-semibold text-emerald-600">Optimal</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
@@ -219,11 +219,11 @@ export function TaskManager() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 12
               </span>
-              <span className="text-xs text-primary-container font-semibold">Hari Aktif</span>
+              <span className="text-xs text-primary-container font-semibold">Active Days</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>Rekor: 14 hari</span>
-              <span className="font-semibold text-primary-container">🔥 Rekor</span>
+              <span>Record: 14 days</span>
+              <span className="font-semibold text-primary-container">🔥 Record</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
               <div
@@ -250,11 +250,11 @@ export function TaskManager() {
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse" />
                 <span className="text-xs font-bold text-on-surface uppercase tracking-wide">
-                  Fokus Deep Work
+                  Deep Work Focus
                 </span>
               </div>
               <div className="flex items-center gap-1 bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface-variant text-[11px] font-semibold">
-                <span>Sesi {sessionsCompleted + 1}/6</span>
+                <span>Session {sessionsCompleted + 1}/6</span>
               </div>
             </div>
 
@@ -264,7 +264,7 @@ export function TaskManager() {
                 {formatTimer(timeLeft)}
               </div>
               <span className="text-xs text-on-surface-variant font-medium mt-2">
-                {timerRunning ? 'Sesi fokus sedang berjalan — minimalkan gangguan' : 'Siap untuk deep work sprint'}
+                {timerRunning ? 'Focus session in progress — minimize distractions' : 'Ready for deep work sprint'}
               </span>
             </div>
 
@@ -276,7 +276,7 @@ export function TaskManager() {
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-inverse-surface text-white text-xs font-bold shadow-md hover:bg-black transition active:scale-95"
               >
                 {timerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                <span>{timerRunning ? 'Jeda Sesi' : 'Mulai Fokus'}</span>
+                <span>{timerRunning ? 'Pause Session' : 'Start Focus'}</span>
               </button>
               <button
                 type="button"
@@ -295,14 +295,14 @@ export function TaskManager() {
             <div className="mt-8 pt-4 border-t border-outline/20">
               <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mb-2">
                 <Headphones className="w-3.5 h-3.5 text-primary-container" />
-                <span className="font-semibold">Suara Ambien Fokus</span>
+                <span className="font-semibold">Ambient Soundscape</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {[
-                  { id: 'off', label: 'Hening' },
+                  { id: 'off', label: 'Mute' },
                   { id: 'lofi', label: 'Lofi Chill' },
                   { id: 'brown', label: 'Brown Noise' },
-                  { id: 'rain', label: 'Hujan Malam' },
+                  { id: 'rain', label: 'Rain Ambient' },
                 ].map((s) => (
                   <button
                     key={s.id}
@@ -324,11 +324,11 @@ export function TaskManager() {
           {/* Mental Energy Rhythm Stack */}
           <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
             <span className="text-xs font-bold text-on-surface uppercase tracking-wider block">
-              Ritme Energi Mental Hari Ini
+              Daily Mental Energy Rhythm
             </span>
             <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-on-surface-variant">Pagi (08:00 - 12:00)</span>
+                <span className="text-on-surface-variant">Morning (08:00 - 12:00)</span>
                 <span className="font-bold text-emerald-600">Peak Focus (90%)</span>
               </div>
               <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
@@ -336,7 +336,7 @@ export function TaskManager() {
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-on-surface-variant">Siang (13:00 - 17:00)</span>
+                <span className="text-on-surface-variant">Afternoon (13:00 - 17:00)</span>
                 <span className="font-bold text-primary-container">Execution (65%)</span>
               </div>
               <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
@@ -344,7 +344,7 @@ export function TaskManager() {
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-on-surface-variant">Sore/Malam (19:00 - 22:00)</span>
+                <span className="text-on-surface-variant">Evening (19:00 - 22:00)</span>
                 <span className="font-bold text-zinc-500">Cool-down (40%)</span>
               </div>
               <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
@@ -364,7 +364,7 @@ export function TaskManager() {
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Tulis target tugas berikutnya... (Enter untuk simpan)"
+                placeholder="Write next target task... (Press Enter to save)"
                 className="flex-1 px-4 py-2 rounded-xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
               <select
@@ -372,8 +372,8 @@ export function TaskManager() {
                 onChange={(e) => setNewPriority(Number(e.target.value) as 1 | 2 | 3)}
                 className="px-3 py-2 rounded-xl bg-surface-container-low border border-outline/30 text-xs font-semibold text-on-surface focus:outline-none"
               >
-                <option value={1}>P1: Mendesak</option>
-                <option value={2}>P2: Terjadwal</option>
+                <option value={1}>P1: Urgent</option>
+                <option value={2}>P2: Scheduled</option>
                 <option value={3}>P3: Quick Win</option>
               </select>
               <button
@@ -394,17 +394,17 @@ export function TaskManager() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                   <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                    P1: Mendesak &amp; Berdampak Tinggi (Do First)
+                    P1: Urgent &amp; High Impact (Do First)
                   </h3>
                 </div>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">
-                  {p1Tasks.length} Task
+                  {p1Tasks.length} Tasks
                 </span>
               </div>
 
               <div className="space-y-2">
                 {p1Tasks.length === 0 ? (
-                  <p className="text-xs text-on-surface-variant py-2">Semua tugas P1 selesai.</p>
+                  <p className="text-xs text-on-surface-variant py-2">All P1 tasks completed.</p>
                 ) : (
                   p1Tasks.map((t) => (
                     <div
@@ -431,7 +431,7 @@ export function TaskManager() {
                               ? 'text-primary-container'
                               : 'text-on-surface-variant hover:text-on-surface'
                           }`}
-                          title="Tandai Daily Focus"
+                          title="Toggle Daily Focus"
                         >
                           <Star className="w-3.5 h-3.5 fill-current" />
                         </button>
@@ -455,17 +455,17 @@ export function TaskManager() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary-container" />
                   <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                    P2: Terjadwal / Progres Panjang (Schedule)
+                    P2: Scheduled / Pipeline (Schedule)
                   </h3>
                 </div>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
-                  {p2Tasks.length} Task
+                  {p2Tasks.length} Tasks
                 </span>
               </div>
 
               <div className="space-y-2">
                 {p2Tasks.length === 0 ? (
-                  <p className="text-xs text-on-surface-variant py-2">Tidak ada tugas P2 aktif.</p>
+                  <p className="text-xs text-on-surface-variant py-2">No active P2 tasks.</p>
                 ) : (
                   p2Tasks.map((t) => (
                     <div
@@ -515,17 +515,17 @@ export function TaskManager() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#a387f6]" />
                   <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                    P3: Quick Wins &lt;15 Menit
+                    P3: Quick Wins (&lt;15 Mins)
                   </h3>
                 </div>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
-                  {p3Tasks.length} Task
+                  {p3Tasks.length} Tasks
                 </span>
               </div>
 
               <div className="space-y-2">
                 {p3Tasks.length === 0 ? (
-                  <p className="text-xs text-on-surface-variant py-2">Tidak ada tugas P3 aktif.</p>
+                  <p className="text-xs text-on-surface-variant py-2">No active P3 tasks.</p>
                 ) : (
                   p3Tasks.map((t) => (
                     <div
@@ -563,7 +563,7 @@ export function TaskManager() {
               <div className="bg-surface-container-lowest rounded-3xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3 opacity-75">
                 <div className="flex items-center justify-between pb-2 border-b border-outline/20">
                   <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                    Tugas Selesai ({doneTasks.length})
+                    Completed Tasks ({doneTasks.length})
                   </h3>
                 </div>
 
