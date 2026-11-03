@@ -147,10 +147,10 @@
 4. Update `README.md` with descriptions of the 4 in-app automations (strictly no emojis).
 
 **Steps:**
-- [ ] Update `package.json` test runner script to run all test files.
-- [ ] Run `npm test` and verify all tests pass.
-- [ ] Run `npx tsc --noEmit` and verify 0 TypeScript diagnostics.
-- [ ] Run `npm run build` and verify clean static site generation.
-- [ ] Update `README.md` documenting the Automation Engine.
-- [ ] Commit changes: `docs(core): document in-app automation engine and finalize test suite`.
+- [x] Update `package.json` test runner script to run all test files.
+- [x] Run `npm test` and verify all tests pass.
+- [x] Run `npx tsc --noEmit` and verify 0 TypeScript diagnostics.
+- [x] Run `npm run build` and verify clean static site generation.
+- [x] Update `README.md` documenting the Automation Engine.
+- [x] Commit changes: `docs(core): document in-app automation engine and finalize test suite`.
 

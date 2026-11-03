@@ -56,6 +56,12 @@ Personal OS unifies daily engineering workflows, career development, and persona
 - Cross-Device Clipboard: Instant text, URL, and code snippet synchronization between desktop and mobile devices via Supabase Realtime.
 - Quick Code Scratchpad: Temporary snippet holder with one-click copy functionality.
 
+### 7. Automation Engine
+- Career Follow-up & Assessment Radar: Automatically monitors applied job pipelines; flags applications idle for 5 or more days and assessment tests due within 48 hours with dynamic urgency badges and pre-filled, professional follow-up templates (email and WhatsApp).
+- Daily Morning Briefing & Task Rollover: Automatically checks on first daily session, rolls over incomplete P1 priorities from the previous day directly into the active Daily Focus list, and presents a personalized morning status overview.
+- 24-Hour Cache Auto-Purge: Automatically cleanses unpinned temporary clipboard text, links, and snippets older than 24 hours while strictly preserving pinned critical assets.
+- Dev Port Health-Check Ping: Native browser-driven non-blocking background TCP health checks across all configured project ports every 30 seconds with live status indicators (Active vs Standby).
+
 ---
 
 ## Design System: Warm Bento Fintech
