@@ -30,11 +30,12 @@ let isInitialized = false;
 let isSyncingDown = false;
 let syncTimeout: NodeJS.Timeout | null = null;
 
-const SYNC_TIMEOUT_MS = 4000;
+const SYNC_TIMEOUT_MS = 10000;
 
 export async function pullFromCloud(): Promise<boolean> {
   const supabase = createBrowserClient();
   if (!supabase) {
+    useSyncStore.getState().setErrorMessage('Missing Supabase credentials in .env.local');
     useSyncStore.getState().setStatus('offline');
     return false;
   }
@@ -43,7 +44,7 @@ export async function pullFromCloud(): Promise<boolean> {
     useSyncStore.getState().setStatus('syncing');
     isSyncingDown = true;
 
-    // Parallel fetch with strict 4s timeout to prevent hanging
+    // Parallel fetch with 10s timeout to allow cold connection handshake
     const [careerRes, walletRes, txRes, subRes, taskRes] = await Promise.race([
       Promise.all([
         supabase.from('career_pipelines').select('*'),
@@ -53,7 +54,10 @@ export async function pullFromCloud(): Promise<boolean> {
         supabase.from('tasks').select('*'),
       ]),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Sync timeout')), SYNC_TIMEOUT_MS)
+        setTimeout(
+          () => reject(new Error('Koneksi timeout (>10 detik). Supabase belum merespon.')),
+          SYNC_TIMEOUT_MS
+        )
       ),
     ]);
 
