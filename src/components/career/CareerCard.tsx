@@ -49,7 +49,14 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
   const isInternship = item.category === 'internship';
 
   return (
-    <div className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 flex flex-col gap-3 group hover:shadow-md transition-all">
+    <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', item.id);
+        e.dataTransfer.effectAllowed = 'move';
+      }}
+      className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 flex flex-col gap-3 group hover:shadow-md transition-all cursor-grab active:cursor-grabbing"
+    >
       {/* Category Tag & Platform Source */}
       <div className="flex items-center justify-between">
         <span

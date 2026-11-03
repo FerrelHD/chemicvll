@@ -34,6 +34,7 @@ export function CareerKanban() {
   const [editingItem, setEditingItem] = useState<CareerPipeline | null>(null);
   const [targetStage, setTargetStage] = useState<CareerStage>('applied');
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<CareerStage | null>(null);
 
   // Filtered items based on active category filter
   const filteredItems = useMemo(() => {
@@ -256,11 +257,36 @@ export function CareerKanban() {
       <div className="flex gap-4 overflow-x-auto pb-4 pt-1 items-start snap-x">
         {columns.map((col) => {
           const colItems = filteredItems.filter((i) => i.stage === col.stage);
+          const isTargeted = dragOverStage === col.stage;
 
           return (
             <div
               key={col.stage}
-              className="flex-shrink-0 w-80 max-w-[85vw] flex flex-col gap-3 bg-surface-container-low/70 p-3.5 rounded-2xl border border-outline/20 min-h-[500px] snap-start"
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (dragOverStage !== col.stage) {
+                  setDragOverStage(col.stage);
+                }
+              }}
+              onDragLeave={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                  setDragOverStage(null);
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOverStage(null);
+                const itemId = e.dataTransfer.getData('text/plain');
+                if (itemId) {
+                  moveStage(itemId, col.stage);
+                }
+              }}
+              className={`flex-shrink-0 w-72 sm:w-80 max-w-[85vw] flex flex-col gap-3 p-3.5 rounded-2xl border min-h-[500px] snap-start transition-all ${
+                isTargeted
+                  ? 'bg-primary-fixed/30 border-primary-container ring-2 ring-primary-container/20'
+                  : 'bg-surface-container-low/70 border-outline/20'
+              }`}
             >
               {/* Column Header */}
               <div className="flex items-center justify-between px-1 pt-1">
