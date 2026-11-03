@@ -15,7 +15,7 @@ Personal OS unifies daily engineering workflows, career development, and persona
 ### Tech Stack
 - Frontend: Next.js 14+ (App Router), TypeScript, Tailwind CSS, Lucide Icons
 - Typography: Plus Jakarta Sans via next/font/google
-- State Management: Zustand (client-side state, global command bar, and optimistic caching)
+- State Management: Zustand with localStorage persistence across all core modules (offline-first auto-save, zero data loss on reload)
 - Backend & Database: Supabase Cloud (PostgreSQL, Row Level Security, Supabase Auth, Realtime)
 - Local Server Runner: Node.js background daemon with native child_process spawning and process tree management
 - Security: Client-side .env Vault powered by the Web Crypto API (AES-GCM 256-bit with PBKDF2 key derivation)

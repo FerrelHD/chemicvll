@@ -1,4 +1,11 @@
 import assert from 'node:assert';
+const mockStore = new Map<string, string>();
+(globalThis as any).localStorage = {
+  getItem: (k: string) => mockStore.get(k) ?? null,
+  setItem: (k: string, v: string) => mockStore.set(k, String(v)),
+  removeItem: (k: string) => mockStore.delete(k),
+};
+
 import { useFinanceStore } from '../../stores/useFinanceStore';
 
 console.log('Testing Finance Wallet Store Functions...');

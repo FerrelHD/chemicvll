@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Project } from '@/types/database';
 
 export interface DevProject extends Project {
@@ -48,76 +49,83 @@ const INITIAL_PROJECTS: DevProject[] = [
   },
 ];
 
-export const useDevStore = create<DevState>((set, get) => ({
-  projects: INITIAL_PROJECTS,
-  activeLogProjectId: null,
-  setActiveLogProjectId: (id) => set({ activeLogProjectId: id }),
-  startServer: (id) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const pid = Math.floor(1000 + Math.random() * 9000);
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              serverState: 'running',
-              pid,
-              logs: [
-                ...p.logs.slice(-98),
-                `[${timestamp}] Spawning process: ${p.start_command} (PID: ${pid})`,
-                `[${timestamp}] Ready on http://localhost:${p.default_port}`,
-              ],
-            }
-          : p
-      ),
-    }));
-  },
-  stopServer: (id) => {
-    const timestamp = new Date().toLocaleTimeString();
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === id
-          ? {
-              ...p,
+export const useDevStore = create<DevState>()(
+  persist(
+    (set, get) => ({
+      projects: INITIAL_PROJECTS,
+      activeLogProjectId: null,
+      setActiveLogProjectId: (id) => set({ activeLogProjectId: id }),
+      startServer: (id) => {
+        const timestamp = new Date().toLocaleTimeString();
+        const pid = Math.floor(1000 + Math.random() * 9000);
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  serverState: 'running',
+                  pid,
+                  logs: [
+                    ...p.logs.slice(-98),
+                    `[${timestamp}] Spawning process: ${p.start_command} (PID: ${pid})`,
+                    `[${timestamp}] Ready on http://localhost:${p.default_port}`,
+                  ],
+                }
+              : p
+          ),
+        }));
+      },
+      stopServer: (id) => {
+        const timestamp = new Date().toLocaleTimeString();
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  serverState: 'stopped',
+                  pid: null,
+                  logs: [
+                    ...p.logs.slice(-98),
+                    `[${timestamp}] Process terminated (SIGINT/SIGTERM sent).`,
+                  ],
+                }
+              : p
+          ),
+        }));
+      },
+      restartServer: (id) => {
+        get().stopServer(id);
+        setTimeout(() => get().startServer(id), 500);
+      },
+      appendLog: (id, logLine) =>
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id ? { ...p, logs: [...p.logs.slice(-99), logLine] } : p
+          ),
+        })),
+      saveProjectEnv: (id, encrypted) =>
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id ? { ...p, encryptedEnv: encrypted } : p
+          ),
+        })),
+      addProject: (newProj) =>
+        set((state) => ({
+          projects: [
+            {
+              ...newProj,
+              id: `proj-${Date.now()}`,
               serverState: 'stopped',
               pid: null,
-              logs: [
-                ...p.logs.slice(-98),
-                `[${timestamp}] Process terminated (SIGINT/SIGTERM sent).`,
-              ],
-            }
-          : p
-      ),
-    }));
-  },
-  restartServer: (id) => {
-    get().stopServer(id);
-    setTimeout(() => get().startServer(id), 500);
-  },
-  appendLog: (id, logLine) =>
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === id ? { ...p, logs: [...p.logs.slice(-99), logLine] } : p
-      ),
-    })),
-  saveProjectEnv: (id, encrypted) =>
-    set((state) => ({
-      projects: state.projects.map((p) =>
-        p.id === id ? { ...p, encryptedEnv: encrypted } : p
-      ),
-    })),
-  addProject: (newProj) =>
-    set((state) => ({
-      projects: [
-        {
-          ...newProj,
-          id: `proj-${Date.now()}`,
-          serverState: 'stopped',
-          pid: null,
-          logs: ['[Daemon] Project registered.'],
-        },
-        ...state.projects,
-      ],
-    })),
-}));
+              logs: ['[Daemon] Project registered.'],
+            },
+            ...state.projects,
+          ],
+        })),
+    }),
+    {
+      name: 'chemicvll-dev-storage',
+    }
+  )
+);
 
