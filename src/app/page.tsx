@@ -14,6 +14,7 @@ import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
 import { CommandBar } from '@/components/cmd/CommandBar';
 import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
+import { initSupabaseSync } from '@/lib/supabase-sync';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -24,6 +25,8 @@ export default function HomePage() {
   const executeDailyRollover = useTaskStore((state) => state.executeDailyRollover);
 
   useEffect(() => {
+    initSupabaseSync();
+
     try {
       const todayStr = new Date().toISOString().split('T')[0];
       const lastDate = localStorage.getItem('personal_os_last_briefing');

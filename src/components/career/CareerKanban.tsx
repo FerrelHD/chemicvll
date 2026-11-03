@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { CareerPipeline, CareerStage } from '@/types/database';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
+import { useSyncStore } from '@/lib/supabase-sync';
 import { CareerCard } from './CareerCard';
 import { CategoryFilter } from './CategoryFilter';
 import { CareerModal } from './CareerModal';
@@ -29,6 +30,7 @@ export function CareerKanban() {
   const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
   const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
+  const lastSyncedAt = useSyncStore((s) => s.lastSyncedAt);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CareerPipeline | null>(null);
@@ -165,7 +167,7 @@ export function CareerKanban() {
 
           <div className="hidden lg:flex items-center gap-2 bg-surface-container-lowest px-4 py-1.5 rounded-full border border-outline/30 shadow-sm text-xs text-on-surface-variant">
             <RefreshCw className="w-3.5 h-3.5 text-primary-container" />
-            <span>Last synced: Today, {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
+            <span>Last synced: {lastSyncedAt ? `Today, ${lastSyncedAt} WIB` : 'Connecting...'}</span>
           </div>
         </div>
       </div>

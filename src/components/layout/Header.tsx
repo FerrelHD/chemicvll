@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Menu, Search, Bell, Lock } from 'lucide-react';
+import { useSyncStore, pullFromCloud } from '@/lib/supabase-sync';
 
 interface HeaderProps {
   onOpenMobileMenu?: () => void;
@@ -9,6 +10,9 @@ interface HeaderProps {
 }
 
 export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
+  const syncStatus = useSyncStore((s) => s.status);
+  const lastSyncedAt = useSyncStore((s) => s.lastSyncedAt);
+
   const triggerCommand = () => {
     if (onOpenCommandBar) {
       onOpenCommandBar();
@@ -49,11 +53,34 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
       {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
       <div className="flex items-center gap-3">          
         {/* Cloud Sync Status Pill */}
-        <div className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs">
-          <div className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
+        <button
+          type="button"
+          onClick={() => pullFromCloud()}
+          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer"
+          title={lastSyncedAt ? `Last synced at ${lastSyncedAt} WIB. Click to sync now.` : 'Click to sync now.'}
+        >
+          <div
+            className={`w-2 h-2 rounded-full ${
+              syncStatus === 'syncing'
+                ? 'bg-amber-500 animate-pulse'
+                : syncStatus === 'synced'
+                ? 'bg-emerald-500'
+                : syncStatus === 'offline'
+                ? 'bg-zinc-400'
+                : 'bg-primary-container animate-pulse'
+            }`}
+          />
           <span className="font-semibold text-on-surface text-xs">Cloud Sync</span>
-          <span className="text-on-surface-variant hidden md:inline text-[11px]">Active</span>
-        </div>
+          <span className="text-on-surface-variant hidden md:inline text-[11px]">
+            {syncStatus === 'syncing'
+              ? 'Syncing...'
+              : syncStatus === 'synced'
+              ? 'Synced'
+              : syncStatus === 'offline'
+              ? 'Offline'
+              : 'Active'}
+          </span>
+        </button>
 
         {/* Notifications Icon Button */}
         <button
