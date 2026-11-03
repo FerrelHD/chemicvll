@@ -41,3 +41,4 @@ export function getFollowUpStatus(
   }
   return { isDue: false, label: `Follow-up: ${diffDays} hari lagi` };
 }
+

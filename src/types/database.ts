@@ -107,3 +107,4 @@ export interface DropzoneItem {
   is_pinned: boolean;
   created_at?: string;
 }
+
