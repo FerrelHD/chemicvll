@@ -66,14 +66,13 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         </button>
 
         {/* User Profile Avatar */}
-        <div className="flex items-center gap-2.5 pl-1">
+        <div className="flex items-center gap-2 pl-1">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm">
             F
           </div>
-          <div className="flex flex-col leading-tight hidden sm:block">
-            <span className="text-xs font-bold text-on-surface">Ferrel</span>
-            <span className="text-[10px] text-on-surface-variant font-mono">Administrator</span>
-          </div>
+          <span className="text-xs font-semibold text-on-surface hidden sm:inline">
+            Ferrel
+          </span>
         </div>
       </div>
     </header>
