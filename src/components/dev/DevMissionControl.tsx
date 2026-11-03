@@ -733,6 +733,64 @@ export function DevMissionControl() {
 
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
+                <label className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
+                  Quick Presets
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProjName('Website Kopi (Laravel)');
+                      setProjPort(8000);
+                      setProjCommand('php artisan serve');
+                      setProjPath('E:\\College Stuff\\Career\\Website Kopi');
+                    }}
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                  >
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Laravel Backend</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono">:8000 &bull; artisan serve</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProjName('Website Kopi (Vite)');
+                      setProjPort(5173);
+                      setProjCommand('npm run dev');
+                      setProjPath('E:\\College Stuff\\Career\\Website Kopi');
+                    }}
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                  >
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Vite Assets</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono">:5173 &bull; npm run dev</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProjName('Next.js App');
+                      setProjPort(3001);
+                      setProjCommand('npm run dev');
+                    }}
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                  >
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Next.js App</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono">:3001 &bull; npm run dev</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProjName('Python FastAPI');
+                      setProjPort(8000);
+                      setProjCommand('uvicorn main:app --reload');
+                    }}
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                  >
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">FastAPI Backend</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono">:8000 &bull; uvicorn</div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">Service Name *</label>
                 <input
                   type="text"

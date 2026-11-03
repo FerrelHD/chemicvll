@@ -67,6 +67,42 @@ const INITIAL_PROJECTS: DevProject[] = [
       '[Daemon] System ready. Port 3000 mapped to Personal OS.',
     ],
   },
+  {
+    id: 'proj-kopi-backend',
+    name: 'Website Kopi (Laravel Backend)',
+    description: 'PHP Artisan API & Backend Server',
+    status: 'active',
+    color_code: '#FF2D20',
+    repo_url: null,
+    prod_url: null,
+    local_path: 'E:\\College Stuff\\Career\\Website Kopi',
+    start_command: 'php artisan serve',
+    default_port: 8000,
+    target_date: null,
+    serverState: 'stopped',
+    pid: null,
+    logs: [
+      '[Daemon] Ready to run php artisan serve on port 8000.',
+    ],
+  },
+  {
+    id: 'proj-kopi-vite',
+    name: 'Website Kopi (Vite Assets)',
+    description: 'Vite Frontend Hot Module Reloading',
+    status: 'active',
+    color_code: '#646CFF',
+    repo_url: null,
+    prod_url: null,
+    local_path: 'E:\\College Stuff\\Career\\Website Kopi',
+    start_command: 'npm run dev',
+    default_port: 5173,
+    target_date: null,
+    serverState: 'stopped',
+    pid: null,
+    logs: [
+      '[Daemon] Ready to run npm run dev on port 5173.',
+    ],
+  },
 ];
 
 export const useDevStore = create<DevState>()(
@@ -312,6 +348,18 @@ export const useDevStore = create<DevState>()(
     }),
     {
       name: 'chemicvll-dev-storage',
+      version: 2,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.projects)) {
+          return persistedState;
+        }
+        const existingIds = new Set(persistedState.projects.map((p: any) => p.id));
+        const missingProjects = INITIAL_PROJECTS.filter((p) => !existingIds.has(p.id));
+        return {
+          ...persistedState,
+          projects: [...persistedState.projects, ...missingProjects],
+        };
+      },
     }
   )
 );
