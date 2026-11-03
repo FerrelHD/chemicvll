@@ -3,7 +3,15 @@
 import React from 'react';
 import { CareerPipeline, CareerStage } from '@/types/database';
 import { getDaysElapsed, getFollowUpStatus } from '@/lib/career-utils';
-import { ExternalLink, MoreHorizontal } from 'lucide-react';
+import {
+  Building2,
+  FileText,
+  Globe,
+  Pencil,
+  Trash2,
+  ExternalLink,
+  ChevronDown,
+} from 'lucide-react';
 
 interface CareerCardProps {
   item: CareerPipeline;
@@ -28,52 +36,69 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
   const isInternship = item.category === 'internship';
 
   return (
-    <div className="bg-card rounded-lg border border-appleBorder p-4 shadow-apple hover:shadow-appleHover transition-all space-y-3">
-      {/* Category & Source Header (Pure Typography, No Capsule/Pill Box) */}
-      <div className="flex items-center justify-between text-xs">
+    <div className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 flex flex-col gap-3 group hover:shadow-md transition-all">
+      {/* Category Tag & Platform Source */}
+      <div className="flex items-center justify-between">
         <span
-          className={`font-bold text-xs uppercase tracking-wider ${
-            isInternship ? 'text-[#0066CC]' : 'text-[#5856D6]'
+          className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
+            isInternship
+              ? 'bg-tertiary-fixed text-on-tertiary-fixed'
+              : 'bg-primary-container text-white'
           }`}
         >
-          {item.category === 'internship'
-            ? 'Magang'
-            : item.category === 'job'
-            ? 'Full-time'
-            : item.category}
+          {isInternship ? 'Magang' : item.category === 'job' ? 'Full-Time' : item.category}
         </span>
+
         {item.platform_source && (
-          <span className="text-appleText-muted font-mono text-[11px]">
-            via {item.platform_source}
+          <span className="text-xs text-on-surface-variant flex items-center gap-1 font-medium">
+            <Globe className="w-3 h-3 text-on-surface-variant" />
+            <span>via {item.platform_source}</span>
           </span>
         )}
       </div>
 
-      {/* Title & Organization */}
-      <div>
-        <h4 className="text-sm font-semibold text-appleText-primary leading-snug">
-          {item.role_or_program}
-        </h4>
-        <p className="text-xs text-appleText-secondary mt-0.5">
-          {item.entity_name}
-          {item.location && ` • ${item.location}`}
-          {item.work_type && ` (${item.work_type})`}
-        </p>
+      {/* Role Title & Organization Location */}
+      <div className="flex flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="font-bold text-sm md:text-base text-on-surface leading-tight">
+            {item.role_or_program}
+          </h4>
+          {item.portal_url && (
+            <a
+              href={item.portal_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-on-surface-variant hover:text-primary-container p-0.5 transition"
+              title="Buka Link Lowongan"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 text-on-surface-variant text-xs mt-1">
+          <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-on-surface-variant" />
+          <span className="truncate">
+            {item.entity_name}
+            {item.location && ` • ${item.location}`}
+            {item.work_type && ` (${item.work_type})`}
+          </span>
+        </div>
       </div>
 
-      {/* Clean Metadata Rows (Flat, No Nested Inner Boxes) */}
-      <div className="pt-2 border-t border-zinc-100 space-y-1 text-xs">
+      {/* Metadata Pill Table */}
+      <div className="bg-surface-container-low p-2.5 rounded-xl flex flex-col gap-1.5 text-xs">
         {item.applied_date && (
-          <div className="flex items-center justify-between">
-            <span className="text-appleText-muted">Applied:</span>
-            <span className="font-medium text-appleText-primary">
+          <div className="flex justify-between items-center text-on-surface-variant">
+            <span>Applied:</span>
+            <span className="text-on-surface font-medium">
               {new Date(item.applied_date).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
               })}{' '}
               {daysElapsed && (
-                <span className="text-appleText-muted font-normal text-[11px]">
+                <span className="text-on-surface-variant text-[11px] font-normal">
                   ({daysElapsed})
                 </span>
               )}
@@ -82,27 +107,28 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
         )}
 
         {item.resume_version && (
-          <div className="flex items-center justify-between">
-            <span className="text-appleText-muted">CV:</span>
-            <span className="font-mono text-[11px] text-appleText-primary truncate max-w-[170px]">
-              {item.resume_version}
+          <div className="flex justify-between items-center text-on-surface-variant">
+            <span>CV:</span>
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface font-mono text-[11px] border border-outline/30 font-medium truncate max-w-[170px]">
+              <FileText className="w-3 h-3 text-primary-container flex-shrink-0" />
+              <span className="truncate">{item.resume_version}</span>
             </span>
           </div>
         )}
 
         {item.stipend_or_salary && (
-          <div className="flex items-center justify-between">
-            <span className="text-appleText-muted">Gaji/Uang Saku:</span>
-            <span className="text-appleText-primary text-[11px] font-medium">
+          <div className="flex justify-between items-center text-on-surface-variant">
+            <span>Gaji/Uang Saku:</span>
+            <span className="text-on-surface font-medium truncate max-w-[170px]">
               {item.stipend_or_salary}
             </span>
           </div>
         )}
 
         {item.deadline && (
-          <div className="flex items-center justify-between">
-            <span className="text-appleText-muted">Deadline:</span>
-            <span className="text-appleText-primary text-[11px]">
+          <div className="flex justify-between items-center text-on-surface-variant">
+            <span>Deadline:</span>
+            <span className="text-on-surface font-medium">
               {new Date(item.deadline).toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'short',
@@ -112,67 +138,66 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
         )}
       </div>
 
-      {/* Follow-up Alert (Pure Bold Typography, No Box) */}
+      {/* Urgent Follow-up Alert Pill */}
       {followUp && (
-        <div className="pt-1.5 border-t border-zinc-100 flex items-center justify-between text-xs">
+        <div
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold w-fit ${
+            followUp.isDue
+              ? 'bg-primary-fixed text-on-primary-fixed-variant'
+              : 'bg-surface-container-high text-on-surface'
+          }`}
+        >
           <span
-            className={`font-semibold text-xs flex items-center gap-1.5 ${
-              followUp.isDue ? 'text-amber-700' : 'text-appleText-muted font-normal'
+            className={`w-1.5 h-1.5 rounded-full ${
+              followUp.isDue
+                ? 'bg-primary-container animate-pulse'
+                : 'bg-primary'
             }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                followUp.isDue ? 'bg-amber-600 animate-pulse' : 'bg-zinc-400'
-              }`}
-            ></span>
-            {followUp.label}
-          </span>
+          />
+          <span>{followUp.label}</span>
         </div>
       )}
 
-      {/* Card Actions & Stage Mover */}
-      <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
-        <select
-          value={item.stage}
-          onChange={(e) => onMoveStage(item.id, e.target.value as CareerStage)}
-          className="bg-transparent text-[11px] text-appleText-secondary hover:text-appleText-primary cursor-pointer border-none outline-none font-medium"
-        >
-          {stageOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              Move: {opt.label}
-            </option>
-          ))}
-        </select>
+      {/* Action Footer: Stage Select & Edit/Delete Controls */}
+      <div className="flex items-center justify-between pt-1 border-t border-outline/20 mt-0.5">
+        <div className="relative">
+          <select
+            value={item.stage}
+            onChange={(e) => onMoveStage(item.id, e.target.value as CareerStage)}
+            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-xs font-semibold text-on-surface px-3 py-1 pr-6 rounded-full cursor-pointer transition-colors outline-none border border-outline/30"
+          >
+            {stageOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                Move: {opt.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="w-3 h-3 text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
 
-        <div className="flex items-center gap-2">
-          {item.portal_url && (
-            <a
-              href={item.portal_url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-appleText-muted hover:text-[#0066CC] transition"
-              title="Buka Portal"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
+        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => onEdit(item)}
-            className="text-appleText-secondary hover:text-appleText-primary font-medium text-[11px]"
+            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            title="Edit Lamaran"
           >
-            Edit
+            <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
-            onClick={() => onDelete(item.id)}
-            className="text-red-500/80 hover:text-red-600 text-[11px]"
+            onClick={() => {
+              if (confirm(`Hapus lamaran ${item.role_or_program} di ${item.entity_name}?`)) {
+                onDelete(item.id);
+              }
+            }}
+            className="w-7 h-7 rounded-full hover:bg-red-50 hover:text-error flex items-center justify-center text-on-surface-variant transition-colors"
+            title="Hapus Lamaran"
           >
-            Hapus
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
     </div>
   );
 }
-

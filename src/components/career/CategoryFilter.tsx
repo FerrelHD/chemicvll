@@ -16,7 +16,7 @@ export function CategoryFilter({ activeFilter, counts, onFilterChange }: Categor
   ];
 
   return (
-    <div className="flex items-center gap-5 text-xs">
+    <div className="inline-flex items-center p-1 bg-surface-container-high rounded-full shadow-inner">
       {filters.map((f) => {
         const isActive = activeFilter === f.id;
         return (
@@ -24,20 +24,16 @@ export function CategoryFilter({ activeFilter, counts, onFilterChange }: Categor
             key={f.id}
             type="button"
             onClick={() => onFilterChange(f.id)}
-            className={`pb-1 transition-all ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
               isActive
-                ? 'font-bold text-appleText-primary border-b-2 border-zinc-900'
-                : 'text-appleText-muted hover:text-appleText-primary font-normal'
+                ? 'bg-surface-container-lowest text-on-surface shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            {f.label}{' '}
-            <span className="font-mono text-[11px] text-appleText-muted">
-              ({f.count})
-            </span>
+            {f.label} ({f.count})
           </button>
         );
       })}
     </div>
   );
 }
-

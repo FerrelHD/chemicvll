@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CareerPipeline, CareerCategory, CareerStage, WorkType } from '@/types/database';
-import { X } from 'lucide-react';
+import { X, CheckCircle2, Building2, Briefcase, FileText, Calendar, DollarSign, Globe, Video, User } from 'lucide-react';
 
 interface CareerModalProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
     platform_source: 'LinkedIn',
     work_type: 'hybrid' as WorkType,
     location: '',
-    resume_version: '',
+    resume_version: 'CV-SE-v2.pdf',
     stipend_or_salary: '',
     contact_person: '',
     next_follow_up_date: '',
@@ -59,8 +59,8 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         deadline: '',
         platform_source: 'LinkedIn',
         work_type: 'hybrid',
-        location: '',
-        resume_version: '',
+        location: 'Jakarta (hybrid)',
+        resume_version: 'CV-SE-v2.pdf',
         stipend_or_salary: '',
         contact_person: '',
         next_follow_up_date: '',
@@ -92,257 +92,299 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
     onClose();
   };
 
+  const steps: { stage: CareerStage; label: string }[] = [
+    { stage: 'applied', label: 'Screening' },
+    { stage: 'assessment', label: 'Assessment' },
+    { stage: 'interview', label: 'Interview' },
+    { stage: 'offer', label: 'Offering' },
+  ];
+
+  const currentStepIndex = steps.findIndex((s) => s.stage === formData.stage);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-xl border border-appleBorder shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-          <div>
-            <h3 className="text-base font-semibold text-appleText-primary">
-              {initialData ? 'Edit Lamaran' : 'Catat Lamaran Baru'}
-            </h3>
-            <p className="text-xs text-appleText-secondary mt-0.5">
-              Kelola riwayat lamaran magang atau pekerjaan Anda.
-            </p>
+        <div className="flex items-center justify-between p-6 pb-4 border-b border-outline/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container">
+              <Briefcase className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-on-surface">
+                {initialData ? 'Edit Data Lamaran' : 'Catat Lamaran Baru'}
+              </h3>
+              <p className="text-xs text-on-surface-variant">
+                Kelola alur rekrutmen, versi berkas CV, dan timeline follow-up
+              </p>
+            </div>
           </div>
+
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-appleText-muted hover:text-appleText-primary hover:bg-subtle transition"
+            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        {/* Recruitment Pipeline Stepper */}
+        <div className="px-6 py-3 bg-surface-container-low/60 border-b border-outline/20">
+          <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider block mb-2">
+            Alur Tahapan Rekrutmen
+          </span>
+          <div className="flex items-center justify-between">
+            {steps.map((step, idx) => {
+              const isPassed = currentStepIndex >= idx;
+              const isCurrent = formData.stage === step.stage;
+
+              return (
+                <button
+                  key={step.stage}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, stage: step.stage })}
+                  className="flex items-center gap-1.5 focus:outline-none group"
+                >
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                      isCurrent
+                        ? 'bg-primary-container text-white shadow-sm ring-2 ring-primary-container/30'
+                        : isPassed
+                        ? 'bg-inverse-surface text-white'
+                        : 'bg-surface-container-high text-on-surface-variant'
+                    }`}
+                  >
+                    {isPassed ? <CheckCircle2 className="w-3.5 h-3.5" /> : idx + 1}
+                  </div>
+                  <span
+                    className={`text-xs transition-colors hidden sm:inline ${
+                      isCurrent
+                        ? 'font-bold text-on-surface'
+                        : 'text-on-surface-variant'
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Scrollable Form Body */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
           
-          {/* Row 1: Entity Name & Role */}
+          {/* Row 1: Company & Role */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1">
                 Perusahaan / Organisasi *
               </label>
-              <input
-                type="text"
-                required
-                value={formData.entity_name}
-                onChange={(e) => setFormData({ ...formData, entity_name: e.target.value })}
-                placeholder="Misal: Tokopedia"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  placeholder="Misal: Tokopedia, Traveloka, BCA"
+                  value={formData.entity_name}
+                  onChange={(e) => setFormData({ ...formData, entity_name: e.target.value })}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                />
+              </div>
             </div>
+
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Posisi / Role *
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Posisi Lowongan *
               </label>
               <input
                 type="text"
                 required
+                placeholder="Misal: Software Engineer Intern"
                 value={formData.role_or_program}
                 onChange={(e) => setFormData({ ...formData, role_or_program: e.target.value })}
-                placeholder="Misal: Software Engineer Intern"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
 
-          {/* Row 2: Category & Stage */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Row 2: Category & Work Type */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1">
                 Kategori
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as CareerCategory })}
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               >
-                <option value="internship">Magang (Internship)</option>
-                <option value="job">Pekerjaan (Full-time / Part-time)</option>
-                <option value="freelance">Freelance</option>
-                <option value="scholarship">Beasiswa</option>
+                <option value="internship">Magang</option>
+                <option value="job">Full-time</option>
               </select>
             </div>
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Tahap Saat Ini
-              </label>
-              <select
-                value={formData.stage}
-                onChange={(e) => setFormData({ ...formData, stage: e.target.value as CareerStage })}
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
-              >
-                <option value="wishlist">Wishlist (Rencana)</option>
-                <option value="applied">Applied (Sudah Submit)</option>
-                <option value="assessment">Assessment (Tes Teknis/Online)</option>
-                <option value="interview">Interview</option>
-                <option value="offer">Offer (Diterima)</option>
-                <option value="rejected">Rejected (Ditolak)</option>
-              </select>
-            </div>
-          </div>
 
-          {/* Row 3: Applied Date & Next Follow-up Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Tanggal Submit Lamaran
-              </label>
-              <input
-                type="date"
-                value={formData.applied_date}
-                onChange={(e) => setFormData({ ...formData, applied_date: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800 font-mono text-xs"
-              />
-            </div>
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Pengingat Follow-up
-              </label>
-              <input
-                type="date"
-                value={formData.next_follow_up_date}
-                onChange={(e) => setFormData({ ...formData, next_follow_up_date: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800 font-mono text-xs"
-              />
-            </div>
-          </div>
-
-          {/* Row 4: Platform Source & Resume Version */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Sumber / Platform
-              </label>
-              <input
-                type="text"
-                value={formData.platform_source}
-                onChange={(e) => setFormData({ ...formData, platform_source: e.target.value })}
-                placeholder="LinkedIn, Glints, Website Karir, dll"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
-              />
-            </div>
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Versi CV yang Dikirim
-              </label>
-              <input
-                type="text"
-                value={formData.resume_version}
-                onChange={(e) => setFormData({ ...formData, resume_version: e.target.value })}
-                placeholder="Misal: CV-SE-v2.pdf"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800 font-mono text-xs"
-              />
-            </div>
-          </div>
-
-          {/* Row 5: Work Type, Location, & Stipend */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1">
                 Tipe Kerja
               </label>
               <select
                 value={formData.work_type}
                 onChange={(e) => setFormData({ ...formData, work_type: e.target.value as WorkType })}
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               >
                 <option value="remote">Remote</option>
                 <option value="hybrid">Hybrid</option>
                 <option value="onsite">Onsite</option>
               </select>
             </div>
+
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Lokasi
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Sumber / Platform
               </label>
               <input
                 type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Jakarta / Remote"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
-              />
-            </div>
-            <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Uang Saku / Gaji
-              </label>
-              <input
-                type="text"
-                value={formData.stipend_or_salary}
-                onChange={(e) => setFormData({ ...formData, stipend_or_salary: e.target.value })}
-                placeholder="Misal: Rp 4.5jt / bln"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
+                placeholder="LinkedIn, Glints, Referral..."
+                value={formData.platform_source}
+                onChange={(e) => setFormData({ ...formData, platform_source: e.target.value })}
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
 
-          {/* Row 6: Portal URL & Recruiter Info */}
+          {/* Row 3: CV Version & Gaji / Saku */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Link Lowongan / Portal
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Versi CV yang Dikirim
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Misal: CV-SE-v2.pdf, CV-Backend-Go.pdf"
+                  value={formData.resume_version}
+                  onChange={(e) => setFormData({ ...formData, resume_version: e.target.value })}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Gaji / Uang Saku
+              </label>
+              <input
+                type="text"
+                placeholder="Misal: Rp 4.500.000 / bln"
+                value={formData.stipend_or_salary}
+                onChange={(e) => setFormData({ ...formData, stipend_or_salary: e.target.value })}
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+              />
+            </div>
+          </div>
+
+          {/* Row 4: Applied Date & Follow-Up Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Tanggal Apply
+              </label>
+              <input
+                type="date"
+                value={formData.applied_date}
+                onChange={(e) => setFormData({ ...formData, applied_date: e.target.value })}
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Deadline Assessment
+              </label>
+              <input
+                type="date"
+                value={formData.deadline}
+                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Jadwal Follow-up
+              </label>
+              <input
+                type="date"
+                value={formData.next_follow_up_date}
+                onChange={(e) => setFormData({ ...formData, next_follow_up_date: e.target.value })}
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+              />
+            </div>
+          </div>
+
+          {/* Row 5: Portal URL & Contact Person */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Link Lowongan / Meet
               </label>
               <input
                 type="url"
+                placeholder="https://..."
                 value={formData.portal_url}
                 onChange={(e) => setFormData({ ...formData, portal_url: e.target.value })}
-                placeholder="https://..."
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800 font-mono text-xs"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
+
             <div>
-              <label className="block font-medium text-appleText-secondary mb-1">
-                Kontak HR / Recruiter
+              <label className="block text-xs font-semibold text-on-surface mb-1">
+                Kontak Rekruter / HR
               </label>
               <input
                 type="text"
+                placeholder="Nama HR atau email..."
                 value={formData.contact_person}
                 onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
-                placeholder="Nama / Email / LinkedIn"
-                className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
 
-          {/* Row 7: Notes */}
+          {/* Row 6: Notes */}
           <div>
-            <label className="block font-medium text-appleText-secondary mb-1">
-              Catatan / Info Penting
+            <label className="block text-xs font-semibold text-on-surface mb-1">
+              Catatan & Pertanyaan Interview
             </label>
             <textarea
-              rows={2}
+              rows={3}
+              placeholder="Catatan stack, progress take-home challenge, tips interview..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Catatan cover letter, jadwal tes, tips interview, dll"
-              className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-800"
-            ></textarea>
+              className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container resize-none"
+            />
           </div>
 
-          {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-100">
+          {/* Footer Controls */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-outline/20">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-appleText-secondary hover:text-appleText-primary hover:bg-subtle transition font-medium"
+              className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition shadow-sm"
+              className="px-6 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
             >
-              {initialData ? 'Simpan Perubahan' : 'Catat Lamaran'}
+              Simpan Lamaran
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );
 }
-
