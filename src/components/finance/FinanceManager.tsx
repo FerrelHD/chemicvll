@@ -21,6 +21,8 @@ import {
   Pencil,
   Trash2,
   BarChart3,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export function FinanceManager() {
@@ -33,6 +35,8 @@ export function FinanceManager() {
     deleteWallet,
     transactions,
     subscriptions,
+    isPrivacyMode,
+    togglePrivacyMode,
     addTransaction,
     addSubscription,
     deleteSubscription,
@@ -236,13 +240,23 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Saldo Utama (Net)</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <Wallet className="w-4 h-4" />
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={togglePrivacyMode}
+                className="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+              >
+                {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+              <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+                <Wallet className="w-4 h-4" />
+              </div>
             </div>
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp {totalBalance.toLocaleString('id-ID')}
+              {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-2 mt-1">
               {transactions.length === 0 ? (
@@ -278,7 +292,7 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp 0
+              {isPrivacyMode ? 'Rp •••••••' : 'Rp 0'}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -299,7 +313,7 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp {totalIncome.toLocaleString('id-ID')}
+              {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalIncome.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -320,7 +334,7 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp {totalExpense.toLocaleString('id-ID')}
+              {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalExpense.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -383,7 +397,7 @@ export function FinanceManager() {
                   </div>
                   <div className="mt-4 flex items-center justify-between text-xs opacity-90 font-mono">
                     <span>•••• {bw.account_number || '8492'}</span>
-                    <span>Rp {bw.balance.toLocaleString('id-ID')}</span>
+                    <span>{isPrivacyMode ? 'Rp •••••••' : `Rp ${bw.balance.toLocaleString('id-ID')}`}</span>
                   </div>
                 </div>
               );
@@ -420,11 +434,21 @@ export function FinanceManager() {
                   </div>
                 </div>
 
-                <div className="mt-4 mb-2">
-                  <span className="text-[11px] text-white/80 block">Saldo Aktif</span>
-                  <div className="text-2xl font-bold tracking-tight text-white font-sans">
-                    Rp {activeWallet.balance.toLocaleString('id-ID')}
+                <div className="mt-4 mb-2 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-white/80 block">Saldo Aktif</span>
+                    <div className="text-2xl font-bold tracking-tight text-white font-sans">
+                      {isPrivacyMode ? 'Rp •••••••' : `Rp ${activeWallet.balance.toLocaleString('id-ID')}`}
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={togglePrivacyMode}
+                    className="p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white/80 hover:text-white transition"
+                    title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+                  >
+                    {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-white/90 pt-1 font-mono">
@@ -641,7 +665,7 @@ export function FinanceManager() {
                     }`}
                   >
                     {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
-                    Rp {tx.amount.toLocaleString('id-ID')}
+                    {isPrivacyMode ? 'Rp ••••••' : `Rp ${tx.amount.toLocaleString('id-ID')}`}
                   </span>
                   <span className="text-[10px] text-on-surface-variant font-mono uppercase">
                     {tx.wallet_id.replace('w-', '')}
@@ -692,7 +716,7 @@ export function FinanceManager() {
                   <div className="text-right flex items-center gap-3">
                     <div>
                       <span className="font-bold text-on-surface block">
-                        Rp {sub.cost.toLocaleString('id-ID')}
+                        {isPrivacyMode ? 'Rp ••••••' : `Rp ${sub.cost.toLocaleString('id-ID')}`}
                       </span>
                       <span
                         className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -788,7 +812,7 @@ export function FinanceManager() {
                 >
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
-                      {w.name} (Rp {w.balance.toLocaleString('id-ID')})
+                      {w.name} {isPrivacyMode ? '' : `(Rp ${w.balance.toLocaleString('id-ID')})`}
                     </option>
                   ))}
                 </select>

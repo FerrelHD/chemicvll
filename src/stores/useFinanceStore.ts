@@ -7,6 +7,9 @@ interface FinanceState {
   activeWalletId: string;
   transactions: Transaction[];
   subscriptions: Subscription[];
+  isPrivacyMode: boolean;
+  togglePrivacyMode: () => void;
+  setPrivacyMode: (val: boolean) => void;
   setActiveWalletId: (id: string) => void;
   addWallet: (wallet: Omit<Wallet, 'id' | 'created_at'>) => void;
   updateWallet: (id: string, updates: Partial<Wallet>) => void;
@@ -48,6 +51,9 @@ export const useFinanceStore = create<FinanceState>()(
       activeWalletId: 'w-bca',
       transactions: INITIAL_TRANSACTIONS,
       subscriptions: INITIAL_SUBSCRIPTIONS,
+      isPrivacyMode: true,
+      togglePrivacyMode: () => set((state) => ({ isPrivacyMode: !state.isPrivacyMode })),
+      setPrivacyMode: (val) => set({ isPrivacyMode: val }),
       setActiveWalletId: (id) => set({ activeWalletId: id }),
       addWallet: (wallet) =>
         set((state) => {

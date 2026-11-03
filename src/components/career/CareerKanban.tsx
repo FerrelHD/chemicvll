@@ -18,12 +18,16 @@ import {
   Lightbulb,
   ArrowRight,
   RefreshCw,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export function CareerKanban() {
   const { items, filter, setFilter, addItem, updateItem, deleteItem, moveStage } =
     useCareerStore();
   const wallets = useFinanceStore((state) => state.wallets);
+  const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
+  const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -228,9 +232,19 @@ export function CareerKanban() {
             </div>
           </div>
           <div className="flex items-baseline justify-between mt-4">
-            <span className="text-2xl font-bold text-on-surface leading-none font-sans">
-              Rp {totalBalance.toLocaleString('id-ID')}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-on-surface leading-none font-sans">
+                {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
+              </span>
+              <button
+                type="button"
+                onClick={togglePrivacyMode}
+                className="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+              >
+                {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
               Terhubung Live
             </span>

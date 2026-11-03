@@ -19,6 +19,8 @@ import {
   PlusCircle,
   Video,
   BarChart3,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 interface DashboardCockpitProps {
@@ -32,6 +34,8 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const wallets = useFinanceStore((state) => state.wallets);
   const activeWalletId = useFinanceStore((state) => state.activeWalletId);
   const transactions = useFinanceStore((state) => state.transactions);
+  const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
+  const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
   const projects = useDevStore((state) => state.projects);
 
   const activeCareerCount = careerItems.filter(
@@ -170,11 +174,32 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           <div className="my-3">
-            <div className="flex items-baseline gap-1">
-              <span className="text-xs font-bold text-on-surface-variant">Rp</span>
-              <span className="text-2xl font-bold font-mono text-on-surface">
-                {totalBalance.toLocaleString('id-ID')}
-              </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-1">
+                {isPrivacyMode ? (
+                  <span className="text-2xl font-bold font-mono text-on-surface">
+                    Rp •••••••
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-xs font-bold text-on-surface-variant">Rp</span>
+                    <span className="text-2xl font-bold font-mono text-on-surface">
+                      {totalBalance.toLocaleString('id-ID')}
+                    </span>
+                  </>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  togglePrivacyMode();
+                }}
+                className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+              >
+                {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              </button>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold">
@@ -369,13 +394,23 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <CreditCard className="w-5 h-5 text-white/90" />
             </div>
 
-            <div className="pt-2">
-              <span className="text-[10px] text-white/80 font-mono block uppercase">
-                {activeWallet?.card_label || 'SALDO UTAMA'}
-              </span>
-              <span className="text-xl font-bold font-mono tracking-tight text-white block">
-                Rp {(activeWallet?.balance || 0).toLocaleString('id-ID')}
-              </span>
+            <div className="pt-2 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-white/80 font-mono block uppercase">
+                  {activeWallet?.card_label || 'SALDO UTAMA'}
+                </span>
+                <span className="text-xl font-bold font-mono tracking-tight text-white block">
+                  {isPrivacyMode ? 'Rp •••••••' : `Rp ${(activeWallet?.balance || 0).toLocaleString('id-ID')}`}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={togglePrivacyMode}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition focus:outline-none"
+                title={isPrivacyMode ? 'Tampilkan saldo' : 'Sembunyikan saldo'}
+              >
+                {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
             <div className="flex items-center justify-between pt-1 text-xs font-mono text-white/90">
