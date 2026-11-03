@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CareerPipeline, CareerStage } from '@/types/database';
 import { getDaysElapsed, getFollowUpStatus } from '@/lib/career-utils';
+import { getRadarStatus, generateFollowUpDraft } from '@/lib/career-radar';
 import {
   Building2,
   FileText,
@@ -11,6 +12,8 @@ import {
   Trash2,
   ExternalLink,
   ChevronDown,
+  Send,
+  Check,
 } from 'lucide-react';
 
 interface CareerCardProps {
@@ -21,8 +24,18 @@ interface CareerCardProps {
 }
 
 export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardProps) {
+  const [draftCopied, setDraftCopied] = useState(false);
   const daysElapsed = getDaysElapsed(item.applied_date);
   const followUp = getFollowUpStatus(item.next_follow_up_date);
+  const radar = getRadarStatus(item);
+
+  const handleCopyDraft = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const draft = generateFollowUpDraft(item, 'email');
+    navigator.clipboard.writeText(draft);
+    setDraftCopied(true);
+    setTimeout(() => setDraftCopied(false), 2000);
+  };
 
   const stageOptions: { value: CareerStage; label: string }[] = [
     { value: 'wishlist', label: 'Wishlist' },
@@ -138,8 +151,35 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
         )}
       </div>
 
+      {/* Automated Radar Urgency Banner */}
+      {radar.isUrgent && (
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-primary-fixed/40 border border-primary-container/30 text-xs">
+          <div className="flex items-center gap-1.5 font-bold text-primary-container text-[11px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse" />
+            <span>{radar.label}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyDraft}
+            className="flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface text-white text-[11px] font-semibold hover:bg-black transition active:scale-95 shadow-sm"
+          >
+            {draftCopied ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span>Disalin!</span>
+              </>
+            ) : (
+              <>
+                <Send className="w-3 h-3" />
+                <span>Salin Draf</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Urgent Follow-up Alert Pill */}
-      {followUp && (
+      {followUp && !radar.isUrgent && (
         <div
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold w-fit ${
             followUp.isDue
