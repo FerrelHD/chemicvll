@@ -245,11 +245,25 @@ export function FinanceManager() {
               Rp {totalBalance.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                <TrendingUp className="w-3 h-3 text-primary-container" />
-                +18% pekan ini
-              </span>
-              <span className="text-[11px] text-on-surface-variant">vs bulan lalu</span>
+              {transactions.length === 0 ? (
+                <>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold">
+                    0% pekan ini
+                  </span>
+                  <span className="text-[11px] text-on-surface-variant">Belum ada mutasi</span>
+                </>
+              ) : (
+                <>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
+                    <TrendingUp className="w-3 h-3 text-emerald-600" />
+                    {totalIncome >= totalExpense ? '+' : '-'}
+                    {totalExpense > 0
+                      ? Math.round((Math.abs(totalIncome - totalExpense) / totalExpense) * 100)
+                      : 100}% net
+                  </span>
+                  <span className="text-[11px] text-on-surface-variant">Arus kas aktif</span>
+                </>
+              )}
             </div>
           </div>
         </div>
