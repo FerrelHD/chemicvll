@@ -4,17 +4,24 @@ import React, { useState } from 'react';
 import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
 import {
+  Terminal,
   Play,
   Square,
   RotateCcw,
-  Terminal,
   Lock,
   Unlock,
   KeyRound,
   ExternalLink,
   Plus,
   X,
+  Server,
+  Cpu,
+  Boxes,
+  GitBranch,
+  RefreshCw,
+  Radio,
   FileCode,
+  Copy,
 } from 'lucide-react';
 
 export function DevMissionControl() {
@@ -45,6 +52,8 @@ export function DevMissionControl() {
   const activeLogProject = projects.find((p) => p.id === activeLogProjectId);
   const vaultProject = projects.find((p) => p.id === vaultProjectId);
 
+  const runningServers = projects.filter((p) => p.serverState === 'running').length;
+
   const handleOpenVault = (project: DevProject) => {
     setVaultProjectId(project.id);
     setPassphrase('');
@@ -58,7 +67,6 @@ export function DevMissionControl() {
     if (!passphrase.trim() || !vaultProject) return;
 
     if (!vaultProject.encryptedEnv) {
-      // First time vault setup for this project
       setIsUnlocked(true);
       setVaultStatus('Vault baru siap digunakan. Silakan ketik variabel .env Anda.');
       return;
@@ -74,7 +82,7 @@ export function DevMissionControl() {
       setRawEnv(decrypted);
       setIsUnlocked(true);
       setVaultStatus('Berhasil didekripsi dengan Web Crypto AES-GCM 256-bit.');
-    } catch (err) {
+    } catch {
       setVaultStatus('Passphrase salah atau payload rusak.');
     }
   };
@@ -99,380 +107,494 @@ export function DevMissionControl() {
       name: projName,
       description: null,
       status: 'active',
-      color_code: '#10B981',
+      color_code: '#FF6B00',
       repo_url: null,
       prod_url: null,
-      local_path: projPath || null,
+      local_path: projPath || 'E:/College Stuff/Career/' + projName.toLowerCase(),
+      default_port: Number(projPort),
       start_command: projCommand,
-      default_port: projPort,
       target_date: null,
     });
     setProjName('');
+    setProjPath('');
     setIsAddProjOpen(false);
   };
 
   return (
     <section className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-        <div>
-          <h2 className="text-base font-semibold tracking-tight text-appleText-primary">
-            Dev Mission Control
-          </h2>
-          <p className="text-xs text-appleText-secondary mt-0.5">
-            Kendali server lokal tanpa buka VS Code, terminal logs realtime, dan enkripsi client-side .env vault.
+      {/* Welcome & Top Action Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+              Local Environment
+            </h1>
+            <span className="text-2xl md:text-3xl font-bold text-primary-container tracking-tight">
+              Manager
+            </span>
+          </div>
+          <p className="text-xs text-on-surface-variant mt-1">
+            Personal Engine · Windows/Node v20+ · {runningServers} active listening sockets
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsAddProjOpen(true)}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-medium hover:bg-black transition shadow-sm active:scale-95"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Tambah Project</span>
-        </button>
+        {/* Quick Pill Controls */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 bg-surface-container-low px-3.5 py-1.5 rounded-full border border-outline/20 text-xs text-on-surface font-medium">
+            <Radio className="w-3.5 h-3.5 text-primary-container animate-pulse" />
+            <span>Live Daemon</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsAddProjOpen(true)}
+            className="flex items-center gap-1.5 bg-inverse-surface text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Map New Port</span>
+          </button>
+        </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((p) => {
-          const isRunning = p.serverState === 'running';
+      {/* Bento 4 Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Active Ports */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-on-surface-variant">Active Ports</span>
+            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+              <Server className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+                {runningServers}
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+                Bound
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant mt-1 font-mono">
+              {projects.map((p) => `:${p.default_port}`).join(', ')}
+            </p>
+          </div>
+        </div>
 
-          return (
-            <div
-              key={p.id}
-              className="bg-white rounded-xl border border-appleBorder p-4 shadow-apple hover:shadow-appleHover transition space-y-3"
-            >
-              {/* Card Header & Status */}
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        isRunning ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
-                      }`}
-                    ></span>
-                    <h3 className="text-sm font-semibold text-appleText-primary">{p.name}</h3>
-                  </div>
-                  {p.description && (
-                    <p className="text-xs text-appleText-secondary mt-0.5">{p.description}</p>
-                  )}
-                </div>
+        {/* Card 2: Memory Load */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-on-surface-variant">RAM Load</span>
+            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+              <Cpu className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+                4.8 <span className="text-xs text-on-surface-variant font-normal">/ 16 GB</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+                Optimal
+              </span>
+            </div>
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2.5 overflow-hidden">
+              <div className="bg-primary-container h-full rounded-full" style={{ width: '30%' }} />
+            </div>
+          </div>
+        </div>
 
-                <span
-                  className={`font-mono text-[11px] font-bold uppercase tracking-wider ${
-                    isRunning ? 'text-emerald-700' : 'text-appleText-muted'
-                  }`}
+        {/* Card 3: Docker Daemons */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-on-surface-variant">Container Services</span>
+            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+              <Boxes className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+                3 Up
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant">
+                0 Exited
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant mt-1 font-mono">
+              postgres, redis, runner
+            </p>
+          </div>
+        </div>
+
+        {/* Card 4: Git Sync Status */}
+        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-on-surface-variant">Git Branches</span>
+            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+              <GitBranch className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-bold text-on-surface tracking-tight font-mono">
+                main
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+                Synced
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant mt-1">
+              Atomic commits enforced
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Workspace: Stack Cards & Terminal Stream */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        {/* Left: Project Stack Cards (6 Cols) */}
+        <div className="lg:col-span-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-on-surface">Service Stack</h3>
+            <span className="text-xs text-on-surface-variant font-medium">
+              {projects.length} Layanan Terkonfigurasi
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {projects.map((proj) => {
+              const isRunning = proj.serverState === 'running';
+
+              return (
+                <div
+                  key={proj.id}
+                  className="bg-surface-container-lowest p-5 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col gap-3 hover:shadow-md transition"
                 >
-                  {isRunning ? `Running (PID: ${p.pid})` : 'Stopped'}
-                </span>
-              </div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`w-2.5 h-2.5 rounded-full ${
+                            isRunning ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
+                          }`}
+                        />
+                        <h4 className="font-bold text-sm text-on-surface">{proj.name}</h4>
+                        <span className="font-mono text-xs text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-md font-semibold">
+                          :{proj.default_port}
+                        </span>
+                      </div>
+                      <p className="text-xs text-on-surface-variant mt-1 font-mono truncate max-w-sm">
+                        {proj.start_command}
+                      </p>
+                    </div>
 
-              {/* Meta Info */}
-              <div className="pt-2 border-t border-zinc-100 text-xs text-appleText-secondary space-y-1 font-mono">
-                <div className="flex justify-between">
-                  <span className="text-appleText-muted">Command:</span>
-                  <span className="text-appleText-primary">{p.start_command}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-appleText-muted">Port:</span>
-                  <span className="text-appleText-primary">:{p.default_port}</span>
-                </div>
-                {p.local_path && (
-                  <div className="flex justify-between truncate">
-                    <span className="text-appleText-muted">Path:</span>
-                    <span className="text-appleText-primary truncate max-w-[200px]" title={p.local_path}>
-                      {p.local_path}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Server Runner Actions */}
-              <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  {!isRunning ? (
-                    <button
-                      type="button"
-                      onClick={() => startServer(p.id)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition shadow-sm active:scale-95"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-white" />
-                      <span>Start Server</span>
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => stopServer(p.id)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition shadow-sm active:scale-95"
+                    {isRunning && (
+                      <a
+                        href={`http://localhost:${proj.default_port}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-on-surface-variant hover:text-primary-container p-1 transition"
+                        title="Buka di Browser"
                       >
-                        <Square className="w-3.5 h-3.5 fill-white" />
-                        <span>Stop</span>
-                      </button>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div className="flex items-center justify-between pt-2 border-t border-outline/20">
+                    <div className="flex items-center gap-1.5">
+                      {isRunning ? (
+                        <button
+                          type="button"
+                          onClick={() => stopServer(proj.id)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold transition"
+                        >
+                          <Square className="w-3 h-3 fill-current" />
+                          <span>Stop</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => startServer(proj.id)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition"
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>Start</span>
+                        </button>
+                      )}
+
                       <button
                         type="button"
-                        onClick={() => restartServer(p.id)}
-                        className="p-1.5 rounded-lg border border-appleBorder hover:bg-subtle text-appleText-secondary transition"
+                        onClick={() => restartServer(proj.id)}
+                        className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
                         title="Restart"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                       </button>
-                    </>
-                  )}
+
+                      <button
+                        type="button"
+                        onClick={() => setActiveLogProjectId(proj.id)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+                          activeLogProjectId === proj.id
+                            ? 'bg-inverse-surface text-white'
+                            : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
+                        }`}
+                      >
+                        <Terminal className="w-3 h-3 inline mr-1" />
+                        <span>Logs</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenVault(proj)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/20 text-xs font-medium text-on-surface transition"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-primary-container" />
+                      <span>.env Vault</span>
+                    </button>
+                  </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveLogProjectId(p.id)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-appleBorder hover:bg-subtle text-appleText-secondary text-[11px] font-mono transition"
-                  >
-                    <Terminal className="w-3 h-3" />
-                    <span>Logs</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleOpenVault(p)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-appleBorder hover:bg-subtle text-appleText-secondary text-[11px] font-mono transition"
-                  >
-                    <Lock className="w-3 h-3 text-amber-600" />
-                    <span>.env</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Terminal Log Drawer (Slide-Over Panel) */}
-      {activeLogProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/40 backdrop-blur-sm">
-          <div className="bg-[#121316] text-zinc-200 border-l border-zinc-800 w-full max-w-xl h-full flex flex-col p-5 space-y-3 font-mono shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800 text-xs">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-emerald-400" />
-                <span className="font-bold text-white">Live Logs: {activeLogProject.name}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveLogProjectId(null)}
-                className="p-1 text-zinc-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex-1 bg-black/60 rounded-lg p-3 text-xs overflow-y-auto space-y-1 font-mono text-zinc-300">
-              {activeLogProject.logs.map((line, idx) => (
-                <div key={idx} className="leading-relaxed break-all">
-                  <span className="text-zinc-600 mr-2">{idx + 1}</span>
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
-              <span>Menampilkan {activeLogProject.logs.length} baris log terakhir</span>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(activeLogProject.logs.join('\n'));
-                }}
-                className="text-emerald-400 hover:underline"
-              >
-                Salin Semua Log
-              </button>
-            </div>
+              );
+            })}
           </div>
         </div>
-      )}
 
-      {/* .env Vault Modal */}
-      {vaultProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-          <div className="bg-white rounded-xl border border-appleBorder shadow-2xl max-w-lg w-full p-6 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
+        {/* Right: Live Streaming Console Terminal (6 Cols) */}
+        <div className="lg:col-span-6 bg-[#18181b] rounded-3xl p-5 border border-zinc-800 shadow-xl flex flex-col justify-between min-h-[480px] font-mono text-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
+              <span className="text-zinc-400 text-xs pl-2 font-semibold">
+                {activeLogProject ? `${activeLogProject.name} (Port ${activeLogProject.default_port})` : 'Terminal Console'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] text-zinc-400">Live Streaming</span>
+            </div>
+          </div>
+
+          {/* Terminal Output Body */}
+          <div className="flex-1 py-4 overflow-y-auto space-y-1.5 text-zinc-300">
+            {activeLogProject?.logs && activeLogProject.logs.length > 0 ? (
+              activeLogProject.logs.map((log, idx) => (
+                <div key={idx} className="flex gap-2 leading-relaxed">
+                  <span className="text-zinc-500 select-none">&gt;</span>
+                  <span>{log}</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-zinc-500 py-8 text-center">
+                Pilih layanan dan tekan Start untuk mulai streaming log HTTP &amp; database.
+              </div>
+            )}
+          </div>
+
+          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500">
+            <span>Daemon: Localhost (127.0.0.1)</span>
+            <span className="text-zinc-400">Ctrl+C untuk menghentikan port</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal .env Vault (Client-Side Encrypted) */}
+      {vaultProjectId && vaultProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <div className="flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-amber-600" />
-                <h3 className="text-sm font-bold text-appleText-primary">
-                  .env Vault: {vaultProject.name}
+                <Lock className="w-4 h-4 text-primary-container" />
+                <h3 className="font-bold text-sm text-on-surface">
+                  Client .env Vault: {vaultProject.name}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setVaultProjectId(null)}
-                className="p-1 rounded text-appleText-muted hover:text-appleText-primary"
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-appleText-secondary leading-relaxed">
-              Konfigurasi dienkripsi menggunakan <strong>Web Crypto API (AES-GCM 256-bit)</strong> di browser dengan Master Passphrase Anda. Tidak pernah dikirim dalam teks biasa ke server.
+            <p className="text-xs text-on-surface-variant">
+              Terenkripsi secara lokal dengan <strong>Web Crypto AES-GCM 256-bit</strong>. Kunci tidak pernah dikirim ke server.
             </p>
 
             {vaultStatus && (
-              <div className="p-2.5 rounded bg-zinc-100 text-xs text-appleText-primary font-mono">
+              <div className="p-3 rounded-2xl bg-surface-container-low text-xs text-on-surface font-medium border border-outline/30">
                 {vaultStatus}
               </div>
             )}
 
             {!isUnlocked ? (
-              <form onSubmit={handleUnlockVault} className="space-y-3 text-xs">
+              <form onSubmit={handleUnlockVault} className="space-y-4">
                 <div>
-                  <label className="block text-appleText-secondary font-medium mb-1">
-                    Masukkan Master Passphrase
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Passphrase Dekripsi
                   </label>
                   <input
                     type="password"
                     required
+                    placeholder="Masukkan passphrase master..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
-                    placeholder="Passphrase enkripsi..."
-                    className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono focus:outline-none"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-2 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition text-xs"
-                >
-                  Buka Vault (Decrypt)
-                </button>
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setVaultProjectId(null)}
+                    className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                  >
+                    Buka Vault
+                  </button>
+                </div>
               </form>
             ) : (
-              <form onSubmit={handleSaveVault} className="space-y-3 text-xs">
+              <form onSubmit={handleSaveVault} className="space-y-4">
                 <div>
-                  <label className="block text-appleText-secondary font-medium mb-1">
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
                     Konfigurasi Environment (.env)
                   </label>
                   <textarea
-                    rows={6}
+                    rows={8}
                     value={rawEnv}
                     onChange={(e) => setRawEnv(e.target.value)}
-                    placeholder="DATABASE_URL=postgres://...&#10;API_KEY=sk_..."
-                    className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono text-xs focus:outline-none"
-                  ></textarea>
+                    placeholder="DATABASE_URL=postgres://...&#10;API_KEY=secret_xyz"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-3 text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container resize-none"
+                  />
                 </div>
                 <div>
-                  <label className="block text-appleText-secondary font-medium mb-1">
-                    Master Passphrase (untuk Enkripsi Ulang)
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Konfirmasi Passphrase untuk Enkripsi
                   </label>
                   <input
                     type="password"
                     required
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
-                    placeholder="Passphrase..."
-                    className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono focus:outline-none"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-2 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition text-xs"
-                >
-                  Simpan & Enkripsi Ulang (.env)
-                </button>
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setVaultProjectId(null)}
+                    className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
+                  >
+                    Tutup
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                  >
+                    Enkripsi &amp; Simpan
+                  </button>
+                </div>
               </form>
             )}
           </div>
         </div>
       )}
 
-      {/* Add Project Modal */}
+      {/* Modal Tambah Port / Project */}
       {isAddProjOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-          <div className="bg-white rounded-xl border border-appleBorder shadow-2xl max-w-md w-full p-6 space-y-4 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <h3 className="text-sm font-bold text-appleText-primary">Tambah Project Baru</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
+              <h3 className="font-bold text-sm text-on-surface">Map New Local Port</h3>
               <button
                 type="button"
                 onClick={() => setIsAddProjOpen(false)}
-                className="p-1 rounded text-appleText-muted hover:text-appleText-primary"
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateProject} className="space-y-3">
+            <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-appleText-secondary font-medium mb-1">
-                  Nama Project *
-                </label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Nama Layanan *</label>
                 <input
                   type="text"
                   required
+                  placeholder="Misal: Go Gin API, AI Sandbox"
                   value={projName}
                   onChange={(e) => setProjName(e.target.value)}
-                  placeholder="Misal: API Backend Service"
-                  className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary focus:outline-none"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-appleText-secondary font-medium mb-1">
-                    Start Command
-                  </label>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">Port *</label>
                   <input
-                    type="text"
-                    value={projCommand}
-                    onChange={(e) => setProjCommand(e.target.value)}
-                    placeholder="npm run dev"
-                    className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono focus:outline-none"
+                    type="number"
+                    required
+                    value={projPort}
+                    onChange={(e) => setProjPort(Number(e.target.value))}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-appleText-secondary font-medium mb-1">
-                    Port Default
-                  </label>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">Command</label>
                   <input
-                    type="number"
-                    value={projPort}
-                    onChange={(e) => setProjPort(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono focus:outline-none"
+                    type="text"
+                    required
+                    value={projCommand}
+                    onChange={(e) => setProjCommand(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-appleText-secondary font-medium mb-1">
-                  Direktori Lokal (Local Path)
-                </label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">Path Folder</label>
                 <input
                   type="text"
+                  placeholder="E:/College Stuff/Career/..."
                   value={projPath}
                   onChange={(e) => setProjPath(e.target.value)}
-                  placeholder="C:\Projects\my-app"
-                  className="w-full px-3 py-2 rounded-lg border border-appleBorder bg-subtle text-appleText-primary font-mono focus:outline-none"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-outline/20">
                 <button
                   type="button"
                   onClick={() => setIsAddProjOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-appleText-secondary hover:bg-subtle"
+                  className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white font-medium hover:bg-black transition"
+                  className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
                 >
-                  Simpan Project
+                  Daftarkan Port
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </section>
   );
 }
-
