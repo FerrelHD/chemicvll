@@ -1,48 +1,81 @@
 'use client';
 
 import React from 'react';
-import { Command } from 'lucide-react';
+import { Menu, Search, Bell } from 'lucide-react';
 
-export function Header() {
+interface HeaderProps {
+  onOpenMobileMenu?: () => void;
+  onOpenCommandBar?: () => void;
+}
+
+export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
+  const triggerCommand = () => {
+    if (onOpenCommandBar) {
+      onOpenCommandBar();
+    } else {
+      window.dispatchEvent(new CustomEvent('open-command-bar'));
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-30 bg-canvas/80 backdrop-blur-md border-b border-appleBorder/80 px-4 md:px-8 py-3.5">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Brand */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#1D1D1F] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-            ⌘
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-semibold text-sm tracking-tight text-appleText-primary">
-              Personal OS
-            </span>
-            <span className="font-mono text-xs text-appleText-muted">
-              / chemicvll
-            </span>
-          </div>
+    <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-surface/90 backdrop-blur-xl border-b border-outline/70 z-30 flex items-center justify-between px-4 md:px-6 shadow-[0_1px_8px_rgba(24,24,27,0.03)]">
+      {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          aria-label="Menu"
+          onClick={onOpenMobileMenu}
+          className="lg:hidden w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
+
+        {/* ⌘K Capsule Input */}
+        <button
+          type="button"
+          onClick={triggerCommand}
+          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-4 py-1.5 rounded-full border border-outline shadow-sm hover:border-zinc-400 transition cursor-pointer text-left"
+        >
+          <Search className="w-3.5 h-3.5 text-on-surface-variant" />
+          <span className="text-xs text-on-surface-variant pr-4">
+            Cari sistem, berkas, perintah...
+          </span>
+          <kbd className="bg-surface-container-high text-on-surface text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold">
+            ⌘K
+          </kbd>
+        </button>
+      </div>
+
+      {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
+      <div className="flex items-center gap-3">
+        {/* Cloud Sync Status Pill */}
+        <div className="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs">
+          <div className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
+          <span className="font-semibold text-on-surface text-xs">Cloud Sync</span>
+          <span className="text-on-surface-variant hidden md:inline text-[11px]">Aktif</span>
         </div>
 
-        {/* Quick Utilities */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-appleBorder text-xs font-mono text-appleText-secondary shadow-apple">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            <span>Cloud Sync</span>
-          </div>
+        {/* Notifications Icon Button */}
+        <button
+          type="button"
+          aria-label="Notifikasi"
+          onClick={() => alert('Tidak ada notifikasi baru.')}
+          className="w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
+        >
+          <Bell className="w-4 h-4 text-on-surface-variant" />
+        </button>
 
-          <button
-            type="button"
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-subtle border border-appleBorder text-xs text-appleText-secondary shadow-apple transition active:scale-95"
-            onClick={() => {
-              // Future Cmd+K handler trigger
-              window.dispatchEvent(new CustomEvent('open-command-bar'));
-            }}
-          >
-            <Command className="w-3 h-3 text-appleText-muted" />
-            <span className="font-mono text-[11px] text-appleText-muted">⌘K</span>
-          </button>
+        {/* User Profile Avatar */}
+        <div className="flex items-center gap-2.5 pl-1">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm">
+            F
+          </div>
+          <div className="flex flex-col leading-tight hidden sm:block">
+            <span className="text-xs font-bold text-on-surface">Ferrel</span>
+            <span className="text-[10px] text-on-surface-variant font-mono">Administrator</span>
+          </div>
         </div>
       </div>
     </header>
   );
 }
-

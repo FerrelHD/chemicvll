@@ -1,35 +1,37 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, CheckSquare, Wallet, Terminal } from 'lucide-react';
+import { LayoutDashboard, Briefcase, CheckCircle2, Wallet, Terminal } from 'lucide-react';
 
 interface MobileNavProps {
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }
 
-export function MobileNav({ activeTab = 'career', onTabChange }: MobileNavProps) {
+export function MobileNav({ activeTab, onTabChange }: MobileNavProps) {
   const tabs = [
+    { id: 'dashboard', label: 'Dash', icon: LayoutDashboard },
     { id: 'career', label: 'Karir', icon: Briefcase },
-    { id: 'tasks', label: 'Tugas', icon: CheckSquare },
-    { id: 'finance', label: 'Keuangan', icon: Wallet },
-    { id: 'dev', label: 'Dev Server', icon: Terminal },
+    { id: 'tasks', label: 'Tugas', icon: CheckCircle2 },
+    { id: 'finance', label: 'Uang', icon: Wallet },
+    { id: 'dev', label: 'Dev', icon: Terminal },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-lg border-t border-appleBorder px-2 py-1.5 flex items-center justify-around shadow-lg">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline px-2 py-1.5 flex items-center justify-around shadow-lg">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
+
         return (
           <button
             key={tab.id}
             type="button"
-            onClick={() => onTabChange?.(tab.id)}
-            className={`min-h-[44px] min-w-[44px] flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-lg transition ${
+            onClick={() => onTabChange(tab.id)}
+            className={`min-h-[44px] min-w-[48px] flex flex-col items-center justify-center gap-1 px-2.5 py-1 rounded-full transition-all ${
               isActive
-                ? 'text-[#0066CC] font-semibold'
-                : 'text-appleText-muted hover:text-appleText-secondary font-normal'
+                ? 'bg-inverse-surface text-white font-semibold shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface font-normal'
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -40,4 +42,3 @@ export function MobileNav({ activeTab = 'career', onTabChange }: MobileNavProps)
     </nav>
   );
 }
-
