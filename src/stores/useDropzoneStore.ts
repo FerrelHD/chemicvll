@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { DropzoneItem } from '@/types/database';
+import { purgeExpiredDropzoneItems } from '@/lib/dropzone-purger';
 
 interface DropzoneState {
   items: DropzoneItem[];
   addItem: (content: string, type?: 'text' | 'link' | 'code') => void;
   deleteItem: (id: string) => void;
   togglePin: (id: string) => void;
+  purgeExpired: () => number;
 }
 
 // Clean slate ready for Ferrel's actual clipboard & file dropzone items
@@ -42,5 +44,14 @@ export const useDropzoneStore = create<DropzoneState>((set) => ({
         item.id === id ? { ...item, is_pinned: !item.is_pinned } : item
       ),
     })),
+  purgeExpired: () => {
+    const { retainedItems, purgedCount } = purgeExpiredDropzoneItems(
+      useDropzoneStore.getState().items
+    );
+    if (purgedCount > 0) {
+      set({ items: retainedItems });
+    }
+    return purgedCount;
+  },
 }));
 

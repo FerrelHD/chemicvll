@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
 import {
   CloudUpload,
@@ -22,10 +22,15 @@ import {
 } from 'lucide-react';
 
 export function DropzonePanel() {
-  const { items, addItem, deleteItem, togglePin } = useDropzoneStore();
+  const { items, addItem, deleteItem, togglePin, purgeExpired } = useDropzoneStore();
   const [input, setInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'code' | 'links'>('all');
+
+  // Automated 24-hour purge on mount
+  useEffect(() => {
+    purgeExpired();
+  }, [purgeExpired]);
 
   const handleCopy = (id: string, content: string) => {
     navigator.clipboard.writeText(content);
