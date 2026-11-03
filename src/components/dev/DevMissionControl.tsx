@@ -496,17 +496,20 @@ export function DevMissionControl() {
                       </p>
                     </div>
 
-                    {isRunning && (
-                      <a
-                        href={`http://localhost:${proj.default_port}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-on-surface-variant hover:text-primary-container p-1 transition"
-                        title="Open in Browser"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
+                    <a
+                      href={`http://localhost:${proj.default_port}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-1.5 rounded-lg border transition flex items-center gap-1.5 text-xs font-medium ${
+                        isRunning || portStatuses[proj.default_port] === 'healthy'
+                          ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-sm'
+                          : 'border-outline/40 hover:bg-surface-container-high text-on-surface-variant'
+                      }`}
+                      title={`Buka http://localhost:${proj.default_port} di browser`}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="text-[11px] font-mono">:{proj.default_port}</span>
+                    </a>
                   </div>
 
                   {/* Actions Bar */}

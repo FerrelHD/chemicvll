@@ -57,7 +57,7 @@ const INITIAL_PROJECTS: DevProject[] = [
     color_code: '#FF6B00',
     repo_url: 'https://github.com/FerrelHD/chemicvll',
     prod_url: null,
-    local_path: 'E:\\College Stuff\\Career\\chemicvll',
+    local_path: '/Users/Ferrel/Finesser/Career/chemicvll',
     start_command: 'npm run dev',
     default_port: 3000,
     target_date: null,
@@ -65,6 +65,42 @@ const INITIAL_PROJECTS: DevProject[] = [
     pid: null,
     logs: [
       '[Daemon] System ready. Port 3000 mapped to Personal OS.',
+    ],
+  },
+  {
+    id: 'proj-fersya-shop-backend',
+    name: 'Fersya Shop (Laravel Backend)',
+    description: 'PHP Artisan API & E-Commerce Server',
+    status: 'active',
+    color_code: '#10B981',
+    repo_url: null,
+    prod_url: null,
+    local_path: '/Users/Ferrel/Finesser/Career/Fersya/fersya-shop',
+    start_command: 'php artisan serve',
+    default_port: 8000,
+    target_date: null,
+    serverState: 'stopped',
+    pid: null,
+    logs: [
+      '[Daemon] Ready to run php artisan serve on port 8000.',
+    ],
+  },
+  {
+    id: 'proj-fersya-shop-vite',
+    name: 'Fersya Shop (Vite Assets)',
+    description: 'Vite Frontend Hot Module Reloading & Assets',
+    status: 'active',
+    color_code: '#646CFF',
+    repo_url: null,
+    prod_url: null,
+    local_path: '/Users/Ferrel/Finesser/Career/Fersya/fersya-shop',
+    start_command: 'npm run dev',
+    default_port: 5173,
+    target_date: null,
+    serverState: 'stopped',
+    pid: null,
+    logs: [
+      '[Daemon] Ready to run npm run dev on port 5173.',
     ],
   },
   {
@@ -348,7 +384,7 @@ export const useDevStore = create<DevState>()(
     }),
     {
       name: 'chemicvll-dev-storage',
-      version: 2,
+      version: 3,
       migrate: (persistedState: any) => {
         if (!persistedState || !Array.isArray(persistedState.projects)) {
           return persistedState;
