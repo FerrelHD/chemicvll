@@ -18,14 +18,14 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 lg:left-[72px] right-0 h-16 bg-surface/90 backdrop-blur-xl border-b border-outline/70 z-30 flex items-center justify-between px-4 md:px-6 shadow-[0_1px_8px_rgba(24,24,27,0.03)]">
+    <header className="sticky top-0 z-20 w-full h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-outline/30 flex items-center justify-between px-4 md:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
       {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
       <div className="flex items-center gap-3">
         <button
           type="button"
           aria-label="Menu"
           onClick={onOpenMobileMenu}
-          className="lg:hidden w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
+          className="md:hidden w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
         >
           <Menu className="w-4 h-4" />
         </button>
