@@ -45,6 +45,7 @@ interface DevState {
     encrypted: { encryptedPayload: string; iv: string; salt: string }
   ) => void;
   addProject: (project: Omit<DevProject, 'id' | 'serverState' | 'pid' | 'logs'>) => void;
+  deleteProject: (id: string) => void;
 }
 
 const INITIAL_PROJECTS: DevProject[] = [
@@ -170,7 +171,7 @@ export const useDevStore = create<DevState>()(
             id,
             `[${timestamp}] Mengirim perintah start ke laptop via Supabase Realtime Relay...`
           );
-          daemonRelay.startProcess(project.id, project.start_command, project.local_path || undefined);
+          daemonRelay.startProcess(project.id, project.start_command, project.local_path);
           return;
         }
 
@@ -301,6 +302,12 @@ export const useDevStore = create<DevState>()(
             },
             ...state.projects,
           ],
+        })),
+
+      deleteProject: (id) =>
+        set((state) => ({
+          projects: state.projects.filter((p) => p.id !== id),
+          activeLogProjectId: state.activeLogProjectId === id ? null : state.activeLogProjectId,
         })),
     }),
     {

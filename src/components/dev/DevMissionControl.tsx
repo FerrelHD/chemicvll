@@ -24,6 +24,7 @@ import {
   Radio,
   FileCode,
   Copy,
+  Trash2,
 } from 'lucide-react';
 
 export function DevMissionControl() {
@@ -46,6 +47,7 @@ export function DevMissionControl() {
     fetchProjectLogs,
     saveProjectEnv,
     addProject,
+    deleteProject,
   } = useDevStore();
 
   const [vaultProjectId, setVaultProjectId] = useState<string | null>(null);
@@ -509,14 +511,31 @@ export function DevMissionControl() {
                       </button>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleOpenVault(proj)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/20 text-xs font-medium text-on-surface transition"
-                    >
-                      <KeyRound className="w-3.5 h-3.5 text-primary-container" />
-                      <span>.env Vault</span>
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenVault(proj)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/20 text-xs font-medium text-on-surface transition"
+                      >
+                        <KeyRound className="w-3.5 h-3.5 text-primary-container" />
+                        <span>.env Vault</span>
+                      </button>
+
+                      {projects.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Hapus project "${proj.name}" dari Dev Control?`)) {
+                              deleteProject(proj.id);
+                            }
+                          }}
+                          className="p-1.5 rounded-full hover:bg-rose-50 text-on-surface-variant hover:text-rose-600 transition"
+                          title="Hapus Project"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
