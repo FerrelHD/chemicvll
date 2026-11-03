@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Menu, Search, Bell, Eye, EyeOff } from 'lucide-react';
-import { useFinanceStore } from '@/stores/useFinanceStore';
+import { Menu, Search, Bell } from 'lucide-react';
 
 interface HeaderProps {
   onOpenMobileMenu?: () => void;
@@ -10,9 +9,6 @@ interface HeaderProps {
 }
 
 export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
-  const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
-  const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
-
   const triggerCommand = () => {
     if (onOpenCommandBar) {
       onOpenCommandBar();
@@ -50,34 +46,8 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         </button>
       </div>
 
-      {/* Right section: Privacy Toggle + Cloud Sync + Notif + Avatar Ferrel */}
-      <div className="flex items-center gap-2.5">
-        {/* Privacy Sensor Mode Toggle Pill */}
-        <button
-          type="button"
-          onClick={togglePrivacyMode}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-sm text-xs transition cursor-pointer ${
-            isPrivacyMode
-              ? 'bg-primary-fixed/40 border-primary/40 text-on-surface hover:bg-primary-fixed/60'
-              : 'bg-surface-container-lowest border-outline text-on-surface-variant hover:bg-surface-container-high'
-          }`}
-          title={isPrivacyMode ? 'Sensor Saldo Aktif (Klik untuk tampilkan saldo)' : 'Saldo Terbuka (Klik untuk sensor saldo)'}
-        >
-          {isPrivacyMode ? (
-            <>
-              <EyeOff className="w-3.5 h-3.5 text-primary" />
-              <span className="font-semibold text-xs text-on-surface">Sensor</span>
-              <span className="text-[10px] text-primary hidden md:inline font-mono font-bold">ON</span>
-            </>
-          ) : (
-            <>
-              <Eye className="w-3.5 h-3.5 text-on-surface-variant" />
-              <span className="font-semibold text-xs text-on-surface">Sensor</span>
-              <span className="text-[10px] text-on-surface-variant hidden md:inline font-mono font-bold">OFF</span>
-            </>
-          )}
-        </button>
-
+      {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
+      <div className="flex items-center gap-3">          
         {/* Cloud Sync Status Pill */}
         <div className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs">
           <div className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
