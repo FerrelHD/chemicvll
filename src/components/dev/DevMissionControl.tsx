@@ -55,6 +55,8 @@ export function DevMissionControl() {
   const [rawEnv, setRawEnv] = useState('');
   const [vaultStatus, setVaultStatus] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [importStr, setImportStr] = useState('');
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   // New project modal
@@ -159,6 +161,8 @@ export function DevMissionControl() {
     setPassphrase('');
     setRawEnv('');
     setVaultStatus(null);
+    setShowImport(false);
+    setImportStr('');
     // If project has no encrypted vault yet, open directly into create mode!
     if (!project.encryptedEnv) {
       setIsUnlocked(true);
@@ -203,6 +207,30 @@ export function DevMissionControl() {
       setVaultProjectId(null);
       setIsUnlocked(false);
     }, 1500);
+  };
+
+  const handleExportVault = () => {
+    if (!vaultProject?.encryptedEnv) return;
+    navigator.clipboard.writeText(JSON.stringify(vaultProject.encryptedEnv));
+    setVaultStatus('Kode brankas terenkripsi disalin! Aman ditempel ke perangkat lain.');
+  };
+
+  const handleImportVault = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const parsed = JSON.parse(importStr.trim());
+      if (parsed.encryptedPayload && parsed.iv && parsed.salt && vaultProjectId) {
+        saveProjectEnv(vaultProjectId, parsed);
+        setVaultStatus('Brankas berhasil diimpor! Silakan masukkan master passphrase untuk membuka.');
+        setIsUnlocked(false);
+        setShowImport(false);
+        setImportStr('');
+      } else {
+        setVaultStatus('Format tidak valid. Pastikan JSON memiliki encryptedPayload, iv, dan salt.');
+      }
+    } catch {
+      setVaultStatus('Gagal membaca data: format bukan JSON terenkripsi yang valid.');
+    }
   };
 
   const handleCreateProject = (e: React.FormEvent) => {
@@ -650,20 +678,31 @@ export function DevMissionControl() {
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <div className="flex justify-end gap-2">
+                <div className="flex items-center justify-between pt-1">
                   <button
                     type="button"
-                    onClick={() => setVaultProjectId(null)}
-                    className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
+                    onClick={handleExportVault}
+                    className="text-xs text-primary-container hover:underline flex items-center gap-1.5"
+                    title="Salin kode terenkripsi untuk dipindahkan ke perangkat lain"
                   >
-                    Batal
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Ekspor Brankas</span>
                   </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
-                  >
-                    Buka Brankas
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setVaultProjectId(null)}
+                      className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                    >
+                      Buka Brankas
+                    </button>
+                  </div>
                 </div>
               </form>
             ) : (
@@ -695,21 +734,54 @@ export function DevMissionControl() {
                     className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setVaultProjectId(null)}
-                    className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
-                  >
-                    Tutup
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
-                  >
-                    Enkripsi &amp; Simpan
-                  </button>
+                <div className="flex items-center justify-between pt-1">
+                  {!vaultProject.encryptedEnv && (
+                    <button
+                      type="button"
+                      onClick={() => setShowImport(!showImport)}
+                      className="text-xs text-primary-container hover:underline flex items-center gap-1"
+                    >
+                      <span>{showImport ? 'Tutup form impor' : 'Atau impor brankas dari PC'}</span>
+                    </button>
+                  )}
+                  <div className="flex justify-end gap-2 ml-auto">
+                    <button
+                      type="button"
+                      onClick={() => setVaultProjectId(null)}
+                      className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant"
+                    >
+                      Tutup
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                    >
+                      Enkripsi &amp; Simpan
+                    </button>
+                  </div>
                 </div>
+
+                {showImport && (
+                  <div className="pt-3 border-t border-outline/20 space-y-2">
+                    <p className="text-[11px] text-on-surface-variant">
+                      Tempel kode brankas yang di-ekspor dari PC:
+                    </p>
+                    <textarea
+                      rows={3}
+                      value={importStr}
+                      onChange={(e) => setImportStr(e.target.value)}
+                      placeholder='{"encryptedPayload":"...","iv":"...","salt":"..."}'
+                      className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-2.5 text-[11px] font-mono text-on-surface focus:outline-none focus:border-primary-container"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleImportVault}
+                      className="px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-semibold"
+                    >
+                      Pasang Brankas
+                    </button>
+                  </div>
+                )}
               </form>
             )}
           </div>
