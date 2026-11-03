@@ -18,7 +18,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-20 w-full h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-outline/30 flex items-center justify-between px-4 md:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
+    <header className="sticky top-0 z-20 w-full h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-outline/30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
       {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
       <div className="flex items-center gap-3">
         <button
@@ -34,13 +34,13 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         <button
           type="button"
           onClick={triggerCommand}
-          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-4 py-1.5 rounded-full border border-outline shadow-sm hover:border-zinc-400 transition cursor-pointer text-left"
+          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline shadow-sm hover:border-zinc-400 transition cursor-pointer text-left max-w-[210px] md:max-w-xs"
         >
-          <Search className="w-3.5 h-3.5 text-on-surface-variant" />
-          <span className="text-xs text-on-surface-variant pr-4">
-            Search system, files, commands...
+          <Search className="w-3.5 h-3.5 text-on-surface-variant flex-shrink-0" />
+          <span className="text-xs text-on-surface-variant pr-2 truncate">
+            Search system, files...
           </span>
-          <kbd className="bg-surface-container-high text-on-surface text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold">
+          <kbd className="bg-surface-container-high text-on-surface text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold ml-auto flex-shrink-0">
             ⌘K
           </kbd>
         </button>

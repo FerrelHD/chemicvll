@@ -171,9 +171,9 @@ export function CareerKanban() {
       </div>
 
       {/* Bento Top Metric Row (3 Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {/* Card 1: Lamaran Aktif */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -185,8 +185,8 @@ export function CareerKanban() {
               <Briefcase className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between mt-4">
-            <span className="text-3xl font-bold text-on-surface leading-none font-sans">
+          <div className="flex items-center justify-between flex-wrap gap-2 mt-4">
+            <span className="text-2xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
               {activeCount}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
@@ -197,7 +197,7 @@ export function CareerKanban() {
         </div>
 
         {/* Card 2: Daily Focus */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -209,8 +209,8 @@ export function CareerKanban() {
               <Flag className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between mt-4">
-            <span className="text-3xl font-bold text-on-surface leading-none font-sans">
+          <div className="flex items-center justify-between flex-wrap gap-2 mt-4">
+            <span className="text-2xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
               {urgentFollowUpCount} Priorities
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
@@ -220,7 +220,7 @@ export function CareerKanban() {
         </div>
 
         {/* Card 3: Saldo Dompet (Cross-linked to Keuangan) */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_4px_20px_rgba(24,24,27,0.02)] flex flex-col justify-between hover:shadow-md transition sm:col-span-2 lg:col-span-1">
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -232,9 +232,9 @@ export function CareerKanban() {
               <Wallet className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline justify-between mt-4">
+          <div className="flex items-center justify-between flex-wrap gap-2 mt-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-on-surface leading-none font-sans">
+              <span className="text-xl sm:text-2xl font-bold text-on-surface leading-none font-sans">
                 {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
               </span>
               <button
