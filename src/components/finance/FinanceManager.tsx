@@ -152,13 +152,13 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp 5.250.000
+              Rp 0
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                +12% target
+                Alokasi Kas
               </span>
-              <span className="text-[11px] text-on-surface-variant">64% tercapai</span>
+              <span className="text-[11px] text-on-surface-variant">Siap diisi</span>
             </div>
           </div>
         </div>
@@ -173,13 +173,13 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp {totalIncome > 0 ? totalIncome.toLocaleString('id-ID') : '8.750.000'}
+              Rp {totalIncome.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                +15% aktif
+                Total Arus Masuk
               </span>
-              <span className="text-[11px] text-on-surface-variant">Magang &amp; Freelance</span>
+              <span className="text-[11px] text-on-surface-variant">Aktif</span>
             </div>
           </div>
         </div>
@@ -194,13 +194,13 @@ export function FinanceManager() {
           </div>
           <div className="mt-4 flex flex-col gap-1">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
-              Rp {totalExpense > 0 ? totalExpense.toLocaleString('id-ID') : '3.420.000'}
+              Rp {totalExpense.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-                -8% hemat
+                Total Arus Keluar
               </span>
-              <span className="text-[11px] text-on-surface-variant">vs budget limit</span>
+              <span className="text-[11px] text-on-surface-variant">Terkontrol</span>
             </div>
           </div>
         </div>
@@ -266,7 +266,7 @@ export function FinanceManager() {
               <div className="mt-4 mb-2">
                 <span className="text-[11px] text-white/80 block">Saldo Aktif</span>
                 <div className="text-2xl font-bold tracking-tight text-white font-sans">
-                  Rp 9.850.000
+                  Rp {(wallets.find((w) => w.id === 'w-jenius')?.balance || 0).toLocaleString('id-ID')}
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs text-white/90 pt-1 font-mono">

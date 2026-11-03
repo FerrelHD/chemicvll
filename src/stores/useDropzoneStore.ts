@@ -8,32 +8,8 @@ interface DropzoneState {
   togglePin: (id: string) => void;
 }
 
-const INITIAL_DROPZONE_ITEMS: DropzoneItem[] = [
-  {
-    id: 'drop-1',
-    type: 'link',
-    content: 'https://github.com/FerrelHD/chemicvll',
-    device_source: 'desktop',
-    is_pinned: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'drop-2',
-    type: 'code',
-    content: 'npm run dev -- -p 3000',
-    device_source: 'mobile',
-    is_pinned: false,
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: 'drop-3',
-    type: 'text',
-    content: 'Persiapan interview user: pelajari arsitektur Next.js App Router dan PostgreSQL RLS policies.',
-    device_source: 'desktop',
-    is_pinned: false,
-    created_at: new Date(Date.now() - 7200000).toISOString(),
-  },
-];
+// Clean slate ready for Ferrel's actual clipboard & file dropzone items
+const INITIAL_DROPZONE_ITEMS: DropzoneItem[] = [];
 
 export const useDropzoneStore = create<DropzoneState>((set) => ({
   items: INITIAL_DROPZONE_ITEMS,

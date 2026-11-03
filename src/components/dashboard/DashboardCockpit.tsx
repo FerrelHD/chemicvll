@@ -308,23 +308,23 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </span>
           </div>
 
-          {/* Realistic Virtual Card (Bank Jago / Jenius aesthetic) */}
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#1E1B2E] via-[#2A2344] to-[#18181B] text-white shadow-lg space-y-4">
+          {/* Realistic Virtual Card (Signature Warm Orange Fintech) */}
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FF6B00] via-[#FF7A1A] to-[#E05300] text-white shadow-[0_8px_24px_rgba(255,107,0,0.25)] space-y-4">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-xs tracking-wider text-purple-300 font-mono">
+              <span className="font-bold text-xs tracking-wider text-white/95 font-mono uppercase">
                 JENIUS M-CARD
               </span>
-              <CreditCard className="w-5 h-5 text-white/80" />
+              <CreditCard className="w-5 h-5 text-white/90" />
             </div>
 
             <div className="pt-2">
-              <span className="text-[10px] text-white/60 font-mono block">SALDO UTAMA</span>
+              <span className="text-[10px] text-white/80 font-mono block">SALDO UTAMA</span>
               <span className="text-xl font-bold font-mono tracking-tight text-white block">
                 Rp {totalBalance.toLocaleString('id-ID')}
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-1 text-xs font-mono text-white/70">
+            <div className="flex items-center justify-between pt-1 text-xs font-mono text-white/90">
               <span>•••• 8492</span>
               <span>11/28</span>
             </div>
@@ -365,48 +365,108 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Timeline Item 1: Interview */}
-          <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold">
-                  INTERVIEW TECH LEAD
+          {careerItems.some((i) => i.stage === 'interview') ? (
+            (() => {
+              const interviewItem = careerItems.find((i) => i.stage === 'interview')!;
+              return (
+                <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold">
+                        INTERVIEW TAHAP LANJUT
+                      </span>
+                      {interviewItem.next_follow_up_date && (
+                        <span className="text-xs text-on-surface-variant font-mono">
+                          {interviewItem.next_follow_up_date}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-sm font-semibold text-on-surface">
+                      {interviewItem.entity_name} • {interviewItem.role_or_program}
+                    </h4>
+                    <p className="text-xs text-on-surface-variant">
+                      {interviewItem.notes || 'Persiapan interview teknis & CV screening'}
+                    </p>
+                  </div>
+                  {interviewItem.portal_url && (
+                    <a
+                      href={interviewItem.portal_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition flex-shrink-0"
+                    >
+                      <Video className="w-3 h-3" />
+                      <span>Buka Meet</span>
+                    </a>
+                  )}
+                </div>
+              );
+            })()
+          ) : (
+            <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-semibold text-on-surface block">
+                  Belum ada jadwal interview
                 </span>
-                <span className="text-xs text-on-surface-variant font-mono">14:00 WIB</span>
+                <span className="text-[11px] text-on-surface-variant">
+                  Catat lamaran atau update status ke tahap interview.
+                </span>
               </div>
-              <h4 className="text-sm font-semibold text-on-surface">GovTech Edu • Fullstack Web Intern</h4>
-              <p className="text-xs text-on-surface-variant">User Interview via Google Meet</p>
+              <button
+                type="button"
+                onClick={() => onNavigate('career')}
+                className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
+              >
+                + Lamaran
+              </button>
             </div>
-            <a
-              href="https://meet.google.com"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition flex-shrink-0"
-            >
-              <Video className="w-3 h-3" />
-              <span>Buka Meet</span>
-            </a>
-          </div>
+          )}
 
-          {/* Timeline Item 2: Pomodoro Deep Work */}
-          <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
-                  DEEP WORK WORKSTATION
+          {/* Timeline Item 2: Pomodoro Deep Work / Priority Task */}
+          {tasks.some((t) => t.status !== 'done') ? (
+            (() => {
+              const activeTask = tasks.find((t) => t.is_daily_focus && t.status !== 'done') || tasks.find((t) => t.status !== 'done')!;
+              return (
+                <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
+                        P{activeTask.priority} DEEP WORK
+                      </span>
+                      <span className="text-xs text-on-surface-variant font-mono">Prioritas Harian</span>
+                    </div>
+                    <h4 className="text-sm font-semibold text-on-surface">{activeTask.title}</h4>
+                    <p className="text-xs text-on-surface-variant">Fokus sprint 25 menit tanpa distraksi</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('tasks')}
+                    className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition flex-shrink-0"
+                  >
+                    Mulai Timer
+                  </button>
+                </div>
+              );
+            })()
+          ) : (
+            <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-semibold text-on-surface block">
+                  Tidak ada tugas fokus berjalan
                 </span>
-                <span className="text-xs text-on-surface-variant font-mono">16:30 WIB</span>
+                <span className="text-[11px] text-on-surface-variant">
+                  Tambahkan target tugas baru di modul Tugas &amp; Fokus.
+                </span>
               </div>
-              <h4 className="text-sm font-semibold text-on-surface">Go Gin Backend & Supabase Realtime Setup</h4>
-              <p className="text-xs text-on-surface-variant">Fokus 50 menit Sprint tanpa distraksi</p>
+              <button
+                type="button"
+                onClick={() => onNavigate('tasks')}
+                className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
+              >
+                + Tugas
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => onNavigate('tasks')}
-              className="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-semibold transition flex-shrink-0"
-            >
-              Mulai Timer
-            </button>
-          </div>
+          )}
         </div>
       </div>
 

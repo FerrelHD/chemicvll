@@ -9,41 +9,8 @@ interface TaskState {
   deleteTask: (id: string) => void;
 }
 
-const INITIAL_TASKS: Task[] = [
-  {
-    id: 'task-1',
-    title: 'Pelajari System Design interview untuk Software Engineer',
-    priority: 1,
-    is_daily_focus: true,
-    status: 'todo',
-    project_id: null,
-    due_date: new Date().toISOString(),
-    completed_at: null,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'task-2',
-    title: 'Kirim email follow-up ke recruiter Tokopedia',
-    priority: 1,
-    is_daily_focus: true,
-    status: 'todo',
-    project_id: null,
-    due_date: new Date().toISOString(),
-    completed_at: null,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'task-3',
-    title: 'Rapikan repository GitHub dan README Personal OS',
-    priority: 2,
-    is_daily_focus: false,
-    status: 'inbox',
-    project_id: null,
-    due_date: null,
-    completed_at: null,
-    created_at: new Date().toISOString(),
-  },
-];
+// Clean slate ready for Ferrel's actual tasks
+const INITIAL_TASKS: Task[] = [];
 
 export const useTaskStore = create<TaskState>((set) => ({
   tasks: INITIAL_TASKS,

@@ -18,56 +18,15 @@ interface FinanceState {
 }
 
 const INITIAL_WALLETS: Wallet[] = [
-  { id: 'w-bca', name: 'Bank BCA', type: 'bank', balance: 14500000, color: '#0066CC' },
-  { id: 'w-gopay', name: 'GoPay', type: 'ewallet', balance: 650000, color: '#00AA13' },
-  { id: 'w-cash', name: 'Cash', type: 'cash', balance: 250000, color: '#5856D6' },
+  { id: 'w-bca', name: 'Bank BCA', type: 'bank', balance: 0, color: '#0066CC' },
+  { id: 'w-jenius', name: 'Jenius m-Card', type: 'bank', balance: 0, color: '#FF6B00' },
+  { id: 'w-gopay', name: 'GoPay / e-Wallet', type: 'ewallet', balance: 0, color: '#00AA13' },
+  { id: 'w-cash', name: 'Tunai (Cash)', type: 'cash', balance: 0, color: '#5856D6' },
 ];
 
-const INITIAL_TRANSACTIONS: Transaction[] = [
-  {
-    id: 'tx-1',
-    wallet_id: 'w-bca',
-    to_wallet_id: null,
-    project_id: null,
-    type: 'income',
-    category: 'Gaji / Stipend',
-    amount: 5000000,
-    note: 'Stipend Magang Oktober',
-    transaction_date: '2026-10-31T00:00:00Z',
-  },
-  {
-    id: 'tx-2',
-    wallet_id: 'w-gopay',
-    to_wallet_id: null,
-    project_id: null,
-    type: 'expense',
-    category: 'Makan & Minum',
-    amount: 35000,
-    note: 'Kopi & Makan Siang',
-    transaction_date: '2026-11-02T12:00:00Z',
-  },
-];
+const INITIAL_TRANSACTIONS: Transaction[] = [];
 
-const INITIAL_SUBSCRIPTIONS: Subscription[] = [
-  {
-    id: 'sub-github',
-    wallet_id: 'w-bca',
-    name: 'GitHub Copilot / Pro',
-    cost: 160000,
-    billing_cycle: 'monthly',
-    next_billing_date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], // H-2 (Alert!)
-    is_active: true,
-  },
-  {
-    id: 'sub-chatgpt',
-    wallet_id: 'w-bca',
-    name: 'ChatGPT Plus',
-    cost: 320000,
-    billing_cycle: 'monthly',
-    next_billing_date: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
-    is_active: true,
-  },
-];
+const INITIAL_SUBSCRIPTIONS: Subscription[] = [];
 
 export const useFinanceStore = create<FinanceState>((set) => ({
   wallets: INITIAL_WALLETS,
