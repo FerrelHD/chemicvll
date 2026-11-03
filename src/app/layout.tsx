@@ -4,7 +4,6 @@ import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-jakarta",
   display: "swap",
 });
@@ -43,8 +42,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={jakarta.variable}>
-      <body className={`${jakarta.className} min-h-screen bg-surface text-on-surface font-sans antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant`}>
+    <html lang="id" className={`${jakarta.variable} h-full`}>
+      <body className={`${jakarta.className} h-full bg-surface text-on-surface font-sans antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant`}>
         {children}
       </body>
     </html>

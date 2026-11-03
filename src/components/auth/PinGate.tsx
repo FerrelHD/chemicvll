@@ -56,8 +56,10 @@ export function PinGate({ children }: PinGateProps) {
     } catch {
       // Ignore
     }
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
     setTimeout(() => {
       setIsUnlocked(true);
+      if (typeof window !== 'undefined') window.scrollTo(0, 0);
     }, 550);
   };
 
