@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Task } from '@/types/database';
+import { checkAndExecuteRollover, RolloverResult } from '@/lib/daily-rollover';
 
 interface TaskState {
   tasks: Task[];
@@ -7,6 +8,7 @@ interface TaskState {
   toggleDone: (id: string) => void;
   toggleDailyFocus: (id: string) => void;
   deleteTask: (id: string) => void;
+  executeDailyRollover: (todayStr: string, lastDate: string | null) => RolloverResult;
 }
 
 // Clean slate ready for Ferrel's actual tasks
@@ -51,6 +53,13 @@ export const useTaskStore = create<TaskState>((set) => ({
     })),
   deleteTask: (id) =>
     set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
+  executeDailyRollover: (todayStr, lastDate) => {
+    const res = checkAndExecuteRollover(useTaskStore.getState().tasks, todayStr, lastDate);
+    if (res.rolledOverCount > 0) {
+      set({ tasks: res.updatedTasks });
+    }
+    return res;
+  },
 }));
 
 // Setup listener for Command Bar integration

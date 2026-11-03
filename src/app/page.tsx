@@ -1,21 +1,52 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { DashboardCockpit } from '@/components/dashboard/DashboardCockpit';
+import { DailyBriefingModal } from '@/components/dashboard/DailyBriefingModal';
 import { CareerKanban } from '@/components/career/CareerKanban';
 import { TaskManager } from '@/components/tasks/TaskManager';
 import { FinanceManager } from '@/components/finance/FinanceManager';
 import { DevMissionControl } from '@/components/dev/DevMissionControl';
 import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
 import { CommandBar } from '@/components/cmd/CommandBar';
+import { useTaskStore } from '@/stores/useTaskStore';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [isBriefingOpen, setIsBriefingOpen] = useState(false);
+  const [rolledOverCount, setRolledOverCount] = useState(0);
+  const executeDailyRollover = useTaskStore((state) => state.executeDailyRollover);
+
+  useEffect(() => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const lastDate = localStorage.getItem('personal_os_last_briefing');
+      if (todayStr !== lastDate) {
+        const res = executeDailyRollover(todayStr, lastDate);
+        if (res.shouldBrief) {
+          setRolledOverCount(res.rolledOverCount);
+          setIsBriefingOpen(true);
+        }
+      }
+    } catch {
+      // In case localStorage is blocked in private browsing
+    }
+  }, [executeDailyRollover]);
+
+  const handleDismissBriefing = () => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      localStorage.setItem('personal_os_last_briefing', todayStr);
+    } catch {
+      // Ignore
+    }
+    setIsBriefingOpen(false);
+  };
 
   const showNotification = (msg: string) => {
     setNotice(msg);
@@ -55,6 +86,14 @@ export default function HomePage() {
 
         {/* Global Command Bar Modal */}
         <CommandBar onNavigate={setActiveTab} onShowNotice={showNotification} />
+
+        {/* Automated Daily Morning Briefing Modal */}
+        <DailyBriefingModal
+          isOpen={isBriefingOpen}
+          rolledOverCount={rolledOverCount}
+          onDismiss={handleDismissBriefing}
+          onNavigate={setActiveTab}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 w-full pt-20 px-4 md:px-8 pb-24 lg:pb-12 max-w-7xl">
