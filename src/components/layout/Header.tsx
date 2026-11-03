@@ -12,6 +12,17 @@ interface HeaderProps {
 export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   const syncStatus = useSyncStore((s) => s.status);
   const lastSyncedAt = useSyncStore((s) => s.lastSyncedAt);
+  const syncErrorMessage = useSyncStore((s) => s.errorMessage);
+
+  const handleSyncClick = async () => {
+    const success = await pullFromCloud();
+    if (!success) {
+      const msg = useSyncStore.getState().errorMessage;
+      if (msg) {
+        alert(`Supabase Sync Status: ${msg}`);
+      }
+    }
+  };
 
   const triggerCommand = () => {
     if (onOpenCommandBar) {
@@ -55,9 +66,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         {/* Cloud Sync Status Pill */}
         <button
           type="button"
-          onClick={() => pullFromCloud()}
+          onClick={handleSyncClick}
           className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer"
-          title={lastSyncedAt ? `Last synced at ${lastSyncedAt} WIB. Click to sync now.` : 'Click to sync now.'}
+          title={
+            syncStatus === 'synced'
+              ? `Synced at ${lastSyncedAt || 'just now'} WIB. Click to sync now.`
+              : syncStatus === 'offline'
+              ? `Offline: ${syncErrorMessage || 'Click to retry / inspect reason'}`
+              : 'Syncing in progress...'
+          }
         >
           <div
             className={`w-2 h-2 rounded-full ${

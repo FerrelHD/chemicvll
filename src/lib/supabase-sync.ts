@@ -11,15 +11,19 @@ export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline' | 'error';
 interface SyncState {
   status: SyncStatus;
   lastSyncedAt: string | null;
+  errorMessage: string | null;
   setStatus: (status: SyncStatus) => void;
   setLastSyncedAt: (date: string) => void;
+  setErrorMessage: (msg: string | null) => void;
 }
 
 export const useSyncStore = create<SyncState>((set) => ({
   status: 'idle',
   lastSyncedAt: null,
+  errorMessage: null,
   setStatus: (status) => set({ status }),
   setLastSyncedAt: (date) => set({ lastSyncedAt: date }),
+  setErrorMessage: (errorMessage) => set({ errorMessage }),
 }));
 
 let isInitialized = false;
@@ -61,13 +65,15 @@ export async function pullFromCloud(): Promise<boolean> {
       taskRes.error;
 
     if (hasError) {
-      console.warn('Supabase fetch error, fallback to local cache:', {
-        careerErr: careerRes.error,
-        walletErr: walletRes.error,
-        txErr: txRes.error,
-        subErr: subRes.error,
-        taskErr: taskRes.error,
-      });
+      const firstErr =
+        careerRes.error ||
+        walletRes.error ||
+        txRes.error ||
+        subRes.error ||
+        taskRes.error;
+      const errMsg = firstErr?.message || 'Database query error';
+      console.warn('Supabase fetch error, fallback to local cache:', errMsg);
+      useSyncStore.getState().setErrorMessage(errMsg);
       useSyncStore.getState().setStatus('offline');
       isSyncingDown = false;
       return false;
@@ -105,13 +111,16 @@ export async function pullFromCloud(): Promise<boolean> {
     }
 
     useSyncStore.getState().setStatus('synced');
+    useSyncStore.getState().setErrorMessage(null);
     useSyncStore.getState().setLastSyncedAt(
       new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
     );
     isSyncingDown = false;
     return true;
-  } catch (err) {
-    console.warn('Failed to sync from cloud (timeout/network):', err);
+  } catch (err: any) {
+    const msg = err?.message || 'Connection timeout';
+    console.warn('Failed to sync from cloud:', msg);
+    useSyncStore.getState().setErrorMessage(msg);
     useSyncStore.getState().setStatus('offline');
     isSyncingDown = false;
     return false;
