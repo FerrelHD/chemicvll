@@ -56,6 +56,10 @@ export interface Wallet {
   type: 'bank' | 'ewallet' | 'cash' | 'investment';
   balance: number;
   color: string;
+  account_number?: string;
+  card_label?: string;
+  holder_name?: string;
+  expiry?: string;
   created_at?: string;
 }
 

@@ -18,6 +18,7 @@ import {
   Send,
   PlusCircle,
   Video,
+  BarChart3,
 } from 'lucide-react';
 
 interface DashboardCockpitProps {
@@ -29,6 +30,8 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const careerItems = useCareerStore((state) => state.items);
   const tasks = useTaskStore((state) => state.tasks);
   const wallets = useFinanceStore((state) => state.wallets);
+  const activeWalletId = useFinanceStore((state) => state.activeWalletId);
+  const transactions = useFinanceStore((state) => state.transactions);
   const projects = useDevStore((state) => state.projects);
 
   const activeCareerCount = careerItems.filter(
@@ -37,6 +40,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const interviewCount = careerItems.filter((i) => i.stage === 'interview').length;
 
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
+  const activeWallet = wallets.find((w) => w.id === activeWalletId) || wallets[0];
 
   const completedTasks = tasks.filter((t) => t.status === 'done').length;
   const totalTasks = tasks.length;
@@ -44,15 +48,35 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
   const runningServers = projects.filter((p) => p.serverState === 'running').length;
 
-  // Monthly cashflow capsule mock data (6 months)
-  const cashflowMonths = [
-    { month: 'Jun', in: 6.5, out: 3.2 },
-    { month: 'Jul', in: 7.0, out: 4.1 },
-    { month: 'Agt', in: 5.5, out: 3.8 },
-    { month: 'Sep', in: 8.2, out: 4.5 },
-    { month: 'Okt', in: 9.0, out: 5.2 },
-    { month: 'Nov', in: 8.5, out: 4.0 },
-  ];
+  // Monthly cashflow calculation from real transactions
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+  const now = new Date();
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    return {
+      year: d.getFullYear(),
+      monthIndex: d.getMonth(),
+      label: monthNames[d.getMonth()],
+    };
+  });
+
+  const cashflowMonths = last6Months.map((m) => {
+    const txInMonth = transactions.filter((t) => {
+      const td = new Date(t.transaction_date);
+      return td.getFullYear() === m.year && td.getMonth() === m.monthIndex;
+    });
+    const income = txInMonth.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+    const expense = txInMonth.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+    return {
+      month: m.label,
+      in: income / 1_000_000,
+      out: expense / 1_000_000,
+      rawIn: income,
+      rawOut: expense,
+    };
+  });
+
+  const maxVal = Math.max(1, ...cashflowMonths.map((m) => Math.max(m.in, m.out)));
 
   return (
     <div className="space-y-6">
@@ -269,34 +293,55 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           {/* Capsule Chart Graphic */}
-          <div className="h-48 flex items-end justify-between gap-4 pt-4 px-2">
-            {cashflowMonths.map((m, idx) => {
-              const inHeight = `${(m.in / 10) * 100}%`;
-              const outHeight = `${(m.out / 10) * 100}%`;
+          {transactions.length === 0 ? (
+            <div className="h-48 flex flex-col items-center justify-center p-6 bg-surface-container-low/40 rounded-2xl border border-dashed border-outline/40 text-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+                <BarChart3 className="w-5 h-5 text-on-surface-variant" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-sm font-bold text-on-surface">Belum ada riwayat transaksi</p>
+                <p className="text-xs text-on-surface-variant max-w-sm">
+                  Grafik arus kas akan otomatis terisi secara proporsional saat Anda mencatat transaksi pemasukan atau pengeluaran.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate('finance')}
+                className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition"
+              >
+                Catat Transaksi Pertama
+              </button>
+            </div>
+          ) : (
+            <div className="h-48 flex items-end justify-between gap-4 pt-4 px-2">
+              {cashflowMonths.map((m, idx) => {
+                const inHeight = `${Math.max(4, (m.in / maxVal) * 100)}%`;
+                const outHeight = `${Math.max(4, (m.out / maxVal) * 100)}%`;
 
-              return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                  <div className="w-full flex items-end justify-center gap-1.5 h-full">
-                    {/* In Bar */}
-                    <div
-                      style={{ height: inHeight }}
-                      className="w-3.5 bg-primary-container rounded-full transition-all group-hover:brightness-110"
-                      title={`In: Rp ${m.in}M`}
-                    ></div>
-                    {/* Out Bar */}
-                    <div
-                      style={{ height: outHeight }}
-                      className="w-3.5 bg-inverse-surface/80 rounded-full transition-all group-hover:bg-inverse-surface"
-                      title={`Out: Rp ${m.out}M`}
-                    ></div>
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
+                    <div className="w-full flex items-end justify-center gap-1.5 h-full">
+                      {/* In Bar */}
+                      <div
+                        style={{ height: inHeight }}
+                        className="w-3.5 bg-primary-container rounded-full transition-all group-hover:brightness-110"
+                        title={`In: Rp ${m.rawIn.toLocaleString('id-ID')}`}
+                      ></div>
+                      {/* Out Bar */}
+                      <div
+                        style={{ height: outHeight }}
+                        className="w-3.5 bg-inverse-surface/80 rounded-full transition-all group-hover:bg-inverse-surface"
+                        title={`Out: Rp ${m.rawOut.toLocaleString('id-ID')}`}
+                      ></div>
+                    </div>
+                    <span className="text-[11px] font-mono text-on-surface-variant font-medium">
+                      {m.month}
+                    </span>
                   </div>
-                  <span className="text-[11px] font-mono text-on-surface-variant font-medium">
-                    {m.month}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Module B: Active Debit Card & Quick Action (Col span 5) */}
@@ -308,25 +353,34 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </span>
           </div>
 
-          {/* Realistic Virtual Card (Signature Warm Orange Fintech) */}
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FF6B00] via-[#FF7A1A] to-[#E05300] text-white shadow-[0_8px_24px_rgba(255,107,0,0.25)] space-y-4">
+          {/* Realistic Virtual Card */}
+          <div
+            className="p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-4"
+            style={{
+              background: activeWallet?.color
+                ? `linear-gradient(135deg, ${activeWallet.color}, #18181B)`
+                : 'linear-gradient(135deg, #0066CC, #003E8A)',
+            }}
+          >
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs tracking-wider text-white/95 font-mono uppercase">
-                JENIUS M-CARD
+                {activeWallet?.name || 'BANK BCA'}
               </span>
               <CreditCard className="w-5 h-5 text-white/90" />
             </div>
 
             <div className="pt-2">
-              <span className="text-[10px] text-white/80 font-mono block">SALDO UTAMA</span>
+              <span className="text-[10px] text-white/80 font-mono block uppercase">
+                {activeWallet?.card_label || 'SALDO UTAMA'}
+              </span>
               <span className="text-xl font-bold font-mono tracking-tight text-white block">
-                Rp {totalBalance.toLocaleString('id-ID')}
+                Rp {(activeWallet?.balance || 0).toLocaleString('id-ID')}
               </span>
             </div>
 
             <div className="flex items-center justify-between pt-1 text-xs font-mono text-white/90">
-              <span>•••• 8492</span>
-              <span>11/28</span>
+              <span>•••• {activeWallet?.account_number || '8492'}</span>
+              <span>{activeWallet?.expiry || '11/28'}</span>
             </div>
           </div>
 

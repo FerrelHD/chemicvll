@@ -3,8 +3,13 @@ import { Wallet, Transaction, Subscription } from '@/types/database';
 
 interface FinanceState {
   wallets: Wallet[];
+  activeWalletId: string;
   transactions: Transaction[];
   subscriptions: Subscription[];
+  setActiveWalletId: (id: string) => void;
+  addWallet: (wallet: Omit<Wallet, 'id' | 'created_at'>) => void;
+  updateWallet: (id: string, updates: Partial<Wallet>) => void;
+  deleteWallet: (id: string) => void;
   addTransaction: (data: {
     wallet_id: string;
     to_wallet_id?: string | null;
@@ -18,10 +23,17 @@ interface FinanceState {
 }
 
 const INITIAL_WALLETS: Wallet[] = [
-  { id: 'w-bca', name: 'Bank BCA', type: 'bank', balance: 0, color: '#0066CC' },
-  { id: 'w-jenius', name: 'Jenius m-Card', type: 'bank', balance: 0, color: '#FF6B00' },
-  { id: 'w-gopay', name: 'GoPay / e-Wallet', type: 'ewallet', balance: 0, color: '#00AA13' },
-  { id: 'w-cash', name: 'Tunai (Cash)', type: 'cash', balance: 0, color: '#5856D6' },
+  {
+    id: 'w-bca',
+    name: 'Bank BCA',
+    type: 'bank',
+    balance: 0,
+    color: '#0066CC',
+    card_label: 'Rekening Utama',
+    account_number: '8492',
+    holder_name: 'FERREL',
+    expiry: '11/28',
+  },
 ];
 
 const INITIAL_TRANSACTIONS: Transaction[] = [];
@@ -30,8 +42,34 @@ const INITIAL_SUBSCRIPTIONS: Subscription[] = [];
 
 export const useFinanceStore = create<FinanceState>((set) => ({
   wallets: INITIAL_WALLETS,
+  activeWalletId: 'w-bca',
   transactions: INITIAL_TRANSACTIONS,
   subscriptions: INITIAL_SUBSCRIPTIONS,
+  setActiveWalletId: (id) => set({ activeWalletId: id }),
+  addWallet: (wallet) =>
+    set((state) => {
+      const newWallet: Wallet = {
+        ...wallet,
+        id: `w-${Date.now()}`,
+        created_at: new Date().toISOString(),
+      };
+      return {
+        wallets: [...state.wallets, newWallet],
+        activeWalletId: state.wallets.length === 0 ? newWallet.id : state.activeWalletId,
+      };
+    }),
+  updateWallet: (id, updates) =>
+    set((state) => ({
+      wallets: state.wallets.map((w) => (w.id === id ? { ...w, ...updates } : w)),
+    })),
+  deleteWallet: (id) =>
+    set((state) => {
+      const filtered = state.wallets.filter((w) => w.id !== id);
+      return {
+        wallets: filtered,
+        activeWalletId: state.activeWalletId === id ? (filtered[0]?.id || '') : state.activeWalletId,
+      };
+    }),
   addTransaction: ({ wallet_id, to_wallet_id, type, category, amount, note }) =>
     set((state) => {
       const newTx: Transaction = {
