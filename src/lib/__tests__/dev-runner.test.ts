@@ -30,3 +30,4 @@ if (!Array.isArray(running)) {
 console.log('Test 3 Passed: Running processes registry initialized.');
 
 console.log('All Dev Runner Engine tests passed successfully!');
+

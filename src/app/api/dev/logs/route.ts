@@ -14,3 +14,4 @@ export async function GET(request: Request) {
   const logs = getProcessLogs(projectId);
   return NextResponse.json({ logs });
 }
+
