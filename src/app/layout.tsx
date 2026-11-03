@@ -1,5 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Personal OS — chemicvll",
@@ -16,7 +24,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#F5F5F7",
+  themeColor: "#FAF9F4",
 };
 
 export default function RootLayout({
@@ -25,11 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
-      <body className="min-h-screen bg-canvas text-appleText-primary antialiased">
+    <html lang="id" className={jakarta.variable}>
+      <body className="min-h-screen bg-surface text-on-surface font-sans antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
         {children}
       </body>
     </html>
   );
 }
-
