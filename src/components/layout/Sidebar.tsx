@@ -47,9 +47,11 @@ export function Sidebar({
             className="flex items-center gap-3 px-1 py-1 cursor-pointer select-none"
             onClick={() => onTabChange('dashboard')}
           >
-            <div className="w-8 h-8 rounded-xl bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
-              C
-            </div>
+            <img
+              src="/icon-192.png"
+              alt="chemicvll logo"
+              className="w-8 h-8 rounded-xl object-contain shadow-sm flex-shrink-0"
+            />
             <motion.div
               animate={{
                 opacity: open ? 1 : 0,
