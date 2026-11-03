@@ -234,10 +234,6 @@ export function FinanceManager() {
             <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
               Financial Vault &amp; Cashflow
             </h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
-              Live Sync
-            </span>
           </div>
           <p className="text-xs text-on-surface-variant">
             Track bank accounts, savings allocations, and real-time monthly cashflow.

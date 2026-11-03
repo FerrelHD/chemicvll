@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   title: "Personal OS — chemicvll",
   description: "Personal Life & Dev Command Center",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/icon.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

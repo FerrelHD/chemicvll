@@ -48,7 +48,7 @@ export function Sidebar({
             onClick={() => onTabChange('dashboard')}
           >
             <div className="w-8 h-8 rounded-xl bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
-              P
+              C
             </div>
             <motion.div
               animate={{
