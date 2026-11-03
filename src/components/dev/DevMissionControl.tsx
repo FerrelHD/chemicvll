@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
 import { checkPortHealth, PortHealth } from '@/lib/port-checker';
+import { daemonRelay } from '@/lib/daemon-relay';
 import {
   Terminal,
   Play,
@@ -31,7 +32,13 @@ export function DevMissionControl() {
     activeLogProjectId,
     systemMetrics,
     isLocal,
+    isDaemonOnline,
+    daemonMachine,
     setActiveLogProjectId,
+    setDaemonOnline,
+    setSystemMetrics,
+    setProjectState,
+    appendLog,
     startServer,
     stopServer,
     restartServer,
@@ -61,6 +68,47 @@ export function DevMissionControl() {
 
   const [portStatuses, setPortStatuses] = useState<Record<number, PortHealth>>({});
   const [isPinging, setIsPinging] = useState(false);
+
+  // Initialize Supabase Realtime Relay for remote daemon control
+  useEffect(() => {
+    daemonRelay.init({
+      onDaemonStateChange: (online) => {
+        setDaemonOnline(online);
+      },
+      onHeartbeat: (telemetry) => {
+        setDaemonOnline(true, telemetry.machine);
+        setSystemMetrics({
+          totalGB: telemetry.totalGB,
+          usedGB: telemetry.usedGB,
+          freeGB: telemetry.freeGB,
+          usedPercent: telemetry.usedPercent,
+          platform: telemetry.platform,
+          cpuCount: 0,
+        });
+
+        if (Array.isArray(telemetry.running)) {
+          telemetry.running.forEach((r) => {
+            setProjectState(r.projectId, 'running', r.pid);
+          });
+        }
+      },
+      onLog: (projectId, line) => {
+        appendLog(projectId, line);
+      },
+      onProcessStarted: (projectId, pid) => {
+        setProjectState(projectId, 'running', pid);
+        appendLog(projectId, `[Relay Live] Process started on laptop (PID: ${pid})`);
+      },
+      onProcessStopped: (projectId) => {
+        setProjectState(projectId, 'stopped', null);
+        appendLog(projectId, `[Relay Live] Process stopped.`);
+      },
+      onProcessExited: (projectId, code) => {
+        setProjectState(projectId, 'stopped', null);
+        appendLog(projectId, `[Relay Live] Process exited (code ${code ?? 0}).`);
+      },
+    });
+  }, [setDaemonOnline, setSystemMetrics, setProjectState, appendLog]);
 
   // Periodic daemon & system sync
   useEffect(() => {
@@ -182,17 +230,33 @@ export function DevMissionControl() {
             </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-1">
-            {isLocal
+            {isDaemonOnline
+              ? `Supabase Relay Online · Connected to ${daemonMachine || 'Windows PC'} · ${runningServers} active sockets`
+              : isLocal
               ? `Local Runner · Windows Engine · ${runningServers} active listening sockets`
-              : 'Cloud Mode (Standby) · Jalankan di http://localhost:3000 untuk kontrol proses lokal'}
+              : 'Supabase Relay Standby · Buka run-daemon.bat di laptop untuk mengontrol server'}
           </p>
         </div>
 
         {/* Quick Pill Controls */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 bg-surface-container-low px-3.5 py-1.5 rounded-full border border-outline/20 text-xs text-on-surface font-medium">
-            <Radio className={`w-3.5 h-3.5 ${isLocal ? 'text-emerald-500 animate-pulse' : 'text-zinc-400'}`} />
-            <span>{isLocal ? 'Local Engine Active' : 'Cloud Standby'}</span>
+            <Radio
+              className={`w-3.5 h-3.5 ${
+                isDaemonOnline
+                  ? 'text-emerald-500 animate-pulse'
+                  : isLocal
+                  ? 'text-emerald-500'
+                  : 'text-amber-500'
+              }`}
+            />
+            <span>
+              {isDaemonOnline
+                ? 'Laptop Relay Connected'
+                : isLocal
+                ? 'Local Engine Active'
+                : 'Waiting for Laptop'}
+            </span>
           </div>
 
           <button
@@ -215,6 +279,21 @@ export function DevMissionControl() {
           </button>
         </div>
       </div>
+
+      {/* Banner when in cloud mode and daemon not connected */}
+      {!isDaemonOnline && !isLocal && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900">
+          <div className="flex items-center gap-2.5">
+            <Radio className="w-4 h-4 text-amber-600 flex-shrink-0 animate-pulse" />
+            <div>
+              <p className="font-semibold text-on-surface">Jembatan Laptop Belum Terkoneksi</p>
+              <p className="text-[11px] text-on-surface-variant">
+                Klik 2x file <strong>run-daemon.bat</strong> di folder project laptop Anda agar tombol Start/Stop dan terminal dapat mengontrol laptop langsung dari Vercel.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bento 4 Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

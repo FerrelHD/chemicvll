@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Project } from '@/types/database';
+import { daemonRelay } from '@/lib/daemon-relay';
 
 export interface DevProject extends Project {
   serverState: 'running' | 'stopped' | 'error';
@@ -27,7 +28,12 @@ interface DevState {
   activeLogProjectId: string | null;
   systemMetrics: SystemMetrics | null;
   isLocal: boolean;
+  isDaemonOnline: boolean;
+  daemonMachine: string | null;
   setActiveLogProjectId: (id: string | null) => void;
+  setDaemonOnline: (online: boolean, machine?: string) => void;
+  setSystemMetrics: (metrics: SystemMetrics | null) => void;
+  setProjectState: (id: string, serverState: 'running' | 'stopped' | 'error', pid?: number | null) => void;
   startServer: (id: string) => Promise<void>;
   stopServer: (id: string) => Promise<void>;
   restartServer: (id: string) => Promise<void>;
@@ -69,10 +75,39 @@ export const useDevStore = create<DevState>()(
       activeLogProjectId: null,
       systemMetrics: null,
       isLocal: true,
+      isDaemonOnline: false,
+      daemonMachine: null,
+
       setActiveLogProjectId: (id) => set({ activeLogProjectId: id }),
+      setDaemonOnline: (online, machine) =>
+        set((state) => ({
+          isDaemonOnline: online,
+          daemonMachine: machine || state.daemonMachine,
+        })),
+      setSystemMetrics: (metrics) => set({ systemMetrics: metrics }),
+      setProjectState: (id, serverState, pid) =>
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  serverState,
+                  pid: pid !== undefined ? pid : p.pid,
+                }
+              : p
+          ),
+        })),
 
       syncWithDaemon: async () => {
         if (typeof window === 'undefined') return;
+
+        // If Supabase Realtime Daemon is already connected, don't poll local
+        if (daemonRelay.getIsOnline()) {
+          set({ isDaemonOnline: true });
+          daemonRelay.requestStatus();
+          return;
+        }
+
         try {
           const res = await fetch('/api/dev/status');
           if (!res.ok) return;
@@ -129,23 +164,19 @@ export const useDevStore = create<DevState>()(
 
         const timestamp = new Date().toLocaleTimeString();
 
-        // Optimistically set to running
-        set((state) => ({
-          projects: state.projects.map((p) =>
-            p.id === id
-              ? {
-                  ...p,
-                  serverState: 'running',
-                  logs: [
-                    ...p.logs.slice(-98),
-                    `[${timestamp}] Requesting start: "${p.start_command}"...`,
-                  ],
-                }
-              : p
-          ),
-        }));
+        // 1. If Supabase Realtime Relay is online, use it!
+        if (daemonRelay.getIsOnline()) {
+          get().appendLog(
+            id,
+            `[${timestamp}] Mengirim perintah start ke laptop via Supabase Realtime Relay...`
+          );
+          daemonRelay.startProcess(project.id, project.start_command, project.local_path || undefined);
+          return;
+        }
 
+        // 2. Fallback: If on local machine /api/dev/start
         if (typeof window !== 'undefined') {
+          get().appendLog(id, `[${timestamp}] Requesting start: "${project.start_command}"...`);
           try {
             const res = await fetch('/api/dev/start', {
               method: 'POST',
@@ -177,37 +208,16 @@ export const useDevStore = create<DevState>()(
               }));
               get().fetchProjectLogs(id);
             } else {
-              set((state) => ({
-                projects: state.projects.map((p) =>
-                  p.id === id
-                    ? {
-                        ...p,
-                        serverState: 'stopped',
-                        pid: null,
-                        logs: [
-                          ...p.logs.slice(-98),
-                          `[${new Date().toLocaleTimeString()}] Start failed: ${data.error || 'Unknown error'}`,
-                        ],
-                      }
-                    : p
-                ),
-              }));
+              get().appendLog(
+                id,
+                `[${new Date().toLocaleTimeString()}] Start failed: ${data.error || 'Daemon offline'}. Jalankan run-daemon.bat di laptop Anda.`
+              );
             }
           } catch (err: any) {
-            set((state) => ({
-              projects: state.projects.map((p) =>
-                p.id === id
-                  ? {
-                      ...p,
-                      serverState: 'stopped',
-                      logs: [
-                        ...p.logs.slice(-98),
-                        `[${new Date().toLocaleTimeString()}] Error: ${err.message}`,
-                      ],
-                    }
-                  : p
-              ),
-            }));
+            get().appendLog(
+              id,
+              `[${new Date().toLocaleTimeString()}] Error: ${err.message}. Jalankan run-daemon.bat di laptop Anda.`
+            );
           }
         }
       },
@@ -218,6 +228,17 @@ export const useDevStore = create<DevState>()(
 
         const timestamp = new Date().toLocaleTimeString();
 
+        // 1. If Supabase Realtime Relay is online:
+        if (daemonRelay.getIsOnline()) {
+          get().appendLog(
+            id,
+            `[${timestamp}] Mengirim perintah stop ke laptop via Supabase Realtime Relay...`
+          );
+          daemonRelay.stopProcess(project.id);
+          return;
+        }
+
+        // 2. Fallback local API
         if (typeof window !== 'undefined') {
           try {
             await fetch('/api/dev/stop', {
@@ -251,7 +272,7 @@ export const useDevStore = create<DevState>()(
 
       restartServer: async (id) => {
         await get().stopServer(id);
-        setTimeout(() => get().startServer(id), 800);
+        setTimeout(() => get().startServer(id), 1000);
       },
 
       appendLog: (id, logLine) =>
