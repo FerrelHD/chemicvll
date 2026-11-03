@@ -55,6 +55,7 @@ export function DevMissionControl() {
   const [rawEnv, setRawEnv] = useState('');
   const [vaultStatus, setVaultStatus] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   // New project modal
   const [isAddProjOpen, setIsAddProjOpen] = useState(false);
@@ -283,7 +284,7 @@ export function DevMissionControl() {
       </div>
 
       {/* Banner when in cloud mode and daemon not connected */}
-      {!isDaemonOnline && !isLocal && (
+      {!isDaemonOnline && !isLocal && !isBannerDismissed && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900">
           <div className="flex items-center gap-2.5">
             <Radio className="w-4 h-4 text-amber-600 flex-shrink-0 animate-pulse" />
@@ -294,6 +295,14 @@ export function DevMissionControl() {
               </p>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsBannerDismissed(true)}
+            className="w-7 h-7 rounded-full hover:bg-amber-500/20 flex items-center justify-center text-amber-800 transition flex-shrink-0"
+            title="Tutup Notifikasi"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
