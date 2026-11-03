@@ -12,6 +12,7 @@ import { FinanceManager } from '@/components/finance/FinanceManager';
 import { DevMissionControl } from '@/components/dev/DevMissionControl';
 import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
 import { CommandBar } from '@/components/cmd/CommandBar';
+import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
 
 export default function HomePage() {
@@ -58,7 +59,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-surface-container-low overflow-hidden font-sans">
+    <PinGate>
+      <div className="flex flex-col md:flex-row h-screen w-full bg-surface-container-low overflow-hidden font-sans">
       {/* 1. Collapsible Flex Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -111,5 +113,6 @@ export default function HomePage() {
         </div>
       )}
     </div>
+    </PinGate>
   );
 }

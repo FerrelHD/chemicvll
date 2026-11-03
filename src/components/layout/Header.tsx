@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Menu, Search, Bell } from 'lucide-react';
+import { Menu, Search, Bell, Lock } from 'lucide-react';
 
 interface HeaderProps {
   onOpenMobileMenu?: () => void;
@@ -65,7 +65,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           <Bell className="w-4 h-4 text-on-surface-variant" />
         </button>
 
-        {/* User Profile Avatar */}
+        {/* User Profile Avatar & Lock */}
         <div className="flex items-center gap-2 pl-1">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm">
             F
@@ -73,6 +73,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           <span className="text-xs font-semibold text-on-surface hidden sm:inline">
             Ferrel
           </span>
+          <button
+            type="button"
+            aria-label="Lock Workspace"
+            onClick={() => window.dispatchEvent(new CustomEvent('personal_os_lock'))}
+            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            title="Lock Personal OS (Master PIN)"
+          >
+            <Lock className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </header>
