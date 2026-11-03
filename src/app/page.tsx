@@ -58,7 +58,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-neutral-100 dark:bg-neutral-950 overflow-hidden font-sans">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-surface-container-low overflow-hidden font-sans">
       {/* 1. Collapsible Flex Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -68,7 +68,7 @@ export default function HomePage() {
       />
 
       {/* 2. Main Dashboard Canvas with Rounded Top-Left Corner */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-surface-container-lowest md:rounded-tl-3xl border-t border-l border-neutral-200 dark:border-neutral-800 shadow-[0_4px_24px_rgba(0,0,0,0.03)] relative">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-surface-container-lowest md:rounded-tl-3xl border-t border-l border-outline/50 shadow-[0_4px_24px_rgba(24,24,27,0.03)] relative">
         {/* Sticky Header pinned at top of canvas */}
         <Header
           onOpenMobileMenu={() => setIsSidebarOpen(true)}

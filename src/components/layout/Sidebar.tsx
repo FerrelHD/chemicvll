@@ -47,7 +47,7 @@ export function Sidebar({
             className="flex items-center gap-3 px-1 py-1 cursor-pointer select-none"
             onClick={() => onTabChange('dashboard')}
           >
-            <div className="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
               P
             </div>
             <motion.div
@@ -58,10 +58,10 @@ export function Sidebar({
               transition={{ duration: 0.15 }}
               className="flex-col leading-tight whitespace-nowrap"
             >
-              <span className="font-bold text-sm text-neutral-800 dark:text-neutral-100 tracking-tight">
+              <span className="font-bold text-sm text-on-surface tracking-tight">
                 Personal OS
               </span>
-              <span className="text-[11px] text-neutral-500 font-mono">
+              <span className="text-[11px] text-on-surface-variant font-mono">
                 chemicv11
               </span>
             </motion.div>
@@ -99,7 +99,7 @@ export function Sidebar({
         </div>
 
         {/* User Profile Avatar at Bottom */}
-        <div className="pt-3 border-t border-neutral-200/80 dark:border-neutral-800/80">
+        <div className="pt-3 border-t border-outline/50">
           <SidebarLink
             link={{
               label: 'Ferrel HD',

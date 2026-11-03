@@ -67,6 +67,34 @@ export function FinanceManager() {
   const [toWalletId, setToWalletId] = useState(wallets[1]?.id || 'w-gopay');
   const [note, setNote] = useState('');
 
+  // Subscription form state
+  const [isAddSubOpen, setIsAddSubOpen] = useState(false);
+  const [subName, setSubName] = useState('');
+  const [subCost, setSubCost] = useState('');
+  const [subCycle, setSubCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [subDate, setSubDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  });
+  const [subWalletId, setSubWalletId] = useState(wallets[0]?.id || 'w-bca');
+
+  const handleCreateSubscription = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subName.trim() || !subCost) return;
+    addSubscription({
+      name: subName.trim(),
+      cost: parseFloat(subCost),
+      billing_cycle: subCycle,
+      next_billing_date: subDate,
+      wallet_id: subWalletId || null,
+      is_active: true,
+    });
+    setSubName('');
+    setSubCost('');
+    setIsAddSubOpen(false);
+  };
+
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
 
   // Calculate monthly stats from transactions
@@ -683,64 +711,88 @@ export function FinanceManager() {
               <h3 className="text-sm font-bold text-on-surface">Subscription Radar</h3>
               <p className="text-xs text-on-surface-variant">Auto-alert 3 days before scheduled debit</p>
             </div>
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
-              {subscriptions.length} Services
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+                {subscriptions.length} Services
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsAddSubOpen(true)}
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Service</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">
-            {subscriptions.map((sub) => {
-              const diffDays = Math.ceil(
-                (new Date(sub.next_billing_date).getTime() - new Date().getTime()) /
-                  (1000 * 60 * 60 * 24)
-              );
-              const isUrgent = diffDays <= 3 && diffDays >= 0;
-
-              return (
-                <div
-                  key={sub.id}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
+            {subscriptions.length === 0 ? (
+              <div className="p-6 text-center rounded-2xl bg-surface-container-low border border-dashed border-outline/30 space-y-2">
+                <p className="text-xs text-on-surface-variant">No active subscriptions tracked yet.</p>
+                <button
+                  type="button"
+                  onClick={() => setIsAddSubOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-xs font-semibold text-on-surface transition"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-on-surface">
-                      {sub.name[0]}
-                    </div>
-                    <div>
-                      <span className="font-semibold text-on-surface block">{sub.name}</span>
-                      <span className="text-[11px] text-on-surface-variant">
-                        Cycle: {sub.billing_cycle}
-                      </span>
-                    </div>
-                  </div>
+                  <Plus className="w-3.5 h-3.5 text-primary-container" />
+                  <span>Track First Subscription</span>
+                </button>
+              </div>
+            ) : (
+              subscriptions.map((sub) => {
+                const diffDays = Math.ceil(
+                  (new Date(sub.next_billing_date).getTime() - new Date().getTime()) /
+                    (1000 * 60 * 60 * 24)
+                );
+                const isUrgent = diffDays <= 3 && diffDays >= 0;
 
-                  <div className="text-right flex items-center gap-3">
-                    <div>
-                      <span className="font-bold text-on-surface block">
-                        {isPrivacyMode ? 'Rp ••••••' : `Rp ${sub.cost.toLocaleString('id-ID')}`}
-                      </span>
-                      <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                          isUrgent
-                            ? 'bg-rose-100 text-rose-700'
-                            : 'bg-surface-container-high text-on-surface-variant'
-                        }`}
+                return (
+                  <div
+                    key={sub.id}
+                    className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-on-surface">
+                        {sub.name[0]}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-on-surface block">{sub.name}</span>
+                        <span className="text-[11px] text-on-surface-variant">
+                          Cycle: {sub.billing_cycle}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-right flex items-center gap-3">
+                      <div>
+                        <span className="font-bold text-on-surface block">
+                          {isPrivacyMode ? 'Rp ••••••' : `Rp ${sub.cost.toLocaleString('id-ID')}`}
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                            isUrgent
+                              ? 'bg-rose-100 text-rose-700'
+                              : 'bg-surface-container-high text-on-surface-variant'
+                          }`}
+                        >
+                          {diffDays <= 0 ? 'Due today' : `Due in ${diffDays} days`}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => deleteSubscription(sub.id)}
+                        className="text-on-surface-variant hover:text-error p-1 transition"
+                        title="Delete subscription"
                       >
-                        {diffDays <= 0 ? 'Due today' : `Due in ${diffDays} days`}
-                      </span>
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteSubscription(sub.id)}
-                      className="text-on-surface-variant hover:text-error p-1 transition"
-                      title="Delete subscription"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       </div>
@@ -1037,6 +1089,119 @@ export function FinanceManager() {
                     {editingWallet ? 'Save Changes' : 'Add Account'}
                   </button>
                 </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Add Subscription */}
+      {isAddSubOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
+              <h3 className="font-bold text-sm text-on-surface">Add Active Subscription</h3>
+              <button
+                type="button"
+                onClick={() => setIsAddSubOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSubscription} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">
+                  Service Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Netflix, Spotify, ChatGPT Plus, iCloud"
+                  value={subName}
+                  onChange={(e) => setSubName(e.target.value)}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Cost (IDR) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    placeholder="e.g. 54000"
+                    value={subCost}
+                    onChange={(e) => setSubCost(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Billing Cycle
+                  </label>
+                  <select
+                    value={subCycle}
+                    onChange={(e) => setSubCycle(e.target.value as 'monthly' | 'yearly')}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none font-semibold"
+                  >
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Next Debit Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={subDate}
+                    onChange={(e) => setSubDate(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Charged Account
+                  </label>
+                  <select
+                    value={subWalletId}
+                    onChange={(e) => setSubWalletId(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none"
+                  >
+                    {wallets.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-outline/20">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSubOpen(false)}
+                  className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+                >
+                  Add Subscription
+                </button>
               </div>
             </form>
           </div>

@@ -91,7 +91,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-3 py-4 hidden md:flex md:flex-col bg-neutral-100 dark:bg-neutral-900 w-[260px] flex-shrink-0 transition-colors",
+        "h-full px-3 py-4 hidden md:flex md:flex-col bg-surface-container-low w-[260px] flex-shrink-0 transition-colors",
         className
       )}
       animate={{
@@ -128,12 +128,12 @@ export const MobileSidebar = ({
             ease: "easeInOut",
           }}
           className={cn(
-            "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-8 z-[100] flex flex-col justify-between md:hidden shadow-2xl",
+            "fixed h-full w-full inset-0 bg-surface-container-lowest p-8 z-[100] flex flex-col justify-between md:hidden shadow-2xl",
             className
           )}
         >
           <div
-            className="absolute right-6 top-6 z-50 text-neutral-800 dark:text-neutral-200 cursor-pointer p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+            className="absolute right-6 top-6 z-50 text-on-surface-variant hover:text-on-surface cursor-pointer p-1.5 rounded-full hover:bg-surface-container-high transition"
             onClick={() => setOpen(false)}
           >
             <X className="w-5 h-5" />
@@ -166,7 +166,7 @@ export const SidebarLink = ({
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
         transition={{ duration: 0.15 }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-0.5 transition duration-150 whitespace-nowrap inline-block !p-0 !m-0"
+        className="text-on-surface text-sm group-hover/sidebar:translate-x-0.5 transition duration-150 whitespace-nowrap inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>
@@ -176,8 +176,8 @@ export const SidebarLink = ({
   const baseClass = cn(
     "flex items-center justify-start gap-3 group/sidebar py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left",
     link.isActive
-      ? "bg-white dark:bg-neutral-800 text-on-surface font-semibold shadow-sm"
-      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60",
+      ? "bg-white text-on-surface font-semibold shadow-sm border border-outline/40"
+      : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60",
     className
   );
 
