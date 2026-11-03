@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
 import { checkPortHealth, PortHealth } from '@/lib/port-checker';
@@ -130,6 +130,13 @@ export function DevMissionControl() {
       return () => clearInterval(interval);
     }
   }, [activeLogProjectId, fetchProjectLogs]);
+
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll terminal smoothly to bottom as new logs arrive
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [activeLogProject?.logs]);
 
   const pingAllPorts = async () => {
     setIsPinging(true);
@@ -553,8 +560,8 @@ export function DevMissionControl() {
         </div>
 
         {/* Right: Live Streaming Console Terminal (6 Cols) */}
-        <div className="lg:col-span-6 bg-[#18181b] rounded-3xl p-5 border border-zinc-800 shadow-xl flex flex-col justify-between min-h-[480px] font-mono text-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+        <div className="lg:col-span-6 bg-[#18181b] rounded-3xl p-5 border border-zinc-800 shadow-xl flex flex-col h-[500px] max-h-[500px] overflow-hidden font-mono text-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-800 flex-shrink-0">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
               <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
@@ -570,25 +577,26 @@ export function DevMissionControl() {
             </div>
           </div>
 
-          {/* Terminal Output Body */}
-          <div className="flex-1 py-4 overflow-y-auto space-y-1.5 text-zinc-300">
+          {/* Terminal Output Body - Bounded internal scroll */}
+          <div className="flex-1 min-h-0 py-3 overflow-y-auto space-y-1.5 text-zinc-300 pr-1 select-text">
             {activeLogProject?.logs && activeLogProject.logs.length > 0 ? (
               activeLogProject.logs.map((log, idx) => (
-                <div key={idx} className="flex gap-2 leading-relaxed">
-                  <span className="text-zinc-500 select-none">&gt;</span>
+                <div key={idx} className="flex gap-2 leading-relaxed break-all">
+                  <span className="text-zinc-500 select-none flex-shrink-0">&gt;</span>
                   <span>{log}</span>
                 </div>
               ))
             ) : (
               <div className="text-zinc-500 py-8 text-center">
-                Select a service and press Start to stream HTTP &amp; database logs.
+                Pilih service dan tekan Start untuk mengalirkan log terminal.
               </div>
             )}
+            <div ref={terminalEndRef} />
           </div>
 
-          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500">
-            <span>Daemon: Localhost (127.0.0.1)</span>
-            <span className="text-zinc-400">Ctrl+C to terminate port</span>
+          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 flex-shrink-0">
+            <span>Daemon: Supabase Relay (127.0.0.1)</span>
+            <span className="text-zinc-400">Auto-scrolling</span>
           </div>
         </div>
       </div>
