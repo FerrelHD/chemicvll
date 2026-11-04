@@ -85,7 +85,7 @@ export default function HomePage() {
 
         {/* Scrollable Dashboard Body */}
         <div className="flex-1 overflow-y-auto w-full relative z-20">
-          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-24 md:pb-12">
+          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-28 md:pb-12">
             {activeTab === 'dashboard' && (
               <DashboardCockpit
                 onNavigate={setActiveTab}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LayoutDashboard, Briefcase, CheckCircle2, Wallet, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface MobileNavProps {
   activeTab: string;
@@ -18,27 +19,42 @@ export function MobileNav({ activeTab, onTabChange }: MobileNavProps) {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline px-2 py-1.5 flex items-center justify-around shadow-lg">
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const isActive = activeTab === tab.id;
+    <div className="md:hidden fixed bottom-4 inset-x-0 z-40 flex justify-center pointer-events-none px-4 pb-[env(safe-area-inset-bottom,0px)]">
+      <nav className="pointer-events-auto w-full max-w-sm bg-surface-container-lowest/90 backdrop-blur-2xl border border-outline/80 p-1.5 rounded-full shadow-[0_8px_32px_rgba(24,24,27,0.08)] flex items-center justify-between gap-1">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
 
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => onTabChange(tab.id)}
-            className={`min-h-[44px] min-w-[48px] flex flex-col items-center justify-center gap-1 px-2.5 py-1 rounded-full transition-all ${
-              isActive
-                ? 'bg-inverse-surface text-white font-semibold shadow-sm'
-                : 'text-on-surface-variant hover:text-on-surface font-normal'
-            }`}
-          >
-            <Icon className="w-4 h-4" />
-            <span className="text-[10px] tracking-tight">{tab.label}</span>
-          </button>
-        );
-      })}
-    </nav>
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onTabChange(tab.id)}
+              className={`relative flex-1 min-h-[46px] flex flex-col items-center justify-center gap-0.5 py-1 px-1 rounded-full transition-colors select-none ${
+                isActive
+                  ? 'text-primary-container font-semibold'
+                  : 'text-on-surface-variant hover:text-on-surface font-normal'
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="mobileNavPill"
+                  className="absolute inset-0 bg-primary-fixed/50 rounded-full border border-primary-container/20 -z-10"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                />
+              )}
+              <Icon
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isActive ? 'scale-110 text-primary-container' : 'text-on-surface-variant'
+                }`}
+              />
+              <span className="text-[10px] tracking-tight leading-none">
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
