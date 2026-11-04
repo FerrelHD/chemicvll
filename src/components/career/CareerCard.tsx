@@ -21,9 +21,10 @@ interface CareerCardProps {
   onEdit: (item: CareerPipeline) => void;
   onMoveStage: (id: string, stage: CareerStage) => void;
   onDelete: (id: string) => void;
+  onOpenFollowUp?: (item: CareerPipeline) => void;
 }
 
-export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardProps) {
+export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp }: CareerCardProps) {
   const [draftCopied, setDraftCopied] = useState(false);
   const daysElapsed = getDaysElapsed(item.applied_date);
   const followUp = getFollowUpStatus(item.next_follow_up_date);
@@ -167,20 +168,18 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
           </div>
           <button
             type="button"
-            onClick={handleCopyDraft}
-            className="flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface text-white text-[11px] font-semibold hover:bg-black transition active:scale-95 shadow-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onOpenFollowUp) {
+                onOpenFollowUp(item);
+              } else {
+                handleCopyDraft(e);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white text-[11px] font-semibold transition active:scale-95 shadow-sm"
           >
-            {draftCopied ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-400" />
-                <span>Copied!</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-3 h-3" />
-                <span>Copy Draft</span>
-              </>
-            )}
+            <Send className="w-3 h-3" />
+            <span>Follow-Up</span>
           </button>
         </div>
       )}
@@ -223,6 +222,14 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete }: CareerCardPr
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => onOpenFollowUp?.(item)}
+            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"
+            title="Follow-Up Generator (WA / Email / LinkedIn)"
+          >
+            <Send className="w-3.5 h-3.5" />
+          </button>
           <button
             type="button"
             onClick={() => onEdit(item)}

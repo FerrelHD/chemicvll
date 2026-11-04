@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx src/lib/__tests__/career-utils.test.ts && tsx src/lib/__tests__/command-parser.test.ts && tsx src/lib/__tests__/crypto-vault.test.ts && tsx src/lib/__tests__/career-radar.test.ts && tsx src/lib/__tests__/daily-rollover.test.ts && tsx src/lib/__tests__/dropzone-purger.test.ts && tsx src/lib/__tests__/port-checker.test.ts && tsx src/lib/__tests__/finance-wallet.test.ts && tsx src/lib/__tests__/auto-save-persist.test.ts && tsx src/lib/__tests__/privacy-utils.test.ts && tsx src/lib/__tests__/pin-gate.test.ts && tsx src/lib/__tests__/dev-runner.test.ts && tsx src/lib/__tests__/quick-capture.test.ts"
+    "test": "tsx src/lib/__tests__/career-utils.test.ts && tsx src/lib/__tests__/command-parser.test.ts && tsx src/lib/__tests__/crypto-vault.test.ts && tsx src/lib/__tests__/career-radar.test.ts && tsx src/lib/__tests__/daily-rollover.test.ts && tsx src/lib/__tests__/dropzone-purger.test.ts && tsx src/lib/__tests__/port-checker.test.ts && tsx src/lib/__tests__/finance-wallet.test.ts && tsx src/lib/__tests__/auto-save-persist.test.ts && tsx src/lib/__tests__/privacy-utils.test.ts && tsx src/lib/__tests__/pin-gate.test.ts && tsx src/lib/__tests__/dev-runner.test.ts && tsx src/lib/__tests__/quick-capture.test.ts && tsx src/lib/__tests__/career-followup.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.1",

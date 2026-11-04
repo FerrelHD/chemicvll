@@ -8,6 +8,7 @@ import { useSyncStore } from '@/lib/supabase-sync';
 import { CareerCard } from './CareerCard';
 import { CategoryFilter } from './CategoryFilter';
 import { CareerModal } from './CareerModal';
+import { CareerFollowUpModal } from './CareerFollowUpModal';
 import {
   Briefcase,
   Flag,
@@ -34,6 +35,8 @@ export function CareerKanban() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CareerPipeline | null>(null);
+  const [followUpItem, setFollowUpItem] = useState<CareerPipeline | null>(null);
+  const [isFollowUpOpen, setIsFollowUpOpen] = useState(false);
   const [targetStage, setTargetStage] = useState<CareerStage>('applied');
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<CareerStage | null>(null);
@@ -338,6 +341,10 @@ export function CareerKanban() {
                       onEdit={handleEdit}
                       onMoveStage={moveStage}
                       onDelete={deleteItem}
+                      onOpenFollowUp={(it) => {
+                        setFollowUpItem(it);
+                        setIsFollowUpOpen(true);
+                      }}
                     />
                   ))
                 )}
@@ -390,6 +397,17 @@ export function CareerKanban() {
           setEditingItem(null);
         }}
         onSave={handleSave}
+      />
+
+      {/* 1-Click Career Follow-Up Generator Modal */}
+      <CareerFollowUpModal
+        item={followUpItem}
+        isOpen={isFollowUpOpen}
+        onClose={() => {
+          setIsFollowUpOpen(false);
+          setFollowUpItem(null);
+        }}
+        onShowNotice={(msg) => setTemplateNotice(msg)}
       />
     </section>
   );
