@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Menu, Search, Bell, Lock } from 'lucide-react';
+import { Menu, Search, Bell, Lock, Plus } from 'lucide-react';
 import { useSyncStore, pullFromCloud } from '@/lib/supabase-sync';
 
 interface HeaderProps {
@@ -57,6 +57,20 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           </span>
           <kbd className="bg-surface-container-high text-on-surface text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold ml-auto flex-shrink-0">
             ⌘K
+          </kbd>
+        </button>
+
+        {/* Quick Action Button */}
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('open-quick-capture'))}
+          className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white px-3 py-1.5 rounded-full shadow-sm shadow-primary/20 text-xs font-semibold active:scale-95 transition-all cursor-pointer"
+          title="Quick Capture (Q)"
+        >
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>Quick Add</span>
+          <kbd className="bg-white/20 text-white text-[10px] font-mono px-1 py-0.2 rounded font-semibold ml-0.5">
+            Q
           </kbd>
         </button>
       </div>

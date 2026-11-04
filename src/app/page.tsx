@@ -12,6 +12,7 @@ import { FinanceManager } from '@/components/finance/FinanceManager';
 import { DevMissionControl } from '@/components/dev/DevMissionControl';
 import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
 import { CommandBar } from '@/components/cmd/CommandBar';
+import { QuickCaptureModal } from '@/components/layout/QuickCaptureModal';
 import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { initSupabaseSync } from '@/lib/supabase-sync';
@@ -21,8 +22,34 @@ export default function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [isBriefingOpen, setIsBriefingOpen] = useState(false);
+  const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
   const [rolledOverCount, setRolledOverCount] = useState(0);
   const executeDailyRollover = useTaskStore((state) => state.executeDailyRollover);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl instanceof HTMLInputElement ||
+        activeEl instanceof HTMLTextAreaElement ||
+        activeEl instanceof HTMLSelectElement ||
+        activeEl?.getAttribute('contenteditable') === 'true';
+
+      if (!isInput && (e.key === 'q' || e.key === 'Q') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setIsQuickCaptureOpen(true);
+      }
+    };
+
+    const handleCustomOpen = () => setIsQuickCaptureOpen(true);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-quick-capture', handleCustomOpen);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-quick-capture', handleCustomOpen);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,11 +128,21 @@ export default function HomePage() {
         </div>
 
         {/* Mobile Bottom Navigation (PWA friendly) */}
-        <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <MobileNav
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onOpenQuickCapture={() => setIsQuickCaptureOpen(true)}
+        />
       </div>
 
       {/* Global Modals & Notifications */}
       <CommandBar onNavigate={setActiveTab} onShowNotice={showNotification} />
+      <QuickCaptureModal
+        isOpen={isQuickCaptureOpen}
+        onClose={() => setIsQuickCaptureOpen(false)}
+        onNavigate={setActiveTab}
+        onShowNotice={showNotification}
+      />
       <DailyBriefingModal
         isOpen={isBriefingOpen}
         rolledOverCount={rolledOverCount}
