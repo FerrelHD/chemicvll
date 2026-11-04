@@ -18,6 +18,7 @@ async function runTests() {
   const { useFinanceStore } = await import('../../stores/useFinanceStore');
   const { useDropzoneStore } = await import('../../stores/useDropzoneStore');
   const { useDevStore } = await import('../../stores/useDevStore');
+  const { useNotesStore } = await import('../../stores/useNotesStore');
 
   // Test 1: Career Store persistence
   useCareerStore.getState().addItem({
@@ -99,7 +100,21 @@ async function runTests() {
   assert.strictEqual(goProj.default_port, 8080);
   console.log('Test 5 Passed: useDevStore auto-saves to localStorage');
 
-  console.log('All 5 stores verified: Auto-Save persist works 100% reliably!');
+  // Test 6: Notes Store persistence
+  useNotesStore.getState().addNote({
+    title: 'Architecture Rules',
+    content: 'Always prefer clean code over speculative abstractions.',
+    type: 'note',
+    tags: ['dev', 'architecture'],
+    is_pinned: true,
+  });
+  const notesRaw = mockStorage.get('chemicvll-notes-storage');
+  assert.ok(notesRaw, 'Notes storage must be written to localStorage');
+  const parsedNotes = JSON.parse(notesRaw!);
+  assert.strictEqual(parsedNotes.state.notes[0].title, 'Architecture Rules');
+  console.log('Test 6 Passed: useNotesStore auto-saves to localStorage');
+
+  console.log('All 6 stores verified: Auto-Save persist works 100% reliably!');
 }
 
 runTests();

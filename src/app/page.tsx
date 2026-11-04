@@ -11,6 +11,7 @@ import { TaskManager } from '@/components/tasks/TaskManager';
 import { FinanceManager } from '@/components/finance/FinanceManager';
 import { DevMissionControl } from '@/components/dev/DevMissionControl';
 import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
+import { NotesAndContentStudio } from '@/components/notes/NotesAndContentStudio';
 import { CommandBar } from '@/components/cmd/CommandBar';
 import { QuickCaptureModal } from '@/components/layout/QuickCaptureModal';
 import { PinGate } from '@/components/auth/PinGate';
@@ -124,6 +125,7 @@ export default function HomePage() {
             {activeTab === 'finance' && <FinanceManager />}
             {activeTab === 'dev' && <DevMissionControl />}
             {activeTab === 'dropzone' && <DropzonePanel />}
+            {activeTab === 'notes' && <NotesAndContentStudio />}
           </main>
         </div>
 

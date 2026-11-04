@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface NoteItem {
   id: string;
@@ -63,44 +64,51 @@ const INITIAL_CONTENT: ContentIdea[] = [
   },
 ];
 
-export const useNotesStore = create<NotesState>((set) => ({
-  notes: INITIAL_NOTES,
-  contentIdeas: INITIAL_CONTENT,
-  addNote: (note) =>
-    set((state) => ({
-      notes: [
-        {
-          ...note,
-          id: `note-${Date.now()}`,
-          updated_at: new Date().toISOString(),
-        },
-        ...state.notes,
-      ],
-    })),
-  deleteNote: (id) =>
-    set((state) => ({ notes: state.notes.filter((n) => n.id !== id) })),
-  togglePinNote: (id) =>
-    set((state) => ({
-      notes: state.notes.map((n) =>
-        n.id === id ? { ...n, is_pinned: !n.is_pinned } : n
-      ),
-    })),
-  addContentIdea: (idea) =>
-    set((state) => ({
-      contentIdeas: [
-        {
-          ...idea,
-          id: `content-${Date.now()}`,
-          created_at: new Date().toISOString(),
-        },
-        ...state.contentIdeas,
-      ],
-    })),
-  updateContentStatus: (id, status) =>
-    set((state) => ({
-      contentIdeas: state.contentIdeas.map((c) =>
-        c.id === id ? { ...c, status } : c
-      ),
-    })),
-}));
+export const useNotesStore = create<NotesState>()(
+  persist(
+    (set) => ({
+      notes: INITIAL_NOTES,
+      contentIdeas: INITIAL_CONTENT,
+      addNote: (note) =>
+        set((state) => ({
+          notes: [
+            {
+              ...note,
+              id: `note-${Date.now()}`,
+              updated_at: new Date().toISOString(),
+            },
+            ...state.notes,
+          ],
+        })),
+      deleteNote: (id) =>
+        set((state) => ({ notes: state.notes.filter((n) => n.id !== id) })),
+      togglePinNote: (id) =>
+        set((state) => ({
+          notes: state.notes.map((n) =>
+            n.id === id ? { ...n, is_pinned: !n.is_pinned } : n
+          ),
+        })),
+      addContentIdea: (idea) =>
+        set((state) => ({
+          contentIdeas: [
+            {
+              ...idea,
+              id: `content-${Date.now()}`,
+              created_at: new Date().toISOString(),
+            },
+            ...state.contentIdeas,
+          ],
+        })),
+      updateContentStatus: (id, status) =>
+        set((state) => ({
+          contentIdeas: state.contentIdeas.map((c) =>
+            c.id === id ? { ...c, status } : c
+          ),
+        })),
+    }),
+    {
+      name: 'chemicvll-notes-storage',
+    }
+  )
+);
 

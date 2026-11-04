@@ -13,6 +13,7 @@ import {
   Wallet,
   Terminal,
   CloudUpload,
+  BookOpen,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -36,6 +37,7 @@ export function Sidebar({
     { id: 'finance', label: 'Financial Vault', icon: Wallet },
     { id: 'dev', label: 'Dev Control', icon: Terminal },
     { id: 'dropzone', label: 'Dropzone Vault', icon: CloudUpload },
+    { id: 'notes', label: 'Second Brain', icon: BookOpen },
   ];
 
   return (
