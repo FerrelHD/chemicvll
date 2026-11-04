@@ -5,6 +5,7 @@ import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useDevStore } from '@/stores/useDevStore';
+import { MorningBriefingCard } from './MorningBriefingCard';
 import {
   Briefcase,
   Wallet,
@@ -122,6 +123,9 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </button>
         </div>
       </div>
+
+      {/* Morning Briefing / Daily Standup Card */}
+      <MorningBriefingCard onNavigate={onNavigate} />
 
       {/* Row 1: 4 Quick Stats Bento Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
