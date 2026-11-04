@@ -377,9 +377,20 @@ export function CareerKanban() {
         </div>
       </div>
 
+      {/* Mobile Floating Action Button (FAB) */}
+      <button
+        type="button"
+        aria-label="Record Application"
+        onClick={() => handleOpenAdd('applied')}
+        className="md:hidden fixed bottom-20 right-4 z-40 w-12 h-12 rounded-full bg-inverse-surface text-white shadow-2xl hover:bg-black active:scale-90 transition-all flex items-center justify-center border border-outline/30 focus:outline-none"
+        title="Record Application (+)"
+      >
+        <Plus className="w-5 h-5 stroke-[2.5]" />
+      </button>
+
       {/* Toast Notice for template copy */}
       {templateNotice && (
-        <div className="fixed bottom-6 right-6 z-50 bg-inverse-surface text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
+        <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 bg-inverse-surface text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
           {templateNotice}
         </div>
       )}
