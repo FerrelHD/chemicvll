@@ -118,10 +118,6 @@ export function CareerKanban() {
 
   return (
     <section className="relative w-full space-y-6">
-      {/* Subtle Ambient Glows */}
-      <div className="absolute -top-12 right-12 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-48 left-10 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none -z-10" />
-
       {/* Header & Interactive Filter Bar */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">

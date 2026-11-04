@@ -210,7 +210,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <select
             value={item.stage}
             onChange={(e) => onMoveStage(item.id, e.target.value as CareerStage)}
-            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-xs font-semibold text-on-surface px-3 py-1 pr-6 rounded-full cursor-pointer transition-colors outline-none border border-outline/30"
+            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface px-2.5 py-1 pr-6 rounded-xl cursor-pointer transition-colors outline-none border border-outline/30 focus:border-primary-container"
           >
             {stageOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>

@@ -13,9 +13,9 @@ import {
   Bookmark,
   Copy,
   Check,
-  Sparkles,
   Layers,
   Send,
+  ChevronDown,
 } from 'lucide-react';
 
 export function NotesAndContentStudio() {
@@ -155,16 +155,19 @@ export function NotesAndContentStudio() {
                 placeholder="Judul catatan / nama snippet..."
                 className="sm:col-span-3 px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-medium text-xs"
               />
-              <select
-                value={noteType}
-                onChange={(e) => setNoteType(e.target.value as any)}
-                className="px-3 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer"
-              >
-                <option value="note">📝 Catatan Umum</option>
-                <option value="snippet">💻 Code Snippet</option>
-                <option value="prompt">🤖 AI Prompt</option>
-                <option value="bookmark">🔖 Bookmark</option>
-              </select>
+              <div className="relative sm:col-span-1">
+                <select
+                  value={noteType}
+                  onChange={(e) => setNoteType(e.target.value as any)}
+                  className="w-full appearance-none px-3.5 py-2.5 pr-8 rounded-2xl border border-outline/30 bg-surface-container-low hover:bg-surface-container-lowest text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer transition-all outline-none"
+                >
+                  <option value="note">📝 Catatan Umum</option>
+                  <option value="snippet">💻 Code Snippet</option>
+                  <option value="prompt">🤖 AI Prompt</option>
+                  <option value="bookmark">🔖 Bookmark</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
 
             <textarea
@@ -258,7 +261,7 @@ export function NotesAndContentStudio() {
           >
             <div className="flex items-center justify-between pb-2 border-b border-outline/20">
               <span className="font-bold text-sm text-on-surface flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-primary-container" />
+                <Video className="w-4 h-4 text-primary-container" />
                 <span>Ide Konten Video &amp; Artikel Baru</span>
               </span>
             </div>
@@ -272,16 +275,19 @@ export function NotesAndContentStudio() {
                 placeholder="Judul / Topik video (cth. Setup Personal OS di Mac)..."
                 className="sm:col-span-2 px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-medium text-xs"
               />
-              <select
-                value={contentPlatform}
-                onChange={(e) => setContentPlatform(e.target.value)}
-                className="px-3 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer"
-              >
-                <option value="TikTok/Reels">TikTok / Instagram Reels</option>
-                <option value="YouTube">YouTube Video</option>
-                <option value="LinkedIn">LinkedIn Post</option>
-                <option value="Blog">Technical Blog / Medium</option>
-              </select>
+              <div className="relative sm:col-span-1">
+                <select
+                  value={contentPlatform}
+                  onChange={(e) => setContentPlatform(e.target.value)}
+                  className="w-full appearance-none px-3.5 py-2.5 pr-8 rounded-2xl border border-outline/30 bg-surface-container-low hover:bg-surface-container-lowest text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer transition-all outline-none"
+                >
+                  <option value="TikTok/Reels">TikTok / Instagram Reels</option>
+                  <option value="YouTube">YouTube Video</option>
+                  <option value="LinkedIn">LinkedIn Post</option>
+                  <option value="Blog">Technical Blog / Medium</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
 
             <input
@@ -322,17 +328,20 @@ export function NotesAndContentStudio() {
                     <span className="font-bold text-[11px] uppercase tracking-wider text-purple-600 bg-purple-500/10 px-2.5 py-0.5 rounded-full">
                       {idea.platform}
                     </span>
-                    <select
-                      value={idea.status}
-                      onChange={(e) => updateContentStatus(idea.id, e.target.value as any)}
-                      className="font-mono text-[11px] bg-surface-container-high px-2.5 py-1 rounded-xl border border-outline/30 text-on-surface cursor-pointer font-semibold outline-none"
-                    >
-                      <option value="idea">💡 Idea</option>
-                      <option value="scripting">📝 Scripting</option>
-                      <option value="filming">🎬 Filming</option>
-                      <option value="editing">✂️ Editing</option>
-                      <option value="posted">✅ Posted</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={idea.status}
+                        onChange={(e) => updateContentStatus(idea.id, e.target.value as any)}
+                        className="appearance-none font-mono text-[11px] bg-surface-container-high hover:bg-surface-dim px-2.5 py-1 pr-6 rounded-xl border border-outline/30 text-on-surface cursor-pointer font-semibold outline-none transition-colors"
+                      >
+                        <option value="idea">💡 Idea</option>
+                        <option value="scripting">📝 Scripting</option>
+                        <option value="filming">🎬 Filming</option>
+                        <option value="editing">✂️ Editing</option>
+                        <option value="posted">✅ Posted</option>
+                      </select>
+                      <ChevronDown className="w-3 h-3 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
+                    </div>
                   </div>
 
                   <h4 className="text-sm font-bold text-on-surface leading-tight">{idea.title}</h4>

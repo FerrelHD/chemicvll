@@ -1,16 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useDevStore } from '@/stores/useDevStore';
 import { getRadarStatus } from '@/lib/career-radar';
 import {
-  Sun,
-  Moon,
-  Sunrise,
-  Sunset,
   CheckCircle2,
   Briefcase,
   Terminal,
@@ -19,17 +15,19 @@ import {
   EyeOff,
   Plus,
   ArrowRight,
-  Sparkles,
+  Zap,
 } from 'lucide-react';
 
 interface MorningBriefingCardProps {
   onNavigate: (tab: string) => void;
   onOpenQuickCapture?: () => void;
+  onOpenCommand?: () => void;
 }
 
 export function MorningBriefingCard({
   onNavigate,
   onOpenQuickCapture,
+  onOpenCommand,
 }: MorningBriefingCardProps) {
   const careerItems = useCareerStore((state) => state.items);
   const tasks = useTaskStore((state) => state.tasks);
@@ -44,21 +42,12 @@ export function MorningBriefingCard({
   const hour = now.getHours();
 
   let greetingText = 'Selamat Pagi';
-  let GreetingIcon = Sunrise;
-  let greetingColor = 'text-amber-500';
-
   if (hour >= 11 && hour < 15) {
     greetingText = 'Selamat Siang';
-    GreetingIcon = Sun;
-    greetingColor = 'text-orange-500';
   } else if (hour >= 15 && hour < 18) {
     greetingText = 'Selamat Sore';
-    GreetingIcon = Sunset;
-    greetingColor = 'text-amber-600';
   } else if (hour >= 18 || hour < 4) {
     greetingText = 'Selamat Malam';
-    GreetingIcon = Moon;
-    greetingColor = 'text-indigo-400';
   }
 
   const dateFormatted = now.toLocaleDateString('id-ID', {
@@ -68,23 +57,33 @@ export function MorningBriefingCard({
     year: 'numeric',
   });
 
-  // Task metrics
-  const pendingTasks = tasks.filter((t) => t.status !== 'done');
-  const dailyFocusTasks = pendingTasks.filter((t) => t.is_daily_focus);
-  const highPriorityTasks = pendingTasks.filter((t) => t.priority === 1);
+  // Memoized metrics for optimal rendering performance
+  const { pendingTasks, dailyFocusTasks, highPriorityTasks } = useMemo(() => {
+    const pending = tasks.filter((t) => t.status !== 'done');
+    return {
+      pendingTasks: pending,
+      dailyFocusTasks: pending.filter((t) => t.is_daily_focus),
+      highPriorityTasks: pending.filter((t) => t.priority === 1),
+    };
+  }, [tasks]);
 
-  // Career metrics
-  const urgentFollowUps = careerItems.filter((i) => getRadarStatus(i).isUrgent);
-  const activeInterviews = careerItems.filter((i) => i.stage === 'interview');
+  const { urgentFollowUps, activeInterviews } = useMemo(() => {
+    return {
+      urgentFollowUps: careerItems.filter((i) => getRadarStatus(i).isUrgent),
+      activeInterviews: careerItems.filter((i) => i.stage === 'interview'),
+    };
+  }, [careerItems]);
 
-  // Dev metrics
-  const runningServers = projects.filter((p) => p.serverState === 'running');
+  const runningServers = useMemo(() => {
+    return projects.filter((p) => p.serverState === 'running');
+  }, [projects]);
 
-  // Finance metric
-  const activeWallet = wallets.find((w) => w.id === activeWalletId) || wallets[0] || {
-    name: 'Dompet Utama',
-    balance: 0,
-  };
+  const activeWallet = useMemo(() => {
+    return wallets.find((w) => w.id === activeWalletId) || wallets[0] || {
+      name: 'Dompet Utama',
+      balance: 0,
+    };
+  }, [wallets, activeWalletId]);
 
   const handleTriggerQuickCapture = () => {
     if (onOpenQuickCapture) {
@@ -95,50 +94,49 @@ export function MorningBriefingCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-surface-container-lowest via-surface-container-low to-surface-container border border-outline/50 shadow-bento p-5 sm:p-6 mb-6">
-      {/* Decorative Warm Ambient Glow */}
-      <div className="absolute -top-16 -right-16 w-52 h-52 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-orange-500/10 rounded-full blur-2xl pointer-events-none -z-0" />
-
+    <div className="relative rounded-3xl bg-surface-container-lowest border border-outline/40 shadow-bento p-5 sm:p-6 mb-6">
       <div className="relative z-10 flex flex-col gap-5">
         {/* Header Row: Greeting & Date */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-outline/20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-surface-container-high border border-outline/30 flex items-center justify-center shadow-xs">
-              <GreetingIcon className={`w-5 h-5 ${greetingColor}`} />
-            </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-on-surface flex items-center gap-2">
-                <span>{greetingText},</span>
-                <span className="text-primary-container">Ferrel</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary-fixed/60 text-primary-container font-mono font-semibold">
-                  Standup
-                </span>
-              </h2>
-              <p className="text-xs text-on-surface-variant font-medium mt-0.5">
-                {dateFormatted} • Siap mengeksekusi hari ini?
-              </p>
-            </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-on-surface">
+              {greetingText}, <span className="text-primary-container">Ferrel</span>
+            </h1>
+            <p className="text-xs text-on-surface-variant font-medium mt-0.5">
+              {dateFormatted} • Siap mengeksekusi hari ini?
+            </p>
           </div>
 
-          {/* Quick Capture Floating Pill Button */}
-          <button
-            type="button"
-            onClick={handleTriggerQuickCapture}
-            className="self-start sm:self-auto flex items-center gap-2 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-sm shadow-primary/20 active:scale-95 transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Quick Input (+)</span>
-          </button>
+          {/* Quick Actions */}
+          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            {onOpenCommand && (
+              <button
+                type="button"
+                onClick={onOpenCommand}
+                className="flex items-center gap-1.5 bg-surface-container-low hover:bg-surface-container-high text-on-surface text-xs font-semibold px-3.5 py-2 rounded-full border border-outline/40 shadow-xs transition active:scale-95 cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5 text-primary-container" />
+                <span>Quick Action (⌘K)</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleTriggerQuickCapture}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-sm shadow-primary/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Quick Input (+)</span>
+            </button>
+          </div>
         </div>
 
-        {/* 4 Summary Grid Capsules */}
+        {/* 4 Summary Grid Capsules - Clean solid background without GPU blur stalls */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           
           {/* Capsule 1: Tasks Today */}
           <div
             onClick={() => onNavigate('tasks')}
-            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
+            className="bg-surface-container-low hover:bg-surface-container rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -174,7 +172,7 @@ export function MorningBriefingCard({
           {/* Capsule 2: Career Follow-up */}
           <div
             onClick={() => onNavigate('career')}
-            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
+            className="bg-surface-container-low hover:bg-surface-container rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -210,7 +208,7 @@ export function MorningBriefingCard({
           {/* Capsule 3: Dev Servers */}
           <div
             onClick={() => onNavigate('dev')}
-            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
+            className="bg-surface-container-low hover:bg-surface-container rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -242,7 +240,7 @@ export function MorningBriefingCard({
           {/* Capsule 4: Wallet Balance */}
           <div
             onClick={() => onNavigate('finance')}
-            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
+            className="bg-surface-container-low hover:bg-surface-container rounded-2xl p-3.5 border border-outline/30 hover:border-primary-container/40 transition-all cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider truncate">
@@ -258,22 +256,22 @@ export function MorningBriefingCard({
                 className="text-on-surface-variant hover:text-on-surface p-0.5 rounded-full hover:bg-surface-container"
               >
                 {isPrivacyMode ? (
-                  <EyeOff className="w-3.5 h-3.5 text-zinc-400" />
+                  <EyeOff className="w-3.5 h-3.5" />
                 ) : (
-                  <Eye className="w-3.5 h-3.5 text-zinc-600" />
+                  <Eye className="w-3.5 h-3.5" />
                 )}
               </button>
             </div>
             <div className="my-2">
-              <div className="text-lg sm:text-xl font-bold text-on-surface truncate">
+              <div className="text-xl sm:text-2xl font-bold text-on-surface font-mono">
                 {isPrivacyMode ? 'Rp •••••••' : `Rp ${activeWallet.balance.toLocaleString('id-ID')}`}
               </div>
-              <p className="text-[11px] text-on-surface-variant mt-0.5 truncate">
-                {wallets.length} dompet terdaftar
+              <p className="text-[11px] text-on-surface-variant mt-0.5">
+                Dompet aktif tersinkron
               </p>
             </div>
             <div className="flex items-center text-[10px] text-on-surface-variant group-hover:text-primary-container font-medium gap-1 pt-1.5 border-t border-outline/10">
-              <span>Buka Finance Vault</span>
+              <span>Buka Finansial</span>
               <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>
@@ -283,4 +281,3 @@ export function MorningBriefingCard({
     </div>
   );
 }
-

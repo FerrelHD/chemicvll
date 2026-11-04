@@ -11,8 +11,6 @@ import {
   Wallet,
   CheckCircle2,
   Terminal,
-  Calendar,
-  Zap,
   ArrowRight,
   TrendingUp,
   CreditCard,
@@ -54,78 +52,43 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const runningServers = projects.filter((p) => p.serverState === 'running').length;
 
   // Monthly cashflow calculation from real transactions
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-  const now = new Date();
-  const last6Months = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
-    return {
-      year: d.getFullYear(),
-      monthIndex: d.getMonth(),
-      label: monthNames[d.getMonth()],
-    };
-  });
-
-  const cashflowMonths = last6Months.map((m) => {
-    const txInMonth = transactions.filter((t) => {
-      const td = new Date(t.transaction_date);
-      return td.getFullYear() === m.year && td.getMonth() === m.monthIndex;
+  const { cashflowMonths, maxVal } = React.useMemo(() => {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+    const now = new Date();
+    const last6Months = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+      return {
+        year: d.getFullYear(),
+        monthIndex: d.getMonth(),
+        label: monthNames[d.getMonth()],
+      };
     });
-    const income = txInMonth.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-    const expense = txInMonth.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-    return {
-      month: m.label,
-      in: income / 1_000_000,
-      out: expense / 1_000_000,
-      rawIn: income,
-      rawOut: expense,
-    };
-  });
 
-  const maxVal = Math.max(1, ...cashflowMonths.map((m) => Math.max(m.in, m.out)));
+    const months = last6Months.map((m) => {
+      const txInMonth = transactions.filter((t) => {
+        const td = new Date(t.transaction_date);
+        return td.getFullYear() === m.year && td.getMonth() === m.monthIndex;
+      });
+      const income = txInMonth.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+      const expense = txInMonth.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+      return {
+        month: m.label,
+        in: income / 1_000_000,
+        out: expense / 1_000_000,
+        rawIn: income,
+        rawOut: expense,
+      };
+    });
+
+    const max = Math.max(1, ...months.map((m) => Math.max(m.in, m.out)));
+    return { cashflowMonths: months, maxVal: max };
+  }, [transactions]);
 
   return (
     <div className="space-y-6">
       
-      {/* Top Greeting & Cockpit Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">
-              Welcome Back, <span className="text-primary-container">Ferrel</span>
-            </h1>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-mono text-[11px]">
-              chemicv11
-            </span>
-          </div>
-          <p className="text-xs text-on-surface-variant mt-1">
-            Personal OS Cockpit — Cloud sync, career pipeline, and daily productivity.
-          </p>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-2.5">
-          <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full border border-outline shadow-sm text-xs text-on-surface font-medium">
-            <Calendar className="w-3.5 h-3.5 text-primary-container" />
-            <span>Today</span>
-          </div>
-
-          <div className="flex items-center gap-2 bg-surface-container-lowest px-4 py-2 rounded-full border border-outline shadow-sm text-xs text-on-surface font-medium">
-            <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-            <span>Focus Sprint #3</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={onOpenCommand}
-            className="flex items-center gap-2 bg-inverse-surface hover:bg-black text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-sm transition active:scale-95"
-          >
-            <Zap className="w-3.5 h-3.5 fill-white" />
-            <span>Quick Action (⌘K)</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Morning Briefing / Daily Standup Card */}
-      <MorningBriefingCard onNavigate={onNavigate} />
+      {/* Morning Briefing & Unified Header */}
+      <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
 
       {/* Row 1: 4 Quick Stats Bento Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">

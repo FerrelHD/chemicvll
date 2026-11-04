@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
-import { X, Wallet, CheckCircle2, Zap, ArrowRight, CornerDownLeft, Sparkles } from 'lucide-react';
+import { X, Wallet, CheckCircle2, Zap, ArrowRight, CornerDownLeft, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type QuickCaptureTab = 'expense' | 'task' | 'drop';
@@ -151,19 +151,14 @@ export function QuickCaptureModal({
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-outline/20">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary-fixed/60 flex items-center justify-center text-primary-container">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface">Quick Capture</h3>
-              <p className="text-[11px] text-on-surface-variant">Catat instan ke sistem tanpa berpindah tab</p>
-            </div>
+          <div>
+            <h3 className="font-bold text-sm sm:text-base text-on-surface">Quick Capture</h3>
+            <p className="text-[11px] text-on-surface-variant">Catat instan ke sistem tanpa berpindah tab</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -307,17 +302,20 @@ export function QuickCaptureModal({
                   <label className="block text-xs font-semibold text-on-surface-variant mb-1">
                     Sumber Dompet
                   </label>
-                  <select
-                    value={expenseWalletId}
-                    onChange={(e) => setExpenseWalletId(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/40 rounded-xl px-3 py-2 text-xs font-medium text-on-surface focus:outline-none focus:border-primary-container"
-                  >
-                    {wallets.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name} ({w.card_label || w.type})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={expenseWalletId}
+                      onChange={(e) => setExpenseWalletId(e.target.value)}
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2.5 pr-9 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    >
+                      {wallets.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.name} ({w.card_label || w.type})
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-on-surface-variant pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
               )}
 

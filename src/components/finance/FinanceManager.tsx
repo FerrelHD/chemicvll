@@ -853,35 +853,41 @@ export function FinanceManager() {
 
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">Source Account</label>
-                <select
-                  value={walletId}
-                  onChange={(e) => setWalletId(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-                >
-                  {wallets.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} {isPrivacyMode ? '' : `(Rp ${w.balance.toLocaleString('id-ID')})`}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={walletId}
+                    onChange={(e) => setWalletId(e.target.value)}
+                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                  >
+                    {wallets.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name} {isPrivacyMode ? '' : `(Rp ${w.balance.toLocaleString('id-ID')})`}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                </div>
               </div>
 
               {txType === 'transfer' && (
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">Destination Account</label>
-                  <select
-                    value={toWalletId}
-                    onChange={(e) => setToWalletId(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-                  >
-                    {wallets
-                      .filter((w) => w.id !== walletId)
-                      .map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.name}
-                        </option>
-                      ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={toWalletId}
+                      onChange={(e) => setToWalletId(e.target.value)}
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    >
+                      {wallets
+                        .filter((w) => w.id !== walletId)
+                        .map((w) => (
+                          <option key={w.id} value={w.id}>
+                            {w.name}
+                          </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
               )}
 
@@ -953,16 +959,19 @@ export function FinanceManager() {
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Account Type
                   </label>
-                  <select
-                    value={walletForm.type}
-                    onChange={(e) => setWalletForm({ ...walletForm, type: e.target.value as any })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-                  >
-                    <option value="bank">Bank</option>
-                    <option value="ewallet">E-Wallet</option>
-                    <option value="cash">Cash</option>
-                    <option value="investment">Investment</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={walletForm.type}
+                      onChange={(e) => setWalletForm({ ...walletForm, type: e.target.value as any })}
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    >
+                      <option value="bank">Bank</option>
+                      <option value="ewallet">E-Wallet</option>
+                      <option value="cash">Cash</option>
+                      <option value="investment">Investment</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
@@ -1141,14 +1150,17 @@ export function FinanceManager() {
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Billing Cycle
                   </label>
-                  <select
-                    value={subCycle}
-                    onChange={(e) => setSubCycle(e.target.value as 'monthly' | 'yearly')}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none font-semibold"
-                  >
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={subCycle}
+                      onChange={(e) => setSubCycle(e.target.value as 'monthly' | 'yearly')}
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    >
+                      <option value="monthly">Monthly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
               </div>
 
@@ -1170,17 +1182,20 @@ export function FinanceManager() {
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Charged Account
                   </label>
-                  <select
-                    value={subWalletId}
-                    onChange={(e) => setSubWalletId(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none"
-                  >
-                    {wallets.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={subWalletId}
+                      onChange={(e) => setSubWalletId(e.target.value)}
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    >
+                      {wallets.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
               </div>
 

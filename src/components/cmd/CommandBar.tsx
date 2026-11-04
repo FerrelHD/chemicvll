@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCommandStore } from '@/stores/useCommandStore';
 import { parseCommand } from '@/lib/command-parser';
 import { useCareerStore } from '@/stores/useCareerStore';
-import { Command, CornerDownLeft, Sparkles, X, ArrowRight } from 'lucide-react';
+import { Command, CornerDownLeft, X, ArrowRight } from 'lucide-react';
 
 interface CommandBarProps {
   onNavigate?: (tab: string) => void;

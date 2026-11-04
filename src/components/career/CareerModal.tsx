@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CareerPipeline, CareerCategory, CareerStage, WorkType } from '@/types/database';
-import { X, CheckCircle2, Building2, Briefcase, FileText, Calendar, DollarSign, Globe, Video, User } from 'lucide-react';
+import { X, CheckCircle2, Building2, Briefcase, FileText, Calendar, DollarSign, Globe, Video, User, ChevronDown } from 'lucide-react';
 
 interface CareerModalProps {
   isOpen: boolean;
@@ -215,29 +215,35 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
               <label className="block text-xs font-semibold text-on-surface mb-1">
                 Category
               </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as CareerCategory })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-              >
-                <option value="internship">Internship</option>
-                <option value="job">Full-time</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value as CareerCategory })}
+                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                >
+                  <option value="internship">Internship</option>
+                  <option value="job">Full-time</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-on-surface mb-1">
                 Work Type
               </label>
-              <select
-                value={formData.work_type}
-                onChange={(e) => setFormData({ ...formData, work_type: e.target.value as WorkType })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-              >
-                <option value="remote">Remote</option>
-                <option value="hybrid">Hybrid</option>
-                <option value="onsite">Onsite</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={formData.work_type}
+                  onChange={(e) => setFormData({ ...formData, work_type: e.target.value as WorkType })}
+                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                >
+                  <option value="remote">Remote</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="onsite">Onsite</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+              </div>
             </div>
 
             <div>
