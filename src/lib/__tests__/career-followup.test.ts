@@ -74,3 +74,4 @@ assert.strictEqual(radarAfter.isUrgent, false);
 console.log('Test 4 Passed: Store update successfully resets radar status to normal');
 
 console.log('All Career Follow-Up Generator tests passed successfully!\n');
+

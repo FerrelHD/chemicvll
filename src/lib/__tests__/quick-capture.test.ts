@@ -67,3 +67,4 @@ if (!latestDropCode || latestDropCode.type !== 'code') {
 
 console.log('Test 3 Passed: Quick Drop auto-detects and classifies links & code snippets');
 console.log('All Universal Quick Capture tests passed successfully!\n');
+

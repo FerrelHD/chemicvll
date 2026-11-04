@@ -283,3 +283,4 @@ export function MorningBriefingCard({
     </div>
   );
 }
+

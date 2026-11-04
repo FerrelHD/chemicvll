@@ -462,3 +462,4 @@ export function QuickCaptureModal({
     </div>
   );
 }
+
