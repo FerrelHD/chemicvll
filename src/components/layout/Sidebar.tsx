@@ -15,7 +15,6 @@ import {
   CloudUpload,
   BookOpen,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface SidebarProps {
   activeTab: string;
@@ -51,24 +50,17 @@ export function Sidebar({
           >
             <img
               src="/icon-192.png"
-              alt="chemicvll logo"
+              alt="logo"
               className="w-8 h-8 rounded-xl object-contain shadow-sm flex-shrink-0"
             />
-            <motion.div
-              animate={{
-                opacity: open ? 1 : 0,
-                display: open ? 'flex' : 'none',
-              }}
-              transition={{ duration: 0.15 }}
-              className="flex-col leading-tight whitespace-nowrap"
-            >
+            <div className="flex flex-col leading-tight whitespace-nowrap">
               <span className="font-bold text-sm text-on-surface tracking-tight">
                 Personal OS
               </span>
               <span className="text-[11px] text-on-surface-variant font-mono">
                 chemicv11
               </span>
-            </motion.div>
+            </div>
           </div>
 
           {/* Navigation Links */}

@@ -17,6 +17,7 @@ import { QuickCaptureModal } from '@/components/layout/QuickCaptureModal';
 import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { initSupabaseSync } from '@/lib/supabase-sync';
+import { motion } from 'framer-motion';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -112,20 +113,27 @@ export default function HomePage() {
         />
 
         {/* Scrollable Dashboard Body */}
-        <div className="flex-1 overflow-y-auto w-full relative z-20">
+        <div className="flex-1 overflow-y-auto w-full relative z-20 scroll-container">
           <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-28 md:pb-12">
-            {activeTab === 'dashboard' && (
-              <DashboardCockpit
-                onNavigate={setActiveTab}
-                onOpenCommand={handleOpenCommand}
-              />
-            )}
-            {activeTab === 'career' && <CareerKanban />}
-            {activeTab === 'tasks' && <TaskManager />}
-            {activeTab === 'finance' && <FinanceManager />}
-            {activeTab === 'dev' && <DevMissionControl />}
-            {activeTab === 'dropzone' && <DropzonePanel />}
-            {activeTab === 'notes' && <NotesAndContentStudio />}
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
+              {activeTab === 'dashboard' && (
+                <DashboardCockpit
+                  onNavigate={setActiveTab}
+                  onOpenCommand={handleOpenCommand}
+                />
+              )}
+              {activeTab === 'career' && <CareerKanban />}
+              {activeTab === 'tasks' && <TaskManager />}
+              {activeTab === 'finance' && <FinanceManager />}
+              {activeTab === 'dev' && <DevMissionControl />}
+              {activeTab === 'dropzone' && <DropzonePanel />}
+              {activeTab === 'notes' && <NotesAndContentStudio />}
+            </motion.div>
           </main>
         </div>
 

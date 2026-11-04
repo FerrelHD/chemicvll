@@ -73,11 +73,11 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = (props: React.ComponentProps<"div">) => {
   return (
     <>
       <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <MobileSidebar {...props} />
     </>
   );
 };
@@ -86,27 +86,17 @@ export const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
-  const { open, setOpen, animate } = useSidebar();
+}: React.ComponentProps<"div">) => {
   return (
-    <motion.div
+    <div
       className={cn(
-        "h-full px-3 py-4 hidden md:flex md:flex-col bg-surface-container-low w-[260px] flex-shrink-0 transition-colors",
+        "h-full px-3 py-4 hidden md:flex md:flex-col bg-surface-container-low w-[240px] flex-shrink-0 transition-colors select-none",
         className
       )}
-      animate={{
-        width: animate ? (open ? "260px" : "68px") : "260px",
-      }}
-      transition={{
-        duration: 0.25,
-        ease: "easeInOut",
-      }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -154,22 +144,14 @@ export const SidebarLink = ({
   className?: string;
   props?: any;
 }) => {
-  const { open, animate } = useSidebar();
   const content = (
     <>
       <div className="flex-shrink-0 flex items-center justify-center w-6 h-6">
         {link.icon}
       </div>
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        transition={{ duration: 0.15 }}
-        className="text-on-surface text-sm group-hover/sidebar:translate-x-0.5 transition duration-150 whitespace-nowrap inline-block !p-0 !m-0"
-      >
+      <span className="text-on-surface text-sm whitespace-nowrap inline-block !p-0 !m-0">
         {link.label}
-      </motion.span>
+      </span>
     </>
   );
 

@@ -33,7 +33,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-10 w-full h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-outline/30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
+    <header className="sticky top-0 z-10 w-full h-16 bg-surface-container-lowest border-b border-outline/30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
       {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
       <div className="flex items-center gap-3">
         <button

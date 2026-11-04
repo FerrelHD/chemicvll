@@ -66,7 +66,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
 
   return (
     <div className="md:hidden fixed bottom-4 inset-x-0 z-40 flex justify-center pointer-events-none px-3 pb-[env(safe-area-inset-bottom,0px)]">
-      <nav className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-surface-container-lowest/90 backdrop-blur-2xl border border-outline/80 p-1.5 rounded-full shadow-[0_8px_32px_rgba(24,24,27,0.08)] flex items-center justify-between gap-1">
+      <nav className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-surface-container-lowest/95 backdrop-blur-sm border border-outline/80 p-1.5 rounded-full shadow-[0_8px_32px_rgba(24,24,27,0.08)] flex items-center justify-between gap-1">
         {/* Left 2 Tabs */}
         {leftTabs.map(renderTabButton)}
 

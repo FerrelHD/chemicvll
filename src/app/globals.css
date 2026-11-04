@@ -47,3 +47,10 @@ input, button, select, textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: #C8C5CA;
 }
+
+/* Smooth Momentum Scrolling */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+}
