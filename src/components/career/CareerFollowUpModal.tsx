@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CareerPipeline } from '@/types/database';
 import { useCareerStore } from '@/stores/useCareerStore';
 import {
@@ -33,11 +34,16 @@ export function CareerFollowUpModal({
   onClose,
   onShowNotice,
 }: CareerFollowUpModalProps) {
+  const [mounted, setMounted] = useState(false);
   const updateItem = useCareerStore((s) => s.updateItem);
   const [channel, setChannel] = useState<FollowUpChannel>('whatsapp');
   const [recruiterName, setRecruiterName] = useState('');
   const [messageBody, setMessageBody] = useState('');
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (item && isOpen) {
@@ -47,7 +53,7 @@ export function CareerFollowUpModal({
     }
   }, [item, isOpen, channel]);
 
-  if (!isOpen || !item) return null;
+  if (!isOpen || !item || !mounted) return null;
 
   const generateText = (ch: FollowUpChannel, data: CareerPipeline, recruiter: string) => {
     const role = data.role_or_program;
@@ -118,8 +124,8 @@ export function CareerFollowUpModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="absolute inset-0 -z-10" onClick={onClose} />
 
       <motion.div
@@ -279,7 +285,7 @@ export function CareerFollowUpModal({
           </div>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }
-

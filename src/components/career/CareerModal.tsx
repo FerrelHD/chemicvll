@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CareerPipeline, CareerCategory, CareerStage, WorkType } from '@/types/database';
 import { X, CheckCircle2, Building2, Briefcase, FileText, Calendar, DollarSign, Globe, Video, User, ChevronDown } from 'lucide-react';
 
@@ -12,6 +13,12 @@ interface CareerModalProps {
 }
 
 export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [formData, setFormData] = useState({
     entity_name: '',
     role_or_program: '',
@@ -70,7 +77,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
     }
   }, [initialData, isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,12 +108,12 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
 
   const currentStepIndex = steps.findIndex((s) => s.stage === formData.stage);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-outline/20">
+        <div className="flex items-center justify-between p-5 sm:p-6 pb-3 sm:pb-4 border-b border-outline/20">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container">
               <Briefcase className="w-5 h-5" />
@@ -131,7 +138,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         </div>
 
         {/* Recruitment Pipeline Stepper */}
-        <div className="px-6 py-3 bg-surface-container-low/60 border-b border-outline/20">
+        <div className="px-5 sm:px-6 py-2.5 sm:py-3 bg-surface-container-low/60 border-b border-outline/20">
           <span className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider block mb-2">
             Recruitment Pipeline Stages
           </span>
@@ -174,7 +181,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
+        <form id="career-modal-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           
           {/* Row 1: Company & Role */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -372,25 +379,27 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
               className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container resize-none"
             />
           </div>
-
-          {/* Footer Controls */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-outline/20">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
-            >
-              Save Application
-            </button>
-          </div>
         </form>
+
+        {/* Sticky/Fixed Footer Controls */}
+        <div className="flex items-center justify-end gap-2.5 p-4 sm:px-6 sm:py-3.5 border-t border-outline/20 bg-surface-container-lowest shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="career-modal-form"
+            className="px-6 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+          >
+            Save Application
+          </button>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
