@@ -259,9 +259,9 @@ export function FinanceManager() {
       </div>
 
       {/* Row 1: 4 Key Metric Bento Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Tile 1: Saldo Utama */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Net Balance</span>
             <div className="flex items-center gap-1.5">
@@ -307,7 +307,7 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 2: Total Tabungan */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Total Savings</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
@@ -328,7 +328,7 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 3: Pemasukan Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Monthly Income</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
@@ -349,7 +349,7 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 4: Pengeluaran Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Monthly Expenses</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
@@ -374,7 +374,7 @@ export function FinanceManager() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
         {/* Left Column: Stacked Cards (4 Cols) */}
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-sm font-bold text-on-surface">Rekening &amp; Kartu</h2>
@@ -533,7 +533,7 @@ export function FinanceManager() {
         </div>
 
         {/* Right Column: Bento Capsule Cashflow Chart (8 Cols) */}
-        <div className="lg:col-span-8 bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
+        <div className="lg:col-span-8 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
             <div>
               <div className="flex items-center gap-2">
@@ -598,10 +598,10 @@ export function FinanceManager() {
             ) : (
               <>
                 {/* Vertical Rounded Capsule Bars */}
-                <div className="grid grid-cols-4 gap-6 items-end h-56 px-4">
+                <div className="grid grid-cols-4 gap-2 sm:gap-6 items-end h-56 px-1 sm:px-4">
                   {weeklyCapsules.map((cap) => (
-                    <div key={cap.label} className="flex flex-col items-center gap-2 h-full justify-end group">
-                      <div className="w-12 sm:w-16 bg-surface-container-low rounded-full p-1.5 flex flex-col justify-end gap-1.5 h-44 shadow-inner relative">
+                    <div key={cap.label} className="flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group">
+                      <div className="w-9 sm:w-16 bg-surface-container-low rounded-full p-1 sm:p-1.5 flex flex-col justify-end gap-1 sm:gap-1.5 h-44 shadow-inner relative">
                         {/* Income capsule (Purple) */}
                         <div
                           className="w-full bg-[#a387f6] rounded-full transition-all duration-500 group-hover:opacity-90"
@@ -615,14 +615,14 @@ export function FinanceManager() {
                           title={`Out: ${cap.outRp}`}
                         />
                       </div>
-                      <span className="text-xs font-semibold text-on-surface-variant group-hover:text-on-surface">
+                      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant group-hover:text-on-surface">
                         {cap.label}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center justify-center gap-6 mt-4 pt-2 border-t border-outline/20 text-xs">
+                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 pt-2 border-t border-outline/20 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#a387f6]" />
                     <span className="text-on-surface-variant font-medium">Income (Cash In)</span>
@@ -641,7 +641,7 @@ export function FinanceManager() {
       {/* Row 3: Riwayat Mutasi & Radar Tagihan */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Riwayat Mutasi Terkini */}
-        <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
+        <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface">Recent Transactions</h3>
             <span className="text-xs text-on-surface-variant font-medium">
@@ -701,13 +701,13 @@ export function FinanceManager() {
         </div>
 
         {/* Radar Langganan & Dana Darurat */}
-        <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <h3 className="text-sm font-bold text-on-surface">Subscription Radar</h3>
               <p className="text-xs text-on-surface-variant">Auto-alert 3 days before scheduled debit</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-start sm:self-auto">
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
                 {subscriptions.length} Services
               </span>
