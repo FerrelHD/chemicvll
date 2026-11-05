@@ -122,9 +122,9 @@ export function TaskManager() {
       </div>
 
       {/* Bento KPI Top Row (4 Columns) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Pomodoro Sessions */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Today&apos;s Focus Sessions</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container">
@@ -152,7 +152,7 @@ export function TaskManager() {
         </div>
 
         {/* Metric 2: P1 Tasks */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Urgent Priorities (P1)</span>
             <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
@@ -180,7 +180,7 @@ export function TaskManager() {
         </div>
 
         {/* Metric 3: Weekly Completion Rate */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Task Completion</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-emerald-600">
@@ -208,7 +208,7 @@ export function TaskManager() {
         </div>
 
         {/* Metric 4: Daily Streak */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant">Daily Habit Streak</span>
             <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
@@ -243,7 +243,7 @@ export function TaskManager() {
         <div className="lg:col-span-5 flex flex-col gap-4">
           
           {/* Interactive Pomodoro Card */}
-          <div className="bg-surface-container-lowest rounded-3xl p-6 sm:p-8 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between relative overflow-hidden">
+          <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between relative overflow-hidden">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse" />
@@ -257,8 +257,8 @@ export function TaskManager() {
             </div>
 
             {/* Timer Display Block */}
-            <div className="my-8 flex flex-col items-center justify-center text-center">
-              <div className="text-6xl sm:text-7xl font-bold font-mono text-on-surface tracking-tight">
+            <div className="my-6 sm:my-8 flex flex-col items-center justify-center text-center">
+              <div className="text-5xl sm:text-7xl font-bold font-mono text-on-surface tracking-tight">
                 {formatTimer(timeLeft)}
               </div>
               <span className="text-xs text-on-surface-variant font-medium mt-2">
@@ -290,7 +290,7 @@ export function TaskManager() {
             </div>
 
             {/* Ambient Sound Pills */}
-            <div className="mt-8 pt-4 border-t border-outline/20">
+            <div className="mt-6 sm:mt-8 pt-4 border-t border-outline/20">
               <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mb-2">
                 <Headphones className="w-3.5 h-3.5 text-primary-container" />
                 <span className="font-semibold">Ambient Soundscape</span>
@@ -320,7 +320,7 @@ export function TaskManager() {
           </div>
 
           {/* Mental Energy Rhythm Stack */}
-          <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
+          <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
             <span className="text-xs font-bold text-on-surface uppercase tracking-wider block">
               Daily Mental Energy Rhythm
             </span>
@@ -356,33 +356,35 @@ export function TaskManager() {
         <div className="lg:col-span-7 flex flex-col gap-4">
           
           {/* Quick Add Bar */}
-          <div className="bg-surface-container-lowest rounded-2xl p-4 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
-            <form onSubmit={handleAddTask} className="flex gap-2">
+          <div className="bg-surface-container-lowest rounded-2xl p-3 sm:p-4 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
+            <form onSubmit={handleAddTask} className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Write next target task... (Press Enter to save)"
-                className="flex-1 px-4 py-2 rounded-xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full sm:flex-1 px-4 py-2.5 rounded-xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
-              <div className="relative">
-                <select
-                  value={newPriority}
-                  onChange={(e) => setNewPriority(Number(e.target.value) as 1 | 2 | 3)}
-                  className="appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-7 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1 sm:flex-none">
+                  <select
+                    value={newPriority}
+                    onChange={(e) => setNewPriority(Number(e.target.value) as 1 | 2 | 3)}
+                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2.5 pr-7 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                  >
+                    <option value={1}>P1: Urgent</option>
+                    <option value={2}>P2: Scheduled</option>
+                    <option value={3}>P3: Quick Win</option>
+                  </select>
+                  <ChevronDown className="w-3 h-3 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                </div>
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm flex items-center justify-center min-w-[44px]"
                 >
-                  <option value={1}>P1: Urgent</option>
-                  <option value={2}>P2: Scheduled</option>
-                  <option value={3}>P3: Quick Win</option>
-                </select>
-                <ChevronDown className="w-3 h-3 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
             </form>
           </div>
 
@@ -390,7 +392,7 @@ export function TaskManager() {
           <div className="space-y-4">
             
             {/* P1: Urgent & Important */}
-            <div className="bg-surface-container-lowest rounded-3xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
+            <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-outline/20">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
@@ -451,7 +453,7 @@ export function TaskManager() {
             </div>
 
             {/* P2: Scheduled & Long Progress */}
-            <div className="bg-surface-container-lowest rounded-3xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
+            <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-outline/20">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary-container" />
@@ -511,7 +513,7 @@ export function TaskManager() {
             </div>
 
             {/* P3: Quick Wins */}
-            <div className="bg-surface-container-lowest rounded-3xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
+            <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-outline/20">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#a387f6]" />
@@ -561,7 +563,7 @@ export function TaskManager() {
 
             {/* Selesai / Completed */}
             {doneTasks.length > 0 && (
-              <div className="bg-surface-container-lowest rounded-3xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3 opacity-75">
+              <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3 opacity-75">
                 <div className="flex items-center justify-between pb-2 border-b border-outline/20">
                   <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                     Completed Tasks ({doneTasks.length})
