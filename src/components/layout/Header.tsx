@@ -35,14 +35,25 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 w-full h-16 bg-surface-container-lowest border-b border-outline/30 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl shadow-[0_1px_8px_rgba(24,24,27,0.02)]">
       {/* Left section: Hamburger (Mobile) + Search Bar (⌘K) */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           type="button"
           aria-label="Menu"
           onClick={onOpenMobileMenu}
-          className="md:hidden w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
+          className="md:hidden w-10 h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm active:scale-95"
         >
           <Menu className="w-4 h-4" />
+        </button>
+
+        {/* Mobile Search / Command Bar Trigger */}
+        <button
+          type="button"
+          aria-label="Search and command"
+          onClick={triggerCommand}
+          className="sm:hidden w-10 h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors shadow-sm active:scale-95"
+          title="Search system & actions"
+        >
+          <Search className="w-4 h-4" />
         </button>
 
         {/* ⌘K Capsule Input */}
@@ -76,12 +87,12 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
       </div>
 
       {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
-      <div className="flex items-center gap-3">          
+      <div className="flex items-center gap-2 sm:gap-3">          
         {/* Cloud Sync Status Pill */}
         <button
           type="button"
           onClick={handleSyncClick}
-          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer"
+          className="flex items-center gap-1.5 sm:gap-2 bg-surface-container-lowest px-2.5 sm:px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer"
           title={
             syncStatus === 'synced'
               ? `Synced at ${lastSyncedAt || 'just now'} WIB. Click to sync now.`
@@ -91,7 +102,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           }
         >
           <div
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-full flex-shrink-0 ${
               syncStatus === 'syncing'
                 ? 'bg-amber-500 animate-pulse'
                 : syncStatus === 'synced'
@@ -101,7 +112,9 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
                 : 'bg-primary-container animate-pulse'
             }`}
           />
-          <span className="font-semibold text-on-surface text-xs">Cloud Sync</span>
+          <span className="font-semibold text-on-surface text-xs hidden xs:inline sm:inline">
+            Sync
+          </span>
           <span className="text-on-surface-variant hidden md:inline text-[11px]">
             {syncStatus === 'syncing'
               ? 'Syncing...'
@@ -118,13 +131,13 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           type="button"
           aria-label="Notifications"
           onClick={() => alert('No new notifications.')}
-          className="w-9 h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
+          className="w-10 h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm active:scale-95"
         >
           <Bell className="w-4 h-4 text-on-surface-variant" />
         </button>
 
         {/* User Profile Avatar & Lock */}
-        <div className="flex items-center gap-2 pl-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 pl-0.5 sm:pl-1">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shadow-sm">
             F
           </div>
@@ -135,7 +148,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Lock Workspace"
             onClick={() => window.dispatchEvent(new CustomEvent('personal_os_lock'))}
-            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors active:scale-95"
             title="Lock Personal OS (Master PIN)"
           >
             <Lock className="w-3.5 h-3.5" />
