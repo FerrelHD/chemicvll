@@ -91,12 +91,12 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
 
       {/* Row 1: 4 Quick Stats Bento Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         
         {/* Stat 1: Karir */}
         <div
           onClick={() => onNavigate('career')}
-          className="bg-surface-container-lowest rounded-2xl p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -129,7 +129,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Stat 2: Keuangan */}
         <div
           onClick={() => onNavigate('finance')}
-          className="bg-surface-container-lowest rounded-2xl p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -187,7 +187,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Stat 3: Tugas & Fokus */}
         <div
           onClick={() => onNavigate('tasks')}
-          className="bg-surface-container-lowest rounded-2xl p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -224,7 +224,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Stat 4: Dev Server */}
         <div
           onClick={() => onNavigate('dev')}
-          className="bg-surface-container-lowest rounded-2xl p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
@@ -261,18 +261,18 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       </div>
 
       {/* Row 2: Cashflow Capsule Chart & Active Debit Card Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
         
         {/* Module A: Cashflow Capsule Bars (Col span 7) */}
-        <div className="lg:col-span-7 bg-surface-container-lowest rounded-3xl p-6 border border-outline shadow-bento space-y-5">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-7 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4 sm:space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <h3 className="text-sm font-bold text-on-surface">Monthly Cashflow (Capsule Chart)</h3>
               <p className="text-xs text-on-surface-variant mt-0.5">
                 Comparison of Income (Orange) vs Expenses (Charcoal) in million IDR.
               </p>
             </div>
-            <div className="flex items-center gap-3 text-xs font-medium">
+            <div className="flex items-center gap-3 text-xs font-medium self-start sm:self-auto">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
                 <span>In</span>
@@ -286,7 +286,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
           {/* Capsule Chart Graphic */}
           {transactions.length === 0 ? (
-            <div className="h-48 flex flex-col items-center justify-center p-6 bg-surface-container-low/40 rounded-2xl border border-dashed border-outline/40 text-center gap-2.5">
+            <div className="h-44 sm:h-48 flex flex-col items-center justify-center p-4 sm:p-6 bg-surface-container-low/40 rounded-2xl border border-dashed border-outline/40 text-center gap-2.5">
               <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
                 <BarChart3 className="w-5 h-5 text-on-surface-variant" />
               </div>
@@ -305,28 +305,28 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               </button>
             </div>
           ) : (
-            <div className="h-48 flex items-end justify-between gap-4 pt-4 px-2">
+            <div className="h-44 sm:h-48 flex items-end justify-between gap-1.5 sm:gap-4 pt-3 sm:pt-4 px-1 sm:px-2">
               {cashflowMonths.map((m, idx) => {
                 const inHeight = `${Math.max(4, (m.in / maxVal) * 100)}%`;
                 const outHeight = `${Math.max(4, (m.out / maxVal) * 100)}%`;
 
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                    <div className="w-full flex items-end justify-center gap-1.5 h-full">
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group">
+                    <div className="w-full flex items-end justify-center gap-1 sm:gap-1.5 h-full">
                       {/* In Bar */}
                       <div
                         style={{ height: inHeight }}
-                        className="w-3.5 bg-primary-container rounded-full transition-all group-hover:brightness-110"
+                        className="w-2.5 sm:w-3.5 bg-primary-container rounded-full transition-all group-hover:brightness-110"
                         title={`In: Rp ${m.rawIn.toLocaleString('id-ID')}`}
                       ></div>
                       {/* Out Bar */}
                       <div
                         style={{ height: outHeight }}
-                        className="w-3.5 bg-inverse-surface/80 rounded-full transition-all group-hover:bg-inverse-surface"
+                        className="w-2.5 sm:w-3.5 bg-inverse-surface/80 rounded-full transition-all group-hover:bg-inverse-surface"
                         title={`Out: Rp ${m.rawOut.toLocaleString('id-ID')}`}
                       ></div>
                     </div>
-                    <span className="text-[11px] font-mono text-on-surface-variant font-medium">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-on-surface-variant font-medium">
                       {m.month}
                     </span>
                   </div>
@@ -337,7 +337,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         </div>
 
         {/* Module B: Active Debit Card & Quick Action (Col span 5) */}
-        <div className="lg:col-span-5 bg-surface-container-lowest rounded-3xl p-6 border border-outline shadow-bento space-y-4 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface">Active Card (Wallet Stack)</h3>
             <span className="text-[10px] font-mono uppercase bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant font-semibold">
@@ -347,7 +347,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
           {/* Realistic Virtual Card */}
           <div
-            className="p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-4"
+            className="p-4 sm:p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-3.5 sm:space-y-4"
             style={{
               background: activeWallet?.color
                 ? `linear-gradient(135deg, ${activeWallet.color}, #18181B)`
@@ -410,7 +410,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       </div>
 
       {/* Row 3: Timeline Hari Ini & Agenda Interview */}
-      <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline shadow-bento space-y-4">
+      <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
