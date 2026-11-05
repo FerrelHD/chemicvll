@@ -109,27 +109,43 @@ export const MobileSidebar = ({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          initial={{ x: "-100%", opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: "-100%", opacity: 0 }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-          }}
-          className={cn(
-            "fixed h-full w-full inset-0 bg-surface-container-lowest p-8 z-[100] flex flex-col justify-between md:hidden shadow-2xl",
-            className
-          )}
-        >
-          <div
-            className="absolute right-6 top-6 z-50 text-on-surface-variant hover:text-on-surface cursor-pointer p-1.5 rounded-full hover:bg-surface-container-high transition"
+        <>
+          {/* Backdrop Overlay with tap dismiss */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={() => setOpen(false)}
+            className="fixed inset-0 bg-black/50 z-[90] md:hidden cursor-pointer"
+          />
+
+          {/* Slide-out Drawer Panel */}
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{
+              type: "spring",
+              damping: 28,
+              stiffness: 300,
+            }}
+            className={cn(
+              "fixed inset-y-0 left-0 w-72 max-w-[85vw] h-full bg-surface-container-low p-5 z-[100] flex flex-col justify-between md:hidden shadow-2xl border-r border-outline/30 select-none",
+              className
+            )}
           >
-            <X className="w-5 h-5" />
-          </div>
-          {children}
-        </motion.div>
+            <button
+              type="button"
+              aria-label="Close menu"
+              className="absolute right-3.5 top-3.5 z-50 text-on-surface-variant hover:text-on-surface cursor-pointer w-10 h-10 rounded-full hover:bg-surface-container-high flex items-center justify-center transition active:scale-95"
+              onClick={() => setOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            {children}
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
