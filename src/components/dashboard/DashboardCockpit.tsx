@@ -85,7 +85,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   }, [transactions]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       
       {/* Morning Briefing & Unified Header */}
       <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
@@ -270,7 +270,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
         
         {/* Module A: Cashflow Capsule Bars (Col span 7) */}
-        <div className="lg:col-span-7 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4 sm:space-y-5">
+        <div className="lg:col-span-7 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4 sm:space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <h3 className="text-sm font-bold text-on-surface">Monthly Cashflow (Capsule Chart)</h3>
@@ -343,7 +343,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         </div>
 
         {/* Module B: Active Debit Card & Quick Action (Col span 5) */}
-        <div className="lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface">Active Card (Wallet Stack)</h3>
             <span className="text-[10px] font-mono uppercase bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant font-semibold">
@@ -416,7 +416,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       </div>
 
       {/* Row 3: Timeline Hari Ini & Agenda Interview */}
-      <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4">
+      <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
