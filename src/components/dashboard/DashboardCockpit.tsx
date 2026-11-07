@@ -96,20 +96,20 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Stat 1: Karir */}
         <div
           onClick={() => onNavigate('career')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
               Career Pipeline
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
-              <Briefcase className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
+              <Briefcase className="w-4 h-4 text-primary-container" />
             </div>
           </div>
 
           <div className="my-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface">{activeCareerCount}</span>
+              <span className="text-2xl font-bold text-on-surface font-sans">{activeCareerCount}</span>
               <span className="text-xs text-on-surface-variant font-medium">Active Applications</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
@@ -120,23 +120,23 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </div>
           </div>
 
-          <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
             <span className="text-[11px] truncate">Open Pipeline Kanban</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 2: Keuangan */}
         <div
           onClick={() => onNavigate('finance')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
               Total Tracked Balance
             </span>
-            <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
-              <Wallet className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-primary-container transition-colors">
+              <Wallet className="w-4 h-4 text-primary-container" />
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   e.stopPropagation();
                   togglePrivacyMode();
                 }}
-                className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition"
                 title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -178,35 +178,35 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </div>
           </div>
 
-          <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Open Ledger & Radar</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[11px]">Open Ledger &amp; Radar</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 3: Tugas & Fokus */}
         <div
           onClick={() => onNavigate('tasks')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
               Daily Task Target
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
-              <CheckCircle2 className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
           </div>
 
           <div className="my-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface">
+              <span className="text-2xl font-bold text-on-surface font-sans">
                 {completedTasks}/{totalTasks}
               </span>
               <span className="text-xs text-on-surface-variant font-medium">Completed</span>
             </div>
             <div className="mt-2">
-              <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary-container h-full rounded-full transition-all duration-500"
                   style={{ width: `${taskRatioPercent}%` }}
@@ -215,29 +215,33 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </div>
           </div>
 
-          <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">{taskRatioPercent}% Completed today</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[11px]">
+              {completedTasks === totalTasks && totalTasks > 0
+                ? 'All targets completed'
+                : `${taskRatioPercent}% Completed today`}
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 4: Dev Server */}
         <div
           onClick={() => onNavigate('dev')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline shadow-bento hover:shadow-bentoHover cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
               Active Dev Ports
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface">
-              <Terminal className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
+              <Terminal className="w-4 h-4 text-indigo-500" />
             </div>
           </div>
 
           <div className="my-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface">
+              <span className="text-2xl font-bold text-on-surface font-sans">
                 {runningServers > 0 ? `${runningServers} Running` : 'Standby'}
               </span>
             </div>
@@ -248,13 +252,15 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold">
                 :5432
               </span>
-              <span className="text-on-surface-variant">Listening</span>
+              <span className="text-on-surface-variant">
+                {runningServers > 0 ? 'Listening' : 'Ready'}
+              </span>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-outline flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Open Console & Runner</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[11px]">Open Console &amp; Runner</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
