@@ -44,14 +44,8 @@ assert(emailDraft.includes('Shopee Indonesia'));
 console.log('Test 3 Passed: Email draft contains structured professional format');
 
 // 4. Verify Store Reset when Followed-Up
-useCareerStore.getState().addItem({
-  entity_name: 'Shopee Indonesia',
-  role_or_program: 'Software Engineer',
-  category: 'job',
-  stage: 'applied',
-  applied_date: '2026-10-25T00:00:00Z',
-  contact_person: 'Kak Dina',
-});
+const { id, ...testItemData } = testItem;
+useCareerStore.getState().addItem(testItemData);
 
 const storeItem = useCareerStore.getState().items[0];
 assert(storeItem, 'Item should be present in store');
