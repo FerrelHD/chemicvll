@@ -113,10 +113,10 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <span className="text-xs text-on-surface-variant font-medium">Active Applications</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-mono text-[10px] font-bold">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-mono text-[10px] font-bold whitespace-nowrap shrink-0">
                 {interviewCount} Interview
               </span>
-              <span className="text-[11px] text-on-surface-variant">advanced stage</span>
+              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">advanced stage</span>
             </div>
           </div>
 
@@ -169,11 +169,11 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               </button>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold whitespace-nowrap shrink-0">
                 {wallets.length} Active Wallets
               </span>
-              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5">
-                <TrendingUp className="w-3 h-3" /> Liquid
+              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5 whitespace-nowrap shrink-0">
+                <TrendingUp className="w-3 h-3 shrink-0" /> Liquid
               </span>
             </div>
           </div>
@@ -246,13 +246,13 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               </span>
             </div>
             <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px]">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
                 :3000
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
                 :5432
               </span>
-              <span className="text-on-surface-variant">
+              <span className="text-on-surface-variant whitespace-nowrap shrink-0">
                 {runningServers > 0 ? 'Listening' : 'Ready'}
               </span>
             </div>
@@ -434,7 +434,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold whitespace-nowrap shrink-0">
                         ADVANCED INTERVIEW
                       </span>
                       {interviewItem.next_follow_up_date && (
@@ -492,10 +492,10 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold whitespace-nowrap shrink-0">
                         P{activeTask.priority} DEEP WORK
                       </span>
-                      <span className="text-xs text-on-surface-variant font-mono">Daily Priority</span>
+                      <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">Daily Priority</span>
                     </div>
                     <h4 className="text-sm font-semibold text-on-surface">{activeTask.title}</h4>
                     <p className="text-xs text-on-surface-variant">25-minute sprint with zero distraction</p>
