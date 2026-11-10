@@ -261,9 +261,9 @@ export function FinanceManager() {
       {/* Row 1: 4 Key Metric Bento Tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Tile 1: Saldo Utama */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Net Balance</span>
+            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Net Balance</span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
@@ -278,11 +278,11 @@ export function FinanceManager() {
               </div>
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
+          <div className="mt-3 flex flex-col gap-1.5">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2">
               {transactions.length === 0 ? (
                 <>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold">
@@ -307,18 +307,18 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 2: Total Tabungan */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Total Savings</span>
+            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total Savings</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <PiggyBank className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
+          <div className="mt-3 flex flex-col gap-1.5">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
               {isPrivacyMode ? 'Rp •••••••' : 'Rp 0'}
             </span>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
                 Cash Allocation
               </span>
@@ -328,18 +328,18 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 3: Pemasukan Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Monthly Income</span>
+            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Monthly Income</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <ArrowDownLeft className="w-4 h-4 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
+          <div className="mt-3 flex flex-col gap-1.5">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
                 Total Inflow
               </span>
@@ -349,18 +349,18 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 4: Pengeluaran Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Monthly Expenses</span>
+            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Monthly Expenses</span>
             <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
               <ArrowUpRight className="w-4 h-4 text-rose-500" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
+          <div className="mt-3 flex flex-col gap-1.5">
             <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
                 Total Outflow
               </span>
