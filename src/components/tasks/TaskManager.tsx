@@ -121,28 +121,28 @@ export function TaskManager() {
         </div>
       </div>
 
-      {/* Bento KPI Top Row (4 Columns) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Bento KPI Top Row (4 Columns - Mobile 2x2 Grid) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Metric 1: Pomodoro Sessions */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Today&apos;s Focus Sessions</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-primary-container">
-              <Timer className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-start justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Today&apos;s Focus</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-primary-container">
+              <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-3 flex flex-col">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {sessionsCompleted}
               </span>
-              <span className="text-xs text-on-surface-variant font-medium">Sessions</span>
+              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium">Sessions</span>
             </div>
-            <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>{sessionsCompleted * 25} Mins deep work</span>
-              <span className="font-semibold text-on-surface">Target: 6</span>
+            <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
+              <span className="truncate">{sessionsCompleted * 25}m deep</span>
+              <span className="font-semibold text-on-surface shrink-0">Target: 6</span>
             </div>
-            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-primary-container h-full rounded-full transition-all duration-700"
                 style={{ width: `${Math.min(100, Math.round((sessionsCompleted / 6) * 100))}%` }}
@@ -152,25 +152,25 @@ export function TaskManager() {
         </div>
 
         {/* Metric 2: P1 Tasks */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Urgent Priorities (P1)</span>
-            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
-              <AlertTriangle className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-start justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Urgent (P1)</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 shrink-0 flex items-center justify-center text-rose-600">
+              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-3 flex flex-col">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {p1Remaining}
               </span>
-              <span className="text-xs text-rose-600 font-semibold">Remaining</span>
+              <span className="text-[10px] sm:text-xs text-rose-600 font-semibold">Left</span>
             </div>
-            <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>Do First</span>
-              <span className="font-semibold text-rose-600">High</span>
+            <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
+              <span className="truncate">Do First</span>
+              <span className="font-semibold text-rose-600 shrink-0">High</span>
             </div>
-            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-rose-500 h-full rounded-full transition-all duration-700"
                 style={{ width: `${Math.min(100, p1Remaining * 25)}%` }}
@@ -180,25 +180,25 @@ export function TaskManager() {
         </div>
 
         {/* Metric 3: Weekly Completion Rate */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Task Completion</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-emerald-600">
-              <CheckCircle2 className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-start justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Task Done</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-emerald-600">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-3 flex flex-col">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {completionRate}%
               </span>
-              <span className="text-xs text-emerald-600 font-semibold">+6%</span>
+              <span className="text-[10px] sm:text-xs text-emerald-600 font-semibold">+6%</span>
             </div>
-            <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>{completedTasks} of {totalTasks} completed</span>
-              <span className="font-semibold text-emerald-600">Optimal</span>
+            <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
+              <span className="truncate">{completedTasks}/{totalTasks} done</span>
+              <span className="font-semibold text-emerald-600 shrink-0">Optimal</span>
             </div>
-            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-emerald-500 h-full rounded-full transition-all duration-700"
                 style={{ width: `${completionRate}%` }}
@@ -208,25 +208,25 @@ export function TaskManager() {
         </div>
 
         {/* Metric 4: Daily Streak */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Daily Habit Streak</span>
-            <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
-              <Flame className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-start justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Habit Streak</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary-fixed shrink-0 flex items-center justify-center text-primary-container">
+              <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-3 flex flex-col">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 12
               </span>
-              <span className="text-xs text-primary-container font-semibold">Active Days</span>
+              <span className="text-[10px] sm:text-xs text-primary-container font-semibold">Days</span>
             </div>
-            <div className="flex items-center justify-between mt-1 text-xs text-on-surface-variant">
-              <span>Record: 14 days</span>
-              <span className="font-semibold text-primary-container">🔥 Record</span>
+            <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
+              <span className="truncate">Record: 14d</span>
+              <span className="font-semibold text-primary-container shrink-0">🔥 Best</span>
             </div>
-            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-primary-container h-full rounded-full transition-all duration-700"
                 style={{ width: '86%' }}

@@ -341,49 +341,49 @@ export function DevMissionControl() {
         </div>
       )}
 
-      {/* Bento 4 Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Bento 4 Metric Cards - Mobile 2x2 Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Active Ports */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Active Ports</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <Server className="w-4 h-4" />
+        <div className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Active Ports</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-on-surface">
+              <Server className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-4">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {runningServers}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
+              <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 Bound
               </span>
             </div>
-            <p className="text-xs text-on-surface-variant mt-1 font-mono">
+            <p className="text-[10px] sm:text-xs text-on-surface-variant mt-1 font-mono truncate">
               {projects.map((p) => `:${p.default_port}`).join(', ')}
             </p>
           </div>
         </div>
 
         {/* Card 2: Memory Load */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">RAM Load</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <Cpu className="w-4 h-4" />
+        <div className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">RAM Load</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-on-surface">
+              <Cpu className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
-                {systemMetrics ? systemMetrics.usedGB : '4.8'} <span className="text-xs text-on-surface-variant font-normal">/ {systemMetrics ? systemMetrics.totalGB : '16'} GB</span>
+          <div className="mt-2.5 sm:mt-4">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans truncate">
+                {systemMetrics ? systemMetrics.usedGB : '4.8'} <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ {systemMetrics ? systemMetrics.totalGB : '16'}GB</span>
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
+              <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 {systemMetrics ? `${systemMetrics.usedPercent}%` : 'Optimal'}
               </span>
             </div>
-            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2.5 overflow-hidden">
+            <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-2.5 overflow-hidden">
               <div
                 className="bg-primary-container h-full rounded-full transition-all duration-500"
                 style={{ width: `${systemMetrics ? systemMetrics.usedPercent : 30}%` }}
@@ -393,46 +393,46 @@ export function DevMissionControl() {
         </div>
 
         {/* Card 3: Docker Daemons */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Container Services</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <Boxes className="w-4 h-4" />
+        <div className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Containers</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-on-surface">
+              <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2.5 sm:mt-4">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 3 Up
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant whitespace-nowrap shrink-0">
+              <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-surface-container-high text-on-surface-variant whitespace-nowrap shrink-0">
                 0 Exited
               </span>
             </div>
-            <p className="text-xs text-on-surface-variant mt-1 font-mono">
+            <p className="text-[10px] sm:text-xs text-on-surface-variant mt-1 font-mono truncate">
               postgres, redis, runner
             </p>
           </div>
         </div>
 
         {/* Card 4: Git Sync Status */}
-        <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Git Branches</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <GitBranch className="w-4 h-4" />
+        <div className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Git Branches</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-on-surface">
+              <GitBranch className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-on-surface tracking-tight font-mono">
+          <div className="mt-2.5 sm:mt-4">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-lg sm:text-xl font-bold text-on-surface tracking-tight font-mono">
                 main
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
+              <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 Synced
               </span>
             </div>
-            <p className="text-xs text-on-surface-variant mt-1">
+            <p className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
               Atomic commits enforced
             </p>
           </div>
