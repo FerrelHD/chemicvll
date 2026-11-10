@@ -242,17 +242,17 @@ export function FinanceManager() {
 
         {/* Quick Toolbars Matching Reference */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium">
-            <Calendar className="w-3.5 h-3.5 text-on-surface-variant" />
+          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
+            <Calendar className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
             <span>Nov 2026</span>
           </div>
 
           <button
             type="button"
             onClick={() => setIsLoggingOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95 whitespace-nowrap shrink-0"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 shrink-0" />
             <span>Record Transaction</span>
           </button>
         </div>
@@ -642,10 +642,10 @@ export function FinanceManager() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Riwayat Mutasi Terkini */}
         <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-on-surface">Recent Transactions</h3>
-            <span className="text-xs text-on-surface-variant font-medium">
-              {transactions.length} Transactions
+            <span className="text-xs text-on-surface-variant font-medium shrink-0 whitespace-nowrap">
+              {transactions.length} {transactions.length === 1 ? 'Transaction' : 'Transactions'}
             </span>
           </div>
 
@@ -703,20 +703,20 @@ export function FinanceManager() {
         {/* Radar Langganan & Dana Darurat */}
         <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div>
+            <div className="min-w-0">
               <h3 className="text-sm font-bold text-on-surface">Subscription Radar</h3>
               <p className="text-xs text-on-surface-variant">Auto-alert 3 days before scheduled debit</p>
             </div>
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
-                {subscriptions.length} Services
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+              <span className="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant whitespace-nowrap shrink-0">
+                {subscriptions.length} {subscriptions.length === 1 ? 'Service' : 'Services'}
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddSubOpen(true)}
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 shrink-0" />
                 <span>Add Service</span>
               </button>
             </div>
