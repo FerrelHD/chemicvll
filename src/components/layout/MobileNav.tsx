@@ -38,7 +38,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
         key={tab.id}
         type="button"
         onClick={() => onTabChange(tab.id)}
-        className={`relative flex-1 min-h-[46px] flex flex-col items-center justify-center gap-0.5 py-1 px-0.5 rounded-full transition-colors select-none ${
+        className={`relative flex-1 min-h-[48px] flex flex-col items-center justify-center gap-1 py-1 px-1 rounded-full transition-colors select-none ${
           isActive
             ? 'text-primary-container font-semibold'
             : 'text-on-surface-variant hover:text-on-surface font-normal'
@@ -47,16 +47,16 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
         {isActive && (
           <motion.div
             layoutId="mobileNavPill"
-            className="absolute inset-0 bg-primary-fixed/50 rounded-full border border-primary-container/20 -z-10"
+            className="absolute inset-0 bg-primary-fixed/40 rounded-full border border-primary-container/20 -z-10"
             transition={{ type: 'spring', stiffness: 450, damping: 32 }}
           />
         )}
         <Icon
-          className={`w-4 h-4 transition-transform duration-200 ${
+          className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 ${
             isActive ? 'scale-110 text-primary-container' : 'text-on-surface-variant'
           }`}
         />
-        <span className="text-[10px] tracking-tight leading-none">
+        <span className="text-[10px] sm:text-[11px] tracking-tight leading-none">
           {tab.label}
         </span>
       </button>
@@ -64,23 +64,23 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
   };
 
   return (
-    <div className="md:hidden fixed bottom-4 inset-x-0 z-40 flex justify-center pointer-events-none px-3 pb-[env(safe-area-inset-bottom,0px)]">
-      <nav className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-surface-container-lowest/95 backdrop-blur-sm border border-outline/80 p-1.5 rounded-full shadow-[0_8px_32px_rgba(24,24,27,0.08)] flex items-center justify-between gap-1">
+    <div className="md:hidden fixed bottom-5 inset-x-0 z-40 flex justify-center pointer-events-none px-4 pb-[env(safe-area-inset-bottom,0px)]">
+      <nav className="pointer-events-auto w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest/90 backdrop-blur-xl border border-outline/40 px-2 py-1.5 rounded-[28px] shadow-[0_12px_36px_rgba(24,24,27,0.10),0_2px_8px_rgba(24,24,27,0.04)] flex items-center justify-between gap-1">
         {/* Left 2 Tabs */}
         {leftTabs.map(renderTabButton)}
 
-        {/* Center Quick Action Floating Button (Chemicvll Orange Accent) */}
+        {/* Center Quick Action Floating Button (Chemicvll Orange Accent + Ring Cutout) */}
         <button
           type="button"
           aria-label="Quick Action"
           onClick={handleQuickAction}
-          className="relative flex-shrink-0 w-10 h-10 -my-1 rounded-full bg-gradient-to-tr from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white shadow-md shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform select-none"
+          className="relative flex-shrink-0 w-11 h-11 mx-0.5 rounded-full bg-gradient-to-tr from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white shadow-lg shadow-primary/30 flex items-center justify-center active:scale-90 transition-all select-none ring-4 ring-surface-container-lowest"
           title="Quick Capture (+)"
         >
           <Plus className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        {/* Right 3 Tabs */}
+        {/* Right 2 Tabs */}
         {rightTabs.map(renderTabButton)}
       </nav>
     </div>
