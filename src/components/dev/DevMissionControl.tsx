@@ -458,23 +458,23 @@ export function DevMissionControl() {
               return (
                 <div
                   key={proj.id}
-                  className="bg-surface-container-lowest p-5 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col gap-3 hover:shadow-md transition"
+                  className="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col gap-3 hover:shadow-md transition"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                         <span
-                          className={`w-2.5 h-2.5 rounded-full ${
+                          className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                             isRunning ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
                           }`}
                         />
-                        <h4 className="font-bold text-sm text-on-surface">{proj.name}</h4>
-                        <span className="font-mono text-xs text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-md font-semibold">
+                        <h4 className="font-bold text-sm text-on-surface truncate">{proj.name}</h4>
+                        <span className="font-mono text-xs text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded-md font-semibold whitespace-nowrap shrink-0">
                           :{proj.default_port}
                         </span>
                         {portStatuses[proj.default_port] && (
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold whitespace-nowrap shrink-0 ${
                               portStatuses[proj.default_port] === 'healthy'
                                 ? 'bg-emerald-50 text-emerald-700'
                                 : 'bg-zinc-100 text-zinc-500'
@@ -500,7 +500,7 @@ export function DevMissionControl() {
                       href={`http://localhost:${proj.default_port}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`p-1.5 rounded-lg border transition flex items-center gap-1.5 text-xs font-medium ${
+                      className={`p-1.5 rounded-lg border transition flex items-center gap-1.5 text-xs font-medium shrink-0 ${
                         isRunning || portStatuses[proj.default_port] === 'healthy'
                           ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-sm'
                           : 'border-outline/40 hover:bg-surface-container-high text-on-surface-variant'
@@ -513,8 +513,8 @@ export function DevMissionControl() {
                   </div>
 
                   {/* Actions Bar */}
-                  <div className="flex items-center justify-between pt-2 border-t border-outline/20">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-between pt-2 border-t border-outline/20 flex-wrap gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       {isRunning ? (
                         <button
                           type="button"
@@ -558,7 +558,7 @@ export function DevMissionControl() {
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <button
                         type="button"
                         onClick={() => handleOpenVault(proj)}
