@@ -90,7 +90,7 @@ export function TaskManager() {
             <span>•</span>
             <span className="text-primary-container">Tasks &amp; Focus</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
             Deep Work &amp; Productivity Cockpit
           </h1>
         </div>
@@ -414,18 +414,18 @@ export function TaskManager() {
                       key={t.id}
                       className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
                           type="button"
                           onClick={() => toggleDone(t.id)}
-                          className="text-on-surface-variant hover:text-emerald-600 transition"
+                          className="text-on-surface-variant hover:text-emerald-600 transition shrink-0"
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface">{t.title}</span>
+                        <span className="font-medium text-on-surface truncate">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
@@ -475,18 +475,18 @@ export function TaskManager() {
                       key={t.id}
                       className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
                           type="button"
                           onClick={() => toggleDone(t.id)}
-                          className="text-on-surface-variant hover:text-emerald-600 transition"
+                          className="text-on-surface-variant hover:text-emerald-600 transition shrink-0"
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface">{t.title}</span>
+                        <span className="font-medium text-on-surface truncate">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
@@ -535,18 +535,18 @@ export function TaskManager() {
                       key={t.id}
                       className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
                           type="button"
                           onClick={() => toggleDone(t.id)}
-                          className="text-on-surface-variant hover:text-emerald-600 transition"
+                          className="text-on-surface-variant hover:text-emerald-600 transition shrink-0"
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface">{t.title}</span>
+                        <span className="font-medium text-on-surface truncate">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
