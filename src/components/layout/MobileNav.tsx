@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, Briefcase, CheckCircle2, Wallet, Terminal, Plus } from 'lucide-react';
+import { LayoutDashboard, Briefcase, CheckCircle2, Wallet, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MobileNavProps {
@@ -13,13 +13,12 @@ interface MobileNavProps {
 export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: MobileNavProps) {
   const leftTabs = [
     { id: 'dashboard', label: 'Dash', icon: LayoutDashboard },
-    { id: 'career', label: 'Career', icon: Briefcase },
+    { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
   ];
 
   const rightTabs = [
-    { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
     { id: 'finance', label: 'Vault', icon: Wallet },
-    { id: 'dev', label: 'Dev', icon: Terminal },
+    { id: 'career', label: 'Career', icon: Briefcase },
   ];
 
   const handleQuickAction = () => {
