@@ -102,100 +102,100 @@ export function DropzonePanel() {
         </div>
       </div>
 
-      {/* Row 1: KPI Metric Bento Grid (4 Columns) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Row 1: KPI Metric Bento Grid (Mobile 2x2 Grid) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Metric 1: Storage Capacity */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Stash Capacity</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <FolderArchive className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Stash Capacity</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-on-surface">
+              <FolderArchive className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-on-surface font-sans">
-                1.2 <span className="text-xs text-on-surface-variant font-normal">/ 10 GB</span>
+          <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
+            <div className="flex items-baseline justify-between gap-1">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans truncate">
+                1.2 <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ 10GB</span>
               </span>
-              <span className="bg-surface-container-high px-2 py-0.5 rounded-full text-[11px] text-primary-container font-bold">
+              <span className="bg-surface-container-high px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-primary-container font-bold shrink-0">
                 12%
               </span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden mt-1">
               <div className="bg-primary-container h-full rounded-full" style={{ width: '12%' }} />
             </div>
-            <span className="text-xs text-on-surface-variant mt-1">
-              {items.length} items &amp; snippets stored
+            <span className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
+              {items.length} items &amp; snippets
             </span>
           </div>
         </div>
 
         {/* Metric 2: Active Links */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Sync Links</span>
-            <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-              <Share2 className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Sync Links</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-50 shrink-0 flex items-center justify-center text-purple-600">
+              <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface font-sans">
+          <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
                 {items.filter((i) => i.type === 'link').length}
               </span>
-              <span className="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-full text-[11px] text-purple-600 font-semibold">
+              <span className="flex items-center gap-1 bg-surface-container px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-purple-600 font-semibold shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
-                Live Sync
+                Sync
               </span>
             </div>
-            <span className="text-xs text-on-surface-variant mt-1">
-              Cross-device PC &amp; Smartphone (PWA)
+            <span className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
+              PC &amp; Smartphone PWA
             </span>
           </div>
         </div>
 
         {/* Metric 3: Expiring Soon */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Expiring Soon</span>
-            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600">
-              <Flame className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Expiring Soon</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 shrink-0 flex items-center justify-center text-rose-600">
+              <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface font-sans">
+          <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
                 {items.filter((i) => !i.is_pinned).length}
               </span>
-              <span className="bg-rose-50 text-rose-600 text-[11px] px-2 py-0.5 rounded-full font-semibold">
-                &lt; 24 Hours
+              <span className="bg-rose-50 text-rose-600 text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-semibold shrink-0">
+                &lt; 24h
               </span>
             </div>
-            <span className="text-xs text-on-surface-variant mt-1">
-              Pin items to prevent auto-purge
+            <span className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
+              Pin items to keep
             </span>
           </div>
         </div>
 
         {/* Metric 4: Code Snippets */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant">Code Snippets</span>
-            <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
-              <Code className="w-4 h-4" />
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Code Snippets</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary-fixed shrink-0 flex items-center justify-center text-primary-container">
+              <Code className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-on-surface font-sans">
+          <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
                 {items.filter((i) => i.type === 'code').length}
               </span>
-              <span className="bg-surface-container-high px-2 py-0.5 rounded-full text-[11px] text-on-surface font-semibold">
+              <span className="bg-surface-container-high px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-on-surface font-semibold shrink-0">
                 Saved
               </span>
             </div>
-            <span className="text-xs text-on-surface-variant mt-1">
-              1-click copy to terminal
+            <span className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
+              1-click terminal copy
             </span>
           </div>
         </div>
