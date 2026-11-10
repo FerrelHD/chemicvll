@@ -61,7 +61,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
       {/* Category Tag & Platform Source */}
       <div className="flex items-center justify-between">
         <span
-          className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
+          className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap shrink-0 ${
             isInternship
               ? 'bg-tertiary-fixed text-on-tertiary-fixed'
               : 'bg-primary-container text-white'
@@ -71,9 +71,9 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
         </span>
 
         {item.platform_source && (
-          <span className="text-xs text-on-surface-variant flex items-center gap-1 font-medium">
-            <Globe className="w-3 h-3 text-on-surface-variant" />
-            <span>via {item.platform_source}</span>
+          <span className="text-xs text-on-surface-variant flex items-center gap-1 font-medium whitespace-nowrap shrink-0">
+            <Globe className="w-3 h-3 text-on-surface-variant shrink-0" />
+            <span className="truncate max-w-[140px]">via {item.platform_source}</span>
           </span>
         )}
       </div>
@@ -187,20 +187,20 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
       {/* Urgent Follow-up Alert Pill */}
       {followUp && !radar.isUrgent && (
         <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold w-fit ${
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold w-fit whitespace-nowrap shrink-0 ${
             followUp.isDue
               ? 'bg-primary-fixed text-on-primary-fixed-variant'
               : 'bg-surface-container-high text-on-surface'
           }`}
         >
           <span
-            className={`w-1.5 h-1.5 rounded-full ${
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
               followUp.isDue
                 ? 'bg-primary-container animate-pulse'
                 : 'bg-primary'
             }`}
           />
-          <span>{followUp.label}</span>
+          <span className="whitespace-nowrap">{followUp.label}</span>
         </div>
       )}
 

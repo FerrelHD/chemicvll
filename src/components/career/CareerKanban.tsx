@@ -190,8 +190,8 @@ export function CareerKanban() {
             <span className="text-2xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
               {activeCount}
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
-              <TrendingUp className="w-3.5 h-3.5 text-primary-container" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 text-primary-container shrink-0" />
               Active in pipeline
             </span>
           </div>
@@ -214,7 +214,7 @@ export function CareerKanban() {
             <span className="text-2xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
               {urgentFollowUpCount} Priorities
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold whitespace-nowrap shrink-0">
               Follow up now
             </span>
           </div>
@@ -247,7 +247,7 @@ export function CareerKanban() {
                 {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
               Live Synced
             </span>
           </div>
