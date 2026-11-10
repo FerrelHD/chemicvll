@@ -691,8 +691,8 @@ export function FinanceManager() {
                     {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
                     Rp {tx.amount.toLocaleString('id-ID')}
                   </span>
-                  <span className="text-[10px] text-on-surface-variant font-mono uppercase">
-                    {tx.wallet_id.replace('w-', '')}
+                  <span className="text-[10px] text-on-surface-variant font-mono uppercase truncate max-w-[120px] block">
+                    {wallets.find((w) => w.id === tx.wallet_id)?.name || tx.wallet_id.replace('w-', '')}
                   </span>
                 </div>
               </div>

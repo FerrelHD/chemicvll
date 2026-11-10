@@ -157,12 +157,12 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
                 setInput(item.cmd);
                 inputRef.current?.focus();
               }}
-              className="w-full flex items-center justify-between px-3.5 py-2 rounded-2xl hover:bg-surface-container-high text-left transition group"
+              className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-1 px-3.5 py-2 rounded-2xl hover:bg-surface-container-high text-left transition group"
             >
-              <span className="font-mono text-xs text-on-surface font-medium group-hover:text-primary-container">
+              <span className="font-mono text-xs text-on-surface font-medium group-hover:text-primary-container truncate max-w-full">
                 {item.cmd}
               </span>
-              <span className="text-xs text-on-surface-variant flex items-center gap-1">
+              <span className="text-[11px] sm:text-xs text-on-surface-variant flex items-center gap-1 shrink-0">
                 {item.desc}
                 <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </span>

@@ -82,22 +82,22 @@ export function DailyBriefingModal({
               onNavigate('tasks');
               onDismiss();
             }}
-            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between group"
+            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between gap-3 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <div>
-                <span className="font-semibold text-xs text-on-surface block">
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-xs text-on-surface block truncate">
                   {activeFocusTasks.length} Daily Focus Priorities
                 </span>
-                <span className="text-[11px] text-on-surface-variant">
+                <span className="text-[11px] text-on-surface-variant truncate block">
                   {activeFocusTasks.length > 0 ? activeFocusTasks[0].title : 'No target tasks yet'}
                 </span>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform shrink-0" />
           </div>
 
           {/* Block 2: Interviews / Career Radar */}
@@ -106,24 +106,24 @@ export function DailyBriefingModal({
               onNavigate('career');
               onDismiss();
             }}
-            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between group"
+            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between gap-3 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-full bg-primary-fixed text-primary-container flex items-center justify-center shrink-0">
                 <Video className="w-4 h-4" />
               </div>
-              <div>
-                <span className="font-semibold text-xs text-on-surface block">
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-xs text-on-surface block truncate">
                   {interviewItems.length} Scheduled Interviews
                 </span>
-                <span className="text-[11px] text-on-surface-variant">
+                <span className="text-[11px] text-on-surface-variant truncate block">
                   {interviewItems.length > 0
                     ? `${interviewItems[0].entity_name} • ${interviewItems[0].role_or_program}`
                     : 'No interviews scheduled'}
                 </span>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform shrink-0" />
           </div>
 
           {/* Block 3: Dev Sockets */}
@@ -132,22 +132,22 @@ export function DailyBriefingModal({
               onNavigate('dev');
               onDismiss();
             }}
-            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between group"
+            className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between gap-3 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center shrink-0">
                 <Calendar className="w-4 h-4" />
               </div>
-              <div>
-                <span className="font-semibold text-xs text-on-surface block">
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-xs text-on-surface block truncate">
                   Local Dev Workspace
                 </span>
-                <span className="text-[11px] text-on-surface-variant font-mono">
+                <span className="text-[11px] text-on-surface-variant font-mono truncate block">
                   Ports: {activePorts || ':3000'}
                 </span>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-1 transition-transform shrink-0" />
           </div>
         </div>
 
