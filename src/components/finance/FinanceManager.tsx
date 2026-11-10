@@ -373,8 +373,8 @@ export function FinanceManager() {
       {/* Row 2: Middle Bento Cockpit (Wallet Card Stack + Bento Capsule Chart) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
-        {/* Left Column: Stacked Cards (4 Cols) */}
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
+        {/* Left Column: Stacked Cards (5 Cols) */}
+        <div className="lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-sm font-bold text-on-surface">Rekening &amp; Kartu</h2>
@@ -393,7 +393,7 @@ export function FinanceManager() {
           </div>
 
           {/* Stacked Cards Visual Representation */}
-          <div className="relative flex flex-col pt-2 min-h-[260px] justify-end">
+          <div className="relative flex flex-col pt-2 min-h-[280px] justify-end">
             {/* Background Cards (Up to 2) */}
             {backgroundWallets.slice(0, 2).map((bw, idx) => {
               const isBack2 = idx === 1;
@@ -412,7 +412,7 @@ export function FinanceManager() {
                   title="Klik untuk jadikan kartu aktif"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs tracking-wider uppercase truncate max-w-[140px]">
+                    <span className="font-bold text-xs tracking-wider uppercase truncate max-w-[180px]">
                       {bw.name}
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">
@@ -440,7 +440,7 @@ export function FinanceManager() {
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm tracking-widest uppercase truncate max-w-[170px]">
+                  <span className="font-bold text-sm tracking-widest uppercase truncate max-w-[220px]">
                     {activeWallet.name}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -481,7 +481,7 @@ export function FinanceManager() {
                 </div>
 
                 {/* Card Embedded Actions */}
-                <div className="grid grid-cols-2 gap-2 mt-5">
+                <div className="grid grid-cols-2 gap-2 mt-4 sm:mt-5">
                   <button
                     type="button"
                     onClick={() => {
@@ -532,8 +532,8 @@ export function FinanceManager() {
           </div>
         </div>
 
-        {/* Right Column: Bento Capsule Cashflow Chart (8 Cols) */}
-        <div className="lg:col-span-8 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
+        {/* Right Column: Bento Capsule Cashflow Chart (7 Cols) */}
+        <div className="lg:col-span-7 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
             <div>
               <div className="flex items-center gap-2">
