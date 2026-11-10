@@ -251,7 +251,7 @@ export function TaskManager() {
                   Deep Work Focus
                 </span>
               </div>
-              <div className="flex items-center gap-1 bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface-variant text-[11px] font-semibold">
+              <div className="flex items-center gap-1 bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface-variant text-[11px] font-semibold whitespace-nowrap shrink-0">
                 <span>Session {sessionsCompleted + 1}/6</span>
               </div>
             </div>
@@ -400,7 +400,7 @@ export function TaskManager() {
                     P1: Urgent &amp; High Impact (Do First)
                   </h3>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 whitespace-nowrap shrink-0">
                   {p1Tasks.length} Tasks
                 </span>
               </div>
@@ -461,7 +461,7 @@ export function TaskManager() {
                     P2: Scheduled / Pipeline (Schedule)
                   </h3>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant whitespace-nowrap shrink-0">
                   {p2Tasks.length} Tasks
                 </span>
               </div>
@@ -521,7 +521,7 @@ export function TaskManager() {
                     P3: Quick Wins (&lt;15 Mins)
                   </h3>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant whitespace-nowrap shrink-0">
                   {p3Tasks.length} Tasks
                 </span>
               </div>

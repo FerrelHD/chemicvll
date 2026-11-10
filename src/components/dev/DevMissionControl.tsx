@@ -356,7 +356,7 @@ export function DevMissionControl() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {runningServers}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 Bound
               </span>
             </div>
@@ -379,7 +379,7 @@ export function DevMissionControl() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {systemMetrics ? systemMetrics.usedGB : '4.8'} <span className="text-xs text-on-surface-variant font-normal">/ {systemMetrics ? systemMetrics.totalGB : '16'} GB</span>
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 {systemMetrics ? `${systemMetrics.usedPercent}%` : 'Optimal'}
               </span>
             </div>
@@ -405,7 +405,7 @@ export function DevMissionControl() {
               <span className="text-3xl font-bold text-on-surface tracking-tight font-sans">
                 3 Up
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant whitespace-nowrap shrink-0">
                 0 Exited
               </span>
             </div>
@@ -428,7 +428,7 @@ export function DevMissionControl() {
               <span className="text-xl font-bold text-on-surface tracking-tight font-mono">
                 main
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 whitespace-nowrap shrink-0">
                 Synced
               </span>
             </div>
