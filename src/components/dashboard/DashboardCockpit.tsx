@@ -90,67 +90,67 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       {/* Morning Briefing & Unified Header */}
       <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
 
-      {/* Row 1: 4 Quick Stats Bento Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+      {/* Row 1: 4 Quick Stats Bento Cards (Compact 2x2 on Mobile, 4x1 on Desktop) */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
         
         {/* Stat 1: Karir */}
         <div
           onClick={() => onNavigate('career')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Career Pipeline
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
-              <Briefcase className="w-4 h-4 text-primary-container" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
+              <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-container" />
             </div>
           </div>
 
-          <div className="my-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface font-sans">{activeCareerCount}</span>
-              <span className="text-xs text-on-surface-variant font-medium">Active Applications</span>
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">{activeCareerCount}</span>
+              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">Active Applications</span>
             </div>
-            <div className="mt-2 flex items-center gap-1.5">
+            <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-mono text-[10px] font-bold whitespace-nowrap shrink-0">
                 {interviewCount} Interview
               </span>
-              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">advanced stage</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">advanced stage</span>
             </div>
           </div>
 
-          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px] truncate">Open Pipeline Kanban</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[10px] sm:text-[11px] truncate">Open Pipeline</span>
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 2: Keuangan */}
         <div
           onClick={() => onNavigate('finance')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Total Tracked Balance
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
+              Tracked Balance
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-primary-container transition-colors">
-              <Wallet className="w-4 h-4 text-primary-container" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-primary-container transition-colors shrink-0">
+              <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-container" />
             </div>
           </div>
 
-          <div className="my-3">
+          <div className="my-2 sm:my-3">
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1">
                 {isPrivacyMode ? (
-                  <span className="text-2xl font-bold font-mono text-on-surface">
+                  <span className="text-base sm:text-2xl font-bold font-mono text-on-surface">
                     Rp •••••••
                   </span>
                 ) : (
                   <>
-                    <span className="text-xs font-bold text-on-surface-variant">Rp</span>
-                    <span className="text-2xl font-bold font-mono text-on-surface">
+                    <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant">Rp</span>
+                    <span className="text-base sm:text-2xl font-bold font-mono text-on-surface truncate">
                       {totalBalance.toLocaleString('id-ID')}
                     </span>
                   </>
@@ -162,50 +162,50 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   e.stopPropagation();
                   togglePrivacyMode();
                 }}
-                className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition"
+                className="p-1 sm:p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition shrink-0"
                 title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
-                {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {isPrivacyMode ? <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
               </button>
             </div>
-            <div className="mt-2 flex items-center gap-1.5">
+            <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold whitespace-nowrap shrink-0">
-                {wallets.length} Active Wallets
+                {wallets.length} Wallets
               </span>
-              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5 whitespace-nowrap shrink-0">
+              <span className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5 whitespace-nowrap shrink-0">
                 <TrendingUp className="w-3 h-3 shrink-0" /> Liquid
               </span>
             </div>
           </div>
 
-          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Open Ledger &amp; Radar</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[10px] sm:text-[11px] truncate">Open Ledger</span>
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 3: Tugas & Fokus */}
         <div
           onClick={() => onNavigate('tasks')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Daily Task Target
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
+              Daily Target
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
             </div>
           </div>
 
-          <div className="my-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface font-sans">
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">
                 {completedTasks}/{totalTasks}
               </span>
-              <span className="text-xs text-on-surface-variant font-medium">Completed</span>
+              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">Completed</span>
             </div>
-            <div className="mt-2">
+            <div className="mt-1.5 sm:mt-2">
               <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary-container h-full rounded-full transition-all duration-500"
@@ -215,52 +215,52 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </div>
           </div>
 
-          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">
+          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[10px] sm:text-[11px] truncate">
               {completedTasks === totalTasks && totalTasks > 0
-                ? 'All targets completed'
-                : `${taskRatioPercent}% Completed today`}
+                ? 'All Done'
+                : `${taskRatioPercent}% Today`}
             </span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
         {/* Stat 4: Dev Server */}
         <div
           onClick={() => onNavigate('dev')}
-          className="bg-surface-container-lowest rounded-2xl p-4 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              Active Dev Ports
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
+              Dev Ports
             </span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors">
-              <Terminal className="w-4 h-4 text-indigo-500" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
+              <Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
             </div>
           </div>
 
-          <div className="my-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-on-surface font-sans">
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">
                 {runningServers > 0 ? `${runningServers} Running` : 'Standby'}
               </span>
             </div>
-            <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px]">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
+            <div className="mt-1.5 sm:mt-2 flex items-center gap-1 font-mono text-[10px]">
+              <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
                 :3000
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
+              <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0 hidden sm:inline">
                 :5432
               </span>
-              <span className="text-on-surface-variant whitespace-nowrap shrink-0">
+              <span className="text-on-surface-variant whitespace-nowrap shrink-0 text-[10px]">
                 {runningServers > 0 ? 'Listening' : 'Ready'}
               </span>
             </div>
           </div>
 
-          <div className="pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
-            <span className="text-[11px]">Open Console &amp; Runner</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
+            <span className="text-[10px] sm:text-[11px] truncate">Open Console</span>
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
         </div>
 
