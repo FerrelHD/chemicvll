@@ -285,21 +285,21 @@ export function FinanceManager() {
             <div className="flex items-center gap-2">
               {transactions.length === 0 ? (
                 <>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold whitespace-nowrap shrink-0">
                     0% this week
                   </span>
-                  <span className="text-[11px] text-on-surface-variant">No transactions yet</span>
+                  <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">No activity</span>
                 </>
               ) : (
                 <>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
-                    <TrendingUp className="w-3 h-3 text-emerald-600" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold whitespace-nowrap shrink-0">
+                    <TrendingUp className="w-3 h-3 text-emerald-600 shrink-0" />
                     {totalIncome >= totalExpense ? '+' : '-'}
                     {totalExpense > 0
                       ? Math.round((Math.abs(totalIncome - totalExpense) / totalExpense) * 100)
                       : 100}% net
                   </span>
-                  <span className="text-[11px] text-on-surface-variant">Active cashflow</span>
+                  <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active cashflow</span>
                 </>
               )}
             </div>
@@ -319,10 +319,10 @@ export function FinanceManager() {
               {isPrivacyMode ? 'Rp •••••••' : 'Rp 0'}
             </span>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Cash Allocation
               </span>
-              <span className="text-[11px] text-on-surface-variant">Ready to allocate</span>
+              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Ready</span>
             </div>
           </div>
         </div>
@@ -340,10 +340,10 @@ export function FinanceManager() {
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Inflow
               </span>
-              <span className="text-[11px] text-on-surface-variant">Active</span>
+              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active</span>
             </div>
           </div>
         </div>
@@ -361,10 +361,10 @@ export function FinanceManager() {
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Outflow
               </span>
-              <span className="text-[11px] text-on-surface-variant">Controlled</span>
+              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Controlled</span>
             </div>
           </div>
         </div>
@@ -766,7 +766,7 @@ export function FinanceManager() {
                           Rp {sub.cost.toLocaleString('id-ID')}
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${
                             isUrgent
                               ? 'bg-rose-100 text-rose-700'
                               : 'bg-surface-container-high text-on-surface-variant'
