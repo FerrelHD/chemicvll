@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CareerPipeline, CareerStage } from '@/types/database';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 interface CareerState {
   items: CareerPipeline[];
@@ -39,10 +40,12 @@ export const useCareerStore = create<CareerState>()(
             item.id === id ? { ...item, ...updates, updated_at: new Date().toISOString() } : item
           ),
         })),
-      deleteItem: (id) =>
+      deleteItem: (id) => {
         set((state) => ({
           items: state.items.filter((item) => item.id !== id),
-        })),
+        }));
+        deleteFromCloud('career_pipelines', id);
+      },
       moveStage: (id, stage) =>
         set((state) => ({
           items: state.items.map((item) =>
