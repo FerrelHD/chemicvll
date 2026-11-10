@@ -228,10 +228,10 @@ export function FinanceManager() {
     <section className="space-y-6">
       
       {/* Top Bar: Overview Greeting & Action Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col gap-0.5 sm:gap-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
               Financial Vault &amp; Cashflow
             </h1>
           </div>
@@ -242,7 +242,7 @@ export function FinanceManager() {
 
         {/* Quick Toolbars Matching Reference */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
+          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
             <Calendar className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
             <span>Nov 2026</span>
           </div>
@@ -250,7 +250,7 @@ export function FinanceManager() {
           <button
             type="button"
             onClick={() => setIsLoggingOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95 whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95 whitespace-nowrap shrink-0"
           >
             <Plus className="w-3.5 h-3.5 shrink-0" />
             <span>Record Transaction</span>
@@ -258,48 +258,48 @@ export function FinanceManager() {
         </div>
       </div>
 
-      {/* Row 1: 4 Key Metric Bento Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* Row 1: 4 Key Metric Bento Tiles (Compact 2x2 on Mobile, 4x1 on Desktop) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Tile 1: Saldo Utama */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Net Balance</span>
-            <div className="flex items-center gap-1.5">
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Net Balance</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               <button
                 type="button"
                 onClick={togglePrivacyMode}
                 className="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
                 title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
-                {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
-              <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-                <Wallet className="w-4 h-4" />
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
+                <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
           </div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {transactions.length === 0 ? (
                 <>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold whitespace-nowrap shrink-0">
-                    0% this week
+                  <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
+                    0%
                   </span>
-                  <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">No activity</span>
+                  <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">No activity</span>
                 </>
               ) : (
                 <>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold whitespace-nowrap shrink-0">
+                  <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                     <TrendingUp className="w-3 h-3 text-emerald-600 shrink-0" />
                     {totalIncome >= totalExpense ? '+' : '-'}
                     {totalExpense > 0
                       ? Math.round((Math.abs(totalIncome - totalExpense) / totalExpense) * 100)
                       : 100}% net
                   </span>
-                  <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active cashflow</span>
+                  <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">Active</span>
                 </>
               )}
             </div>
@@ -307,64 +307,64 @@ export function FinanceManager() {
         </div>
 
         {/* Tile 2: Total Tabungan */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total Savings</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <PiggyBank className="w-4 h-4" />
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Total Savings</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
+              <PiggyBank className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
               {isPrivacyMode ? 'Rp •••••••' : 'Rp 0'}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Cash Allocation
               </span>
-              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Ready</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Ready</span>
             </div>
           </div>
         </div>
 
         {/* Tile 3: Pemasukan Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Monthly Income</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <ArrowDownLeft className="w-4 h-4 text-emerald-600" />
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Monthly Income</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
+              <ArrowDownLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Inflow
               </span>
-              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active</span>
             </div>
           </div>
         </div>
 
         {/* Tile 4: Pengeluaran Bulan Ini */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4.5 sm:p-5 min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Monthly Expenses</span>
-            <div className="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-              <ArrowUpRight className="w-4 h-4 text-rose-500" />
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Monthly Expenses</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
+              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-500" />
             </div>
           </div>
-          <div className="mt-3 flex flex-col gap-1.5">
-            <span className="text-2xl font-bold text-on-surface tracking-tight font-sans">
+          <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-semibold whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Outflow
               </span>
-              <span className="text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Controlled</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Controlled</span>
             </div>
           </div>
         </div>
