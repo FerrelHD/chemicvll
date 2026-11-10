@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Task } from '@/types/database';
 import { checkAndExecuteRollover, RolloverResult } from '@/lib/daily-rollover';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 interface TaskState {
   tasks: Task[];
@@ -54,8 +55,10 @@ export const useTaskStore = create<TaskState>()(
             t.id === id ? { ...t, is_daily_focus: !t.is_daily_focus } : t
           ),
         })),
-      deleteTask: (id) =>
-        set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
+      deleteTask: (id) => {
+        set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
+        deleteFromCloud('tasks', id);
+      },
       executeDailyRollover: (todayStr, lastDate) => {
         const res = checkAndExecuteRollover(useTaskStore.getState().tasks, todayStr, lastDate);
         if (res.rolledOverCount > 0) {

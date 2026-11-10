@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Wallet, Transaction, Subscription } from '@/types/database';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 interface FinanceState {
   wallets: Wallet[];
@@ -71,14 +72,16 @@ export const useFinanceStore = create<FinanceState>()(
         set((state) => ({
           wallets: state.wallets.map((w) => (w.id === id ? { ...w, ...updates } : w)),
         })),
-      deleteWallet: (id) =>
+      deleteWallet: (id) => {
         set((state) => {
           const filtered = state.wallets.filter((w) => w.id !== id);
           return {
             wallets: filtered,
             activeWalletId: state.activeWalletId === id ? (filtered[0]?.id || '') : state.activeWalletId,
           };
-        }),
+        });
+        deleteFromCloud('wallets', id);
+      },
       addTransaction: ({ wallet_id, to_wallet_id, type, category, amount, note }) =>
         set((state) => {
           const newTx: Transaction = {
@@ -125,10 +128,12 @@ export const useFinanceStore = create<FinanceState>()(
             ...state.subscriptions,
           ],
         })),
-      deleteSubscription: (id) =>
+      deleteSubscription: (id) => {
         set((state) => ({
           subscriptions: state.subscriptions.filter((s) => s.id !== id),
-        })),
+        }));
+        deleteFromCloud('subscriptions', id);
+      },
     }),
     {
       name: 'chemicvll-finance-storage',
