@@ -1,6 +1,7 @@
 'use client';
 
 import { createBrowserClient } from './supabase/client';
+import { flushPendingDeletions, isPendingDeletion } from './supabase-delete';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useTaskStore } from '@/stores/useTaskStore';
@@ -44,6 +45,9 @@ export async function pullFromCloud(): Promise<boolean> {
     useSyncStore.getState().setStatus('syncing');
     isSyncingDown = true;
 
+    // Flush any pending deletions first before fetching
+    await flushPendingDeletions();
+
     // Parallel fetch with 10s timeout to allow cold connection handshake
     const [careerRes, walletRes, txRes, subRes, taskRes] = await Promise.race([
       Promise.all([
@@ -83,31 +87,41 @@ export async function pullFromCloud(): Promise<boolean> {
       return false;
     }
 
-    const remoteCareer = careerRes.data;
-    const remoteWallets = walletRes.data;
-    const remoteTx = txRes.data;
-    const remoteSubs = subRes.data;
-    const remoteTasks = taskRes.data;
+    const filteredCareer = (careerRes.data || []).filter(
+      (item: any) => !isPendingDeletion('career_pipelines', item.id)
+    );
+    const filteredWallets = (walletRes.data || []).filter(
+      (w: any) => !isPendingDeletion('wallets', w.id)
+    );
+    const filteredTx = (txRes.data || []).filter(
+      (tx: any) => !isPendingDeletion('transactions', tx.id)
+    );
+    const filteredSubs = (subRes.data || []).filter(
+      (s: any) => !isPendingDeletion('subscriptions', s.id)
+    );
+    const filteredTasks = (taskRes.data || []).filter(
+      (task: any) => !isPendingDeletion('tasks', task.id)
+    );
 
     // Check if cloud already has stored data
     const hasRemoteData =
-      (remoteCareer && remoteCareer.length > 0) ||
-      (remoteWallets && remoteWallets.length > 0) ||
-      (remoteTasks && remoteTasks.length > 0);
+      filteredCareer.length > 0 ||
+      filteredWallets.length > 0 ||
+      filteredTasks.length > 0;
 
     if (hasRemoteData) {
-      if (remoteCareer && remoteCareer.length > 0) {
-        useCareerStore.setState({ items: remoteCareer });
+      if (careerRes.data) {
+        useCareerStore.setState({ items: filteredCareer });
       }
-      if (remoteWallets && remoteWallets.length > 0) {
+      if (walletRes.data) {
         useFinanceStore.setState({
-          wallets: remoteWallets,
-          transactions: remoteTx || [],
-          subscriptions: remoteSubs || [],
+          wallets: filteredWallets,
+          transactions: filteredTx,
+          subscriptions: filteredSubs,
         });
       }
-      if (remoteTasks && remoteTasks.length > 0) {
-        useTaskStore.setState({ tasks: remoteTasks });
+      if (taskRes.data) {
+        useTaskStore.setState({ tasks: filteredTasks });
       }
     } else {
       // First time cloud initialization: push existing local data to cloud
@@ -137,6 +151,9 @@ export async function pushAllToCloud(force = false): Promise<void> {
 
   try {
     useSyncStore.getState().setStatus('syncing');
+
+    // Flush any pending deletions before upserting active items
+    await flushPendingDeletions();
 
     const careerItems = useCareerStore.getState().items;
     const { wallets, transactions, subscriptions } = useFinanceStore.getState();
