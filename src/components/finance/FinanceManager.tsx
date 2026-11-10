@@ -598,10 +598,10 @@ export function FinanceManager() {
             ) : (
               <>
                 {/* Vertical Rounded Capsule Bars */}
-                <div className="grid grid-cols-4 gap-2 sm:gap-6 items-end h-56 px-1 sm:px-4">
+                <div className="grid grid-cols-4 gap-3 sm:gap-8 items-end h-56 px-2 sm:px-6">
                   {weeklyCapsules.map((cap) => (
-                    <div key={cap.label} className="flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group">
-                      <div className="w-9 sm:w-16 bg-surface-container-low rounded-full p-1 sm:p-1.5 flex flex-col justify-end gap-1 sm:gap-1.5 h-44 shadow-inner relative">
+                    <div key={cap.label} className="flex flex-col items-center gap-2 h-full justify-end group">
+                      <div className="w-8 sm:w-10 bg-surface-container-low rounded-full p-1 sm:p-1.5 flex flex-col justify-end gap-1 sm:gap-1.5 h-44 shadow-inner relative">
                         {/* Income capsule (Purple) */}
                         <div
                           className="w-full bg-[#a387f6] rounded-full transition-all duration-500 group-hover:opacity-90"
@@ -615,14 +615,14 @@ export function FinanceManager() {
                           title={`Out: ${cap.outRp}`}
                         />
                       </div>
-                      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant group-hover:text-on-surface">
+                      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant group-hover:text-on-surface tracking-tight mt-0.5">
                         {cap.label}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 pt-2 border-t border-outline/20 text-xs">
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-4 pt-2.5 border-t border-outline/20 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#a387f6]" />
                     <span className="text-on-surface-variant font-medium">Income (Cash In)</span>
