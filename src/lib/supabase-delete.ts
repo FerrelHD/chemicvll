@@ -5,7 +5,8 @@ export type SyncTable =
   | 'wallets'
   | 'transactions'
   | 'subscriptions'
-  | 'tasks';
+  | 'tasks'
+  | 'budget_plans';
 
 export interface PendingDeletion {
   table: SyncTable;

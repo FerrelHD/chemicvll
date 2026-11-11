@@ -392,3 +392,77 @@ export function getAvailableBudgetCategories(rules: BudgetSplitRule[]): string[]
 
   return result;
 }
+
+export interface BudgetPlanRow {
+  id: string;
+  user_id: string;
+  cycle_start_date: string;
+  cycle_end_date: string;
+  salary_amount: number;
+  fixed_items: FixedAllocation[];
+  rules: BudgetSplitRule[];
+  linked_transaction_ids: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Detects whether a Supabase/PostgREST error means the budget_plans table
+ * has not been created by SQL migration yet.
+ */
+export function isMissingTableError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const err = error as { code?: string; message?: string };
+  if (err.code === '42P01' || err.code === 'PGRST205') return true;
+  if (typeof err.message === 'string') {
+    return /does not exist|could not find the table|relation .*budget_plans/i.test(err.message);
+  }
+  return false;
+}
+
+/**
+ * Serializes a client MonthlyBudgetPlan into the Supabase budget_plans schema.
+ */
+export function budgetPlanToRow(
+  plan: MonthlyBudgetPlan,
+  userId: string,
+  isActive: boolean
+): BudgetPlanRow {
+  return {
+    id: plan.id,
+    user_id: userId,
+    cycle_start_date: plan.cycleStartDate,
+    cycle_end_date: plan.cycleEndDate,
+    salary_amount: Math.max(0, Math.round(plan.salaryAmount || 0)),
+    fixed_items: Array.isArray(plan.fixedItems) ? plan.fixedItems : [],
+    rules: Array.isArray(plan.rules) ? plan.rules : [],
+    linked_transaction_ids: Array.isArray(plan.linkedTransactionIds)
+      ? plan.linkedTransactionIds
+      : [],
+    is_active: isActive,
+    created_at: plan.created_at,
+    updated_at: plan.updated_at,
+  };
+}
+
+/**
+ * Hydrates a client MonthlyBudgetPlan from a Supabase budget_plans row.
+ */
+export function rowToBudgetPlan(row: Partial<BudgetPlanRow> & { id: string }): MonthlyBudgetPlan {
+  const nowIso = new Date().toISOString();
+  return {
+    id: String(row.id),
+    cycleStartDate: String(row.cycle_start_date || ''),
+    cycleEndDate: String(row.cycle_end_date || ''),
+    salaryAmount: Math.max(0, Math.round(Number(row.salary_amount ?? 0) || 0)),
+    fixedItems: Array.isArray(row.fixed_items) ? row.fixed_items : [],
+    rules: Array.isArray(row.rules) ? row.rules : [],
+    linkedTransactionIds: Array.isArray(row.linked_transaction_ids)
+      ? row.linked_transaction_ids.map(String)
+      : [],
+    syncedToCloud: true,
+    created_at: String(row.created_at || nowIso),
+    updated_at: String(row.updated_at || nowIso),
+  };
+}

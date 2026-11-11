@@ -136,6 +136,8 @@ export interface MonthlyBudgetPlan {
   salaryAmount: number;
   fixedItems: FixedAllocation[];
   rules: BudgetSplitRule[];
+  linkedTransactionIds?: string[];
+  syncedToCloud?: boolean;
   created_at: string;
   updated_at: string;
 }
