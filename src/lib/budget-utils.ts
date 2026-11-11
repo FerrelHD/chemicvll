@@ -466,3 +466,53 @@ export function rowToBudgetPlan(row: Partial<BudgetPlanRow> & { id: string }): M
     updated_at: String(row.updated_at || nowIso),
   };
 }
+
+/**
+ * Returns IDs of transactions created by or tied to the given budget cycle
+ * (Payday income logs and Pos Fix payments), supporting both explicit
+ * linkedTransactionIds and legacy timestamp/category matching.
+ */
+export function getReversibleCycleTransactionIds(
+  plan: MonthlyBudgetPlan | null,
+  transactions: Transaction[]
+): string[] {
+  if (!plan) return [];
+
+  if (Array.isArray(plan.linkedTransactionIds)) {
+    const explicitIds = new Set(plan.linkedTransactionIds);
+    return transactions.filter((tx) => explicitIds.has(tx.id)).map((tx) => tx.id);
+  }
+
+  // Legacy fallback for plans saved before linkedTransactionIds tracking existed
+  const planCreatedMs = Date.parse(plan.created_at);
+  const hasValidPlanTime = !Number.isNaN(planCreatedMs);
+  const fixedNamesLower = new Set(
+    plan.fixedItems.map((item) => item.name.trim().toLowerCase())
+  );
+  const fixedCategoryLower = new Set(
+    plan.fixedItems.map((item) => parseFixedPaymentCategory(item.name).toLowerCase())
+  );
+
+  return transactions
+    .filter((tx) => {
+      const txTimeMs = Date.parse(tx.created_at || tx.transaction_date);
+      const isWithinCycleCreation =
+        !hasValidPlanTime || Number.isNaN(txTimeMs) || txTimeMs >= planCreatedMs - 1000;
+      if (!isWithinCycleCreation) return false;
+
+      if (tx.type === 'income' && tx.category === 'Gajian / Payday') {
+        const cycleNote = `siklus ${plan.cycleStartDate} s/d ${plan.cycleEndDate}`;
+        return Boolean(tx.note?.includes(cycleNote)) || tx.amount === plan.salaryAmount;
+      }
+
+      if (tx.type === 'expense' && isFixedPaymentCategory(tx.category)) {
+        const catLower = tx.category.trim().toLowerCase();
+        if (fixedCategoryLower.has(catLower)) return true;
+        const strippedName = catLower.replace(/^pos fix:\s*/i, '');
+        return fixedNamesLower.has(strippedName);
+      }
+
+      return false;
+    })
+    .map((tx) => tx.id);
+}

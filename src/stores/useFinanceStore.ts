@@ -9,7 +9,17 @@ import {
   MonthlyBudgetPlan,
 } from '@/types/database';
 import { deleteFromCloud } from '@/lib/supabase-delete';
-import { computePaydayCycle, parseFixedPaymentCategory } from '@/lib/budget-utils';
+import {
+  computePaydayCycle,
+  getReversibleCycleTransactionIds,
+  isFixedPaymentCategory,
+  parseFixedPaymentCategory,
+} from '@/lib/budget-utils';
+
+function syncFinanceChangesNow(): void {
+  if (typeof window === 'undefined') return;
+  void import('@/lib/supabase-sync').then(({ pushAllToCloud }) => pushAllToCloud());
+}
 
 export const DEFAULT_BUDGET_RULES: BudgetSplitRule[] = [
   {
@@ -74,12 +84,13 @@ interface FinanceState {
     amount: number;
     note?: string | null;
   }) => void;
+  deleteTransaction: (id: string) => void;
   addSubscription: (sub: Omit<Subscription, 'id' | 'created_at'>) => void;
   deleteSubscription: (id: string) => void;
   saveBudgetPlan: (input: SaveBudgetPlanInput) => void;
   updateBudgetRules: (rules: BudgetSplitRule[]) => void;
   toggleFixedItemPaid: (fixedId: string, deductWalletId?: string | null) => void;
-  resetBudgetPlan: () => void;
+  resetBudgetPlan: (options?: { revertTransactions?: boolean }) => void;
 }
 
 function applyBalanceDelta(
@@ -124,7 +135,7 @@ const INITIAL_SUBSCRIPTIONS: Subscription[] = [];
 
 export const useFinanceStore = create<FinanceState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       wallets: INITIAL_WALLETS,
       activeWalletId: 'w-bca',
       transactions: INITIAL_TRANSACTIONS,
@@ -164,8 +175,9 @@ export const useFinanceStore = create<FinanceState>()(
       },
       addTransaction: ({ wallet_id, to_wallet_id, type, category, amount, note }) =>
         set((state) => {
+          const nowIso = new Date().toISOString();
           const newTx: Transaction = {
-            id: `tx-${Date.now()}`,
+            id: `tx-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
             wallet_id,
             to_wallet_id: to_wallet_id || null,
             project_id: null,
@@ -173,8 +185,8 @@ export const useFinanceStore = create<FinanceState>()(
             category,
             amount,
             note: note || null,
-            transaction_date: new Date().toISOString(),
-            created_at: new Date().toISOString(),
+            transaction_date: nowIso,
+            created_at: nowIso,
           };
 
           const updatedWallets = applyBalanceDelta(
@@ -190,6 +202,60 @@ export const useFinanceStore = create<FinanceState>()(
             transactions: [newTx, ...state.transactions],
           };
         }),
+      deleteTransaction: (id) => {
+        const targetTx = get().transactions.find((t) => t.id === id);
+        if (!targetTx) return;
+
+        void deleteFromCloud('transactions', id);
+
+        set((state) => {
+          const nextWallets = applyBalanceDelta(
+            state.wallets,
+            targetTx.wallet_id,
+            targetTx.to_wallet_id ?? null,
+            targetTx.type,
+            -targetTx.amount
+          );
+          const nextTransactions = state.transactions.filter((t) => t.id !== id);
+
+          let nextBudgetPlan = state.budgetPlan;
+          if (nextBudgetPlan) {
+            const prevLinked = nextBudgetPlan.linkedTransactionIds || [];
+            const nextLinked = prevLinked.filter((txId) => txId !== id);
+            let nextFixed = nextBudgetPlan.fixedItems;
+
+            if (targetTx.type === 'expense' && isFixedPaymentCategory(targetTx.category)) {
+              const targetCatLower = targetTx.category.trim().toLowerCase();
+              nextFixed = nextBudgetPlan.fixedItems.map((item) =>
+                item.isPaid &&
+                parseFixedPaymentCategory(item.name).toLowerCase() === targetCatLower
+                  ? { ...item, isPaid: false }
+                  : item
+              );
+            }
+
+            if (
+              nextLinked.length !== prevLinked.length ||
+              nextFixed !== nextBudgetPlan.fixedItems
+            ) {
+              nextBudgetPlan = {
+                ...nextBudgetPlan,
+                fixedItems: nextFixed,
+                linkedTransactionIds: nextLinked,
+                updated_at: new Date().toISOString(),
+              };
+            }
+          }
+
+          return {
+            wallets: nextWallets,
+            transactions: nextTransactions,
+            budgetPlan: nextBudgetPlan,
+          };
+        });
+
+        syncFinanceChangesNow();
+      },
       addSubscription: (sub) =>
         set((state) => ({
           subscriptions: [
@@ -218,28 +284,17 @@ export const useFinanceStore = create<FinanceState>()(
           }));
 
           const isSameCycle = state.budgetPlan?.cycleStartDate === startKey;
-          const nextPlan: MonthlyBudgetPlan = {
-            id: isSameCycle && state.budgetPlan ? state.budgetPlan.id : `budget-${startKey}-${Date.now()}`,
-            cycleStartDate: startKey,
-            cycleEndDate,
-            salaryAmount: cleanSalary,
-            fixedItems: cleanFixed,
-            rules,
-            created_at: isSameCycle && state.budgetPlan ? state.budgetPlan.created_at : nowIso,
-            updated_at: nowIso,
-          };
-
-          const shouldArchivePrev = state.budgetPlan && state.budgetPlan.cycleStartDate !== startKey;
-          const nextHistory = shouldArchivePrev && state.budgetPlan
-            ? [state.budgetPlan, ...state.budgetHistory].slice(0, 12)
-            : state.budgetHistory;
+          const nextLinkedIds =
+            isSameCycle && state.budgetPlan?.linkedTransactionIds
+              ? [...state.budgetPlan.linkedTransactionIds]
+              : [];
 
           let nextWallets = state.wallets;
           let nextTransactions = state.transactions;
 
           if (logIncomeToWalletId && cleanSalary > 0) {
             const incomeTx: Transaction = {
-              id: `tx-payday-${Date.now()}`,
+              id: `tx-payday-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
               wallet_id: logIncomeToWalletId,
               to_wallet_id: null,
               project_id: null,
@@ -250,6 +305,7 @@ export const useFinanceStore = create<FinanceState>()(
               transaction_date: nowIso,
               created_at: nowIso,
             };
+            nextLinkedIds.push(incomeTx.id);
             nextWallets = applyBalanceDelta(
               state.wallets,
               logIncomeToWalletId,
@@ -259,6 +315,27 @@ export const useFinanceStore = create<FinanceState>()(
             );
             nextTransactions = [incomeTx, ...state.transactions];
           }
+
+          const nextPlan: MonthlyBudgetPlan = {
+            id:
+              isSameCycle && state.budgetPlan
+                ? state.budgetPlan.id
+                : `budget-${startKey}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            cycleStartDate: startKey,
+            cycleEndDate,
+            salaryAmount: cleanSalary,
+            fixedItems: cleanFixed,
+            rules,
+            linkedTransactionIds: nextLinkedIds,
+            syncedToCloud: false,
+            created_at: isSameCycle && state.budgetPlan ? state.budgetPlan.created_at : nowIso,
+            updated_at: nowIso,
+          };
+
+          const shouldArchivePrev = state.budgetPlan && state.budgetPlan.cycleStartDate !== startKey;
+          const nextHistory = shouldArchivePrev && state.budgetPlan
+            ? [state.budgetPlan, ...state.budgetHistory].slice(0, 12)
+            : state.budgetHistory;
 
           return {
             budgetPlan: nextPlan,
@@ -275,6 +352,7 @@ export const useFinanceStore = create<FinanceState>()(
             ? {
                 ...state.budgetPlan,
                 rules,
+                syncedToCloud: false,
                 updated_at: new Date().toISOString(),
               }
             : null,
@@ -292,11 +370,14 @@ export const useFinanceStore = create<FinanceState>()(
 
           let nextWallets = state.wallets;
           let nextTransactions = state.transactions;
+          let nextLinkedIds = Array.isArray(state.budgetPlan.linkedTransactionIds)
+            ? [...state.budgetPlan.linkedTransactionIds]
+            : getReversibleCycleTransactionIds(state.budgetPlan, state.transactions);
 
           if (nextPaid && deductWalletId && target.amount > 0) {
             const nowIso = new Date().toISOString();
             const payTx: Transaction = {
-              id: `tx-fix-${Date.now()}`,
+              id: `tx-fix-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
               wallet_id: deductWalletId,
               to_wallet_id: null,
               project_id: null,
@@ -307,6 +388,7 @@ export const useFinanceStore = create<FinanceState>()(
               transaction_date: nowIso,
               created_at: nowIso,
             };
+            nextLinkedIds = [...nextLinkedIds, payTx.id];
             nextWallets = applyBalanceDelta(
               state.wallets,
               deductWalletId,
@@ -321,13 +403,57 @@ export const useFinanceStore = create<FinanceState>()(
             budgetPlan: {
               ...state.budgetPlan,
               fixedItems: updatedFixed,
+              linkedTransactionIds: nextLinkedIds,
+              syncedToCloud: false,
               updated_at: new Date().toISOString(),
             },
             wallets: nextWallets,
             transactions: nextTransactions,
           };
         }),
-      resetBudgetPlan: () => set({ budgetPlan: null }),
+      resetBudgetPlan: (options) => {
+        const state = get();
+        const prevPlan = state.budgetPlan;
+        const revertTransactions = Boolean(options?.revertTransactions);
+        const reversibleIds =
+          revertTransactions && prevPlan
+            ? new Set(getReversibleCycleTransactionIds(prevPlan, state.transactions))
+            : new Set<string>();
+
+        for (const txId of reversibleIds) {
+          void deleteFromCloud('transactions', txId);
+        }
+        if (prevPlan?.id) {
+          void deleteFromCloud('budget_plans', prevPlan.id);
+        }
+
+        set((curr) => {
+          let nextWallets = curr.wallets;
+          let nextTransactions = curr.transactions;
+
+          if (reversibleIds.size > 0) {
+            for (const tx of curr.transactions) {
+              if (!reversibleIds.has(tx.id)) continue;
+              nextWallets = applyBalanceDelta(
+                nextWallets,
+                tx.wallet_id,
+                tx.to_wallet_id ?? null,
+                tx.type,
+                -tx.amount
+              );
+            }
+            nextTransactions = curr.transactions.filter((tx) => !reversibleIds.has(tx.id));
+          }
+
+          return {
+            budgetPlan: null,
+            wallets: nextWallets,
+            transactions: nextTransactions,
+          };
+        });
+
+        syncFinanceChangesNow();
+      },
     }),
     {
       name: 'chemicvll-finance-storage',

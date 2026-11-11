@@ -1,5 +1,10 @@
 import assert from 'node:assert';
-import { computeBudgetProgress, toLocalDateKey } from '../budget-utils';
+import {
+  computeBudgetProgress,
+  getReversibleCycleTransactionIds,
+  toLocalDateKey,
+} from '../budget-utils';
+import { isPendingDeletion, clearPendingDeletion } from '../supabase-delete';
 
 const mockStore = new Map<string, string>();
 (globalThis as any).localStorage = {
@@ -102,6 +107,219 @@ async function runTests() {
   assert.strictEqual(s4.budgetHistory.length, 1);
   assert.strictEqual(s4.budgetHistory[0].salaryAmount, 10_000_000);
   console.log('Test 5 Passed: Starting a new payday cycle archives previous plan cleanly');
+
+  // Test 6: deleteTransaction accurately reverts income, expense, transfer balances & records tombstones
+  s4.addWallet({
+    name: 'BNI Spending',
+    type: 'bank',
+    balance: 1_000_000,
+    color: '#EA580C',
+  });
+  const sWallets = useFinanceStore.getState();
+  const secondWalletId = sWallets.wallets.find((w) => w.name === 'BNI Spending')!.id;
+  const bcaBeforeUndo = sWallets.wallets.find((w) => w.id === 'w-bca')!.balance;
+  const bniBeforeUndo = sWallets.wallets.find((w) => w.id === secondWalletId)!.balance;
+
+  sWallets.addTransaction({
+    wallet_id: 'w-bca',
+    to_wallet_id: secondWalletId,
+    type: 'transfer',
+    category: 'Transfer',
+    amount: 500_000,
+    note: 'Pindah ke spending',
+  });
+  sWallets.addTransaction({
+    wallet_id: secondWalletId,
+    type: 'expense',
+    category: 'Makan & Minum',
+    amount: 75_000,
+    note: 'Salah input kopi',
+  });
+  sWallets.addTransaction({
+    wallet_id: 'w-bca',
+    type: 'income',
+    category: 'Bonus',
+    amount: 250_000,
+    note: 'Typo bonus',
+  });
+
+  const sMid = useFinanceStore.getState();
+  assert.strictEqual(
+    sMid.wallets.find((w) => w.id === 'w-bca')!.balance,
+    bcaBeforeUndo - 500_000 + 250_000
+  );
+  assert.strictEqual(
+    sMid.wallets.find((w) => w.id === secondWalletId)!.balance,
+    bniBeforeUndo + 500_000 - 75_000
+  );
+
+  const bonusTx = sMid.transactions.find((t) => t.note === 'Typo bonus')!;
+  const coffeeTx = sMid.transactions.find((t) => t.note === 'Salah input kopi')!;
+  const transferTx = sMid.transactions.find((t) => t.note === 'Pindah ke spending')!;
+
+  sMid.deleteTransaction(bonusTx.id);
+  sMid.deleteTransaction(coffeeTx.id);
+  sMid.deleteTransaction(transferTx.id);
+
+  const sAfterUndo = useFinanceStore.getState();
+  assert.strictEqual(
+    sAfterUndo.wallets.find((w) => w.id === 'w-bca')!.balance,
+    bcaBeforeUndo,
+    'BCA balance must return to exact pre-undo figure'
+  );
+  assert.strictEqual(
+    sAfterUndo.wallets.find((w) => w.id === secondWalletId)!.balance,
+    bniBeforeUndo,
+    'BNI balance must return to exact pre-undo figure'
+  );
+  assert.strictEqual(isPendingDeletion('transactions', bonusTx.id), true);
+  assert.strictEqual(isPendingDeletion('transactions', coffeeTx.id), true);
+  assert.strictEqual(isPendingDeletion('transactions', transferTx.id), true);
+  clearPendingDeletion('transactions', bonusTx.id);
+  clearPendingDeletion('transactions', coffeeTx.id);
+  clearPendingDeletion('transactions', transferTx.id);
+  console.log('Test 6 Passed: deleteTransaction reverses income/expense/transfer & queues tombstones');
+
+  // Test 7: Deleting a Pos Fix transaction unchecks fixedItems.isPaid and rolls back wallet
+  const bcaPreFix = useFinanceStore.getState().wallets.find((w) => w.id === 'w-bca')!.balance;
+  sAfterUndo.toggleFixedItemPaid('fx-new', 'w-bca');
+  const sPostFix = useFinanceStore.getState();
+  assert.strictEqual(sPostFix.budgetPlan?.fixedItems[0].isPaid, true);
+  assert.strictEqual(
+    sPostFix.wallets.find((w) => w.id === 'w-bca')!.balance,
+    bcaPreFix - 2_000_000
+  );
+  const posFixTx = sPostFix.transactions.find((t) => t.category === 'Pos Fix: Kos')!;
+  assert.ok(sPostFix.budgetPlan?.linkedTransactionIds?.includes(posFixTx.id));
+  sPostFix.deleteTransaction(posFixTx.id);
+
+  const sPostFixUndo = useFinanceStore.getState();
+  assert.strictEqual(sPostFixUndo.budgetPlan?.fixedItems[0].isPaid, false);
+  assert.strictEqual(
+    sPostFixUndo.wallets.find((w) => w.id === 'w-bca')!.balance,
+    bcaPreFix
+  );
+  assert.strictEqual(sPostFixUndo.budgetPlan?.linkedTransactionIds?.includes(posFixTx.id), false);
+  clearPendingDeletion('transactions', posFixTx.id);
+  console.log('Test 7 Passed: Deleting a Pos Fix transaction unchecks paid status cleanly');
+
+  // Test 8: resetBudgetPlan({ revertTransactions: false }) keeps wallets/tx intact & deletes cloud plan
+  const currentPlanId = sPostFixUndo.budgetPlan!.id;
+  const bcaBeforePlanOnlyReset = sPostFixUndo.wallets.find((w) => w.id === 'w-bca')!.balance;
+  const txCountBeforePlanOnlyReset = sPostFixUndo.transactions.length;
+  sPostFixUndo.resetBudgetPlan({ revertTransactions: false });
+
+  const sPlanOnly = useFinanceStore.getState();
+  assert.strictEqual(sPlanOnly.budgetPlan, null);
+  assert.strictEqual(sPlanOnly.wallets.find((w) => w.id === 'w-bca')!.balance, bcaBeforePlanOnlyReset);
+  assert.strictEqual(sPlanOnly.transactions.length, txCountBeforePlanOnlyReset);
+  assert.strictEqual(isPendingDeletion('budget_plans', currentPlanId), true);
+  clearPendingDeletion('budget_plans', currentPlanId);
+  console.log('Test 8 Passed: Plan-only reset leaves transactions untouched & tombstones budget_plans');
+
+  // Test 9: resetBudgetPlan({ revertTransactions: true }) reverts cycle payday + Pos Fix cleanly
+  const trialDate = toLocalDateKey(new Date());
+  const bcaPreTrial = sPlanOnly.wallets.find((w) => w.id === 'w-bca')!.balance;
+  sPlanOnly.saveBudgetPlan({
+    salaryAmount: 5_500_000,
+    cycleStartDate: trialDate,
+    fixedItems: [
+      { id: 'f-saving', name: 'Saving', amount: 2_300_000, isPaid: false },
+      { id: 'f-rumah', name: 'Rumah', amount: 700_000, isPaid: false },
+    ],
+    rules: DEFAULT_BUDGET_RULES,
+    logIncomeToWalletId: 'w-bca',
+  });
+  useFinanceStore.getState().toggleFixedItemPaid('f-rumah', 'w-bca');
+  // Add an unrelated manual snack expense that must NOT be deleted on cycle reset
+  useFinanceStore.getState().addTransaction({
+    wallet_id: 'w-bca',
+    type: 'expense',
+    category: 'Makan & Minum',
+    amount: 25_000,
+    note: 'Snack harian',
+  });
+
+  const sPreFullReset = useFinanceStore.getState();
+  const trialPlan = sPreFullReset.budgetPlan!;
+  const reversibleIds = getReversibleCycleTransactionIds(trialPlan, sPreFullReset.transactions);
+  assert.strictEqual(reversibleIds.length, 2, 'Should find trial Payday income + Pos Fix: Rumah');
+
+  sPreFullReset.resetBudgetPlan({ revertTransactions: true });
+  const sPostFullReset = useFinanceStore.getState();
+  assert.strictEqual(sPostFullReset.budgetPlan, null);
+  assert.strictEqual(
+    sPostFullReset.wallets.find((w) => w.id === 'w-bca')!.balance,
+    bcaPreTrial - 25_000,
+    'Payday (+5.5M) and Pos Fix (-700k) must revert, leaving manual Snack (-25k)'
+  );
+  assert.strictEqual(
+    sPostFullReset.transactions.some((t) => reversibleIds.includes(t.id)),
+    false
+  );
+  assert.strictEqual(
+    sPostFullReset.transactions.some((t) => t.note === 'Snack harian'),
+    true
+  );
+  assert.strictEqual(isPendingDeletion('budget_plans', trialPlan.id), true);
+  for (const tid of reversibleIds) {
+    assert.strictEqual(isPendingDeletion('transactions', tid), true);
+    clearPendingDeletion('transactions', tid);
+  }
+  clearPendingDeletion('budget_plans', trialPlan.id);
+  console.log('Test 9 Passed: Cycle reset with transaction rollback preserves unrelated tx & queues cloud deletions');
+
+  // Test 10: Legacy fallback matching works for existing trial plans lacking linkedTransactionIds
+  const legacyCreatedAt = new Date().toISOString();
+  const legacyPlan = {
+    id: 'budget-legacy-trial',
+    cycleStartDate: '2026-12-16',
+    cycleEndDate: '2027-01-15',
+    salaryAmount: 5_500_000,
+    fixedItems: [{ id: 'lg-1', name: 'Saving', amount: 2_300_000, isPaid: true }],
+    rules: DEFAULT_BUDGET_RULES,
+    created_at: legacyCreatedAt,
+    updated_at: legacyCreatedAt,
+  };
+  useFinanceStore.setState({
+    budgetPlan: legacyPlan,
+    transactions: [
+      {
+        id: 'tx-legacy-payday',
+        wallet_id: 'w-bca',
+        to_wallet_id: null,
+        project_id: null,
+        type: 'income',
+        category: 'Gajian / Payday',
+        amount: 5_500_000,
+        note: 'Alokasi gajian siklus 2026-12-16 s/d 2027-01-15',
+        transaction_date: legacyCreatedAt,
+        created_at: legacyCreatedAt,
+      },
+      {
+        id: 'tx-legacy-fix',
+        wallet_id: 'w-bca',
+        to_wallet_id: null,
+        project_id: null,
+        type: 'expense',
+        category: 'Pos Fix: Saving',
+        amount: 2_300_000,
+        note: 'Pembayaran pos fix: Saving',
+        transaction_date: legacyCreatedAt,
+        created_at: legacyCreatedAt,
+      },
+    ],
+    wallets: [{ ...useFinanceStore.getState().wallets[0], id: 'w-bca', balance: 3_200_000 }],
+  });
+  useFinanceStore.getState().resetBudgetPlan({ revertTransactions: true });
+  const sAfterLegacyReset = useFinanceStore.getState();
+  assert.strictEqual(sAfterLegacyReset.budgetPlan, null);
+  assert.strictEqual(sAfterLegacyReset.transactions.length, 0);
+  assert.strictEqual(sAfterLegacyReset.wallets[0].balance, 0);
+  clearPendingDeletion('budget_plans', 'budget-legacy-trial');
+  clearPendingDeletion('transactions', 'tx-legacy-payday');
+  clearPendingDeletion('transactions', 'tx-legacy-fix');
+  console.log('Test 10 Passed: Legacy pre-tracking trial plan resets and rolls back accurately');
 
   console.log('All Finance Budget Store tests passed successfully!');
 }
