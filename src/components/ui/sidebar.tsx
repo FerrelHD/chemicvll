@@ -165,14 +165,19 @@ export const SidebarLink = ({
       <div className="flex-shrink-0 flex items-center justify-center w-6 h-6">
         {link.icon}
       </div>
-      <span className="text-on-surface text-sm whitespace-nowrap inline-block !p-0 !m-0">
+      <span
+        className={cn(
+          "text-sm whitespace-nowrap inline-block !p-0 !m-0",
+          link.isActive ? "text-on-surface" : "text-on-surface-variant group-hover/sidebar:text-on-surface"
+        )}
+      >
         {link.label}
       </span>
     </>
   );
 
   const baseClass = cn(
-    "flex items-center justify-start gap-3 group/sidebar py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left",
+    "flex items-center justify-start gap-3 group/sidebar min-h-[44px] py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container",
     link.isActive
       ? "bg-white text-on-surface font-semibold shadow-sm border border-outline/40"
       : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60",

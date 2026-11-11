@@ -5,7 +5,8 @@ import { useFinanceStore } from '@/stores/useFinanceStore';
 import { getAvailableBudgetCategories } from '@/lib/budget-utils';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
-import { X, Wallet, CheckCircle2, Zap, ArrowRight, CornerDownLeft, ChevronDown } from 'lucide-react';
+import { X, CornerDownLeft, ChevronDown } from 'lucide-react';
+import { VaultMark, FocusMark, RelayMark } from '@/components/icons/ChemicIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type QuickCaptureTab = 'expense' | 'task' | 'drop';
@@ -142,7 +143,7 @@ export function QuickCaptureModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
       {/* Backdrop click dismiss */}
       <div className="absolute inset-0 -z-10" onClick={onClose} />
 
@@ -179,7 +180,7 @@ export function QuickCaptureModal({
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Wallet className="w-3.5 h-3.5" />
+            <VaultMark active={activeTab === 'expense'} className="w-3.5 h-3.5" />
             <span>Expense</span>
           </button>
 
@@ -192,7 +193,7 @@ export function QuickCaptureModal({
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <CheckCircle2 className="w-3.5 h-3.5" />
+            <FocusMark active={activeTab === 'task'} className="w-3.5 h-3.5" />
             <span>Task</span>
           </button>
 
@@ -205,7 +206,7 @@ export function QuickCaptureModal({
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Zap className="w-3.5 h-3.5" />
+            <RelayMark active={activeTab === 'drop'} className="w-3.5 h-3.5" />
             <span>Quick Drop</span>
           </button>
         </div>
@@ -235,7 +236,7 @@ export function QuickCaptureModal({
                         : ''
                     }
                     onChange={(e) => setExpenseAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="w-full bg-surface-container-low border border-outline/40 rounded-2xl pl-11 pr-4 py-2.5 text-base font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition"
+                    className="w-full bg-surface-container-low border border-outline/40 rounded-2xl pl-11 pr-4 py-2.5 text-base font-bold tabular-nums text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition"
                   />
                 </div>
 
@@ -326,7 +327,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white font-semibold py-3 px-4 rounded-2xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Catat Pengeluaran</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />
@@ -420,7 +421,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white font-semibold py-3 px-4 rounded-2xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Tambahkan Task ke Inbox</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />
@@ -452,7 +453,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white font-semibold py-3 px-4 rounded-2xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Simpan ke Dropzone</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />

@@ -7,14 +7,15 @@ import {
   SidebarLink,
 } from '@/components/ui/sidebar';
 import {
-  LayoutDashboard,
-  Briefcase,
-  CheckCircle2,
-  Wallet,
-  Terminal,
-  CloudUpload,
-  BookOpen,
-} from 'lucide-react';
+  CockpitMark,
+  PipelineMark,
+  FocusMark,
+  VaultMark,
+  ConsoleMark,
+  RelayMark,
+  LedgerNoteMark,
+  ChemicIconProps,
+} from '@/components/icons/ChemicIcons';
 
 interface SidebarProps {
   activeTab: string;
@@ -29,14 +30,18 @@ export function Sidebar({
   open,
   setOpen,
 }: SidebarProps) {
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'career', label: 'Career Pipeline', icon: Briefcase },
-    { id: 'tasks', label: 'Tasks & Focus', icon: CheckCircle2 },
-    { id: 'finance', label: 'Financial Vault', icon: Wallet },
-    { id: 'dev', label: 'Dev Control', icon: Terminal },
-    { id: 'dropzone', label: 'Dropzone Vault', icon: CloudUpload },
-    { id: 'notes', label: 'Second Brain', icon: BookOpen },
+  const navItems: {
+    id: string;
+    label: string;
+    icon: React.ComponentType<ChemicIconProps>;
+  }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: CockpitMark },
+    { id: 'career', label: 'Career Pipeline', icon: PipelineMark },
+    { id: 'tasks', label: 'Tasks & Focus', icon: FocusMark },
+    { id: 'finance', label: 'Financial Vault', icon: VaultMark },
+    { id: 'dev', label: 'Dev Control', icon: ConsoleMark },
+    { id: 'dropzone', label: 'Dropzone Vault', icon: RelayMark },
+    { id: 'notes', label: 'Second Brain', icon: LedgerNoteMark },
   ];
 
   return (
@@ -44,8 +49,9 @@ export function Sidebar({
       <SidebarBody className="justify-between gap-6 h-full">
         <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
           {/* Logo Header */}
-          <div
-            className="flex items-center gap-3 px-1 py-1 cursor-pointer select-none"
+          <button
+            type="button"
+            className="flex items-center gap-3 px-1.5 py-1.5 rounded-xl cursor-pointer select-none text-left hover:bg-surface-container-high/50 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             onClick={() => onTabChange('dashboard')}
           >
             <img
@@ -57,14 +63,14 @@ export function Sidebar({
               <span className="font-bold text-sm text-on-surface tracking-tight">
                 Personal OS
               </span>
-              <span className="text-[11px] text-on-surface-variant font-mono">
+              <span className="text-[11px] text-on-surface-variant font-medium">
                 chemicv11
               </span>
             </div>
-          </div>
+          </button>
 
           {/* Navigation Links */}
-          <div className="mt-8 flex flex-col gap-1.5">
+          <div className="mt-7 flex flex-col gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -75,10 +81,9 @@ export function Sidebar({
                     label: item.label,
                     icon: (
                       <Icon
-                        className={`w-4 h-4 transition-colors ${
-                          isActive
-                            ? 'text-primary-container font-bold'
-                            : 'text-neutral-600 dark:text-neutral-400'
+                        active={isActive}
+                        className={`w-[18px] h-[18px] transition-colors ${
+                          isActive ? 'text-on-surface' : 'text-on-surface-variant'
                         }`}
                       />
                     ),
@@ -100,7 +105,7 @@ export function Sidebar({
             link={{
               label: 'Ferrel HD',
               icon: (
-                <div className="w-7 h-7 rounded-full bg-primary-container text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-inverse-surface text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
                   F
                 </div>
               ),
