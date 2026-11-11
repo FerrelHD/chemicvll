@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
+import { PaydayMark, VaultMark } from '@/components/icons/ChemicIcons';
 import {
-  Wallet,
   PiggyBank,
   TrendingUp,
   CreditCard,
@@ -26,7 +27,6 @@ import {
   BarChart3,
   Eye,
   EyeOff,
-  PieChart,
 } from 'lucide-react';
 
 export function FinanceManager() {
@@ -52,6 +52,11 @@ export function FinanceManager() {
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [isBudgetFreshCycle, setIsBudgetFreshCycle] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [editingWallet, setEditingWallet] = useState<any>(null);
   const [walletForm, setWalletForm] = useState({
     name: '',
@@ -77,6 +82,19 @@ export function FinanceManager() {
 
   // Subscription form state
   const [isAddSubOpen, setIsAddSubOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggingOpen && !isWalletModalOpen && !isAddSubOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsLoggingOpen(false);
+        setIsWalletModalOpen(false);
+        setIsAddSubOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isLoggingOpen, isWalletModalOpen, isAddSubOpen]);
   const [subName, setSubName] = useState('');
   const [subCost, setSubCost] = useState('');
   const [subCycle, setSubCycle] = useState<'monthly' | 'yearly'>('monthly');
@@ -273,7 +291,7 @@ export function FinanceManager() {
             onClick={() => handleOpenBudgetSetup(!budgetPlan)}
             className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container-high border border-outline/30 text-on-surface text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
           >
-            <PieChart className="w-3.5 h-3.5 text-primary-container shrink-0" />
+            <PaydayMark className="w-3.5 h-3.5 shrink-0" />
             <span>{budgetPlan ? 'Payday Budget' : 'Atur Budget Gajian'}</span>
           </button>
 
@@ -303,13 +321,11 @@ export function FinanceManager() {
               >
                 {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
-              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface">
-                <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </div>
+              <VaultMark active className="w-4 h-4 text-on-surface" />
             </div>
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -340,12 +356,10 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Total Savings</span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
-              <PiggyBank className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
+            <PiggyBank className="w-4 h-4 text-on-surface-variant shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${displaySavings.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -365,12 +379,10 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Monthly Income</span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
-              <ArrowDownLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-            </div>
+            <ArrowDownLeft className="w-4 h-4 text-emerald-700 shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -386,12 +398,10 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">Monthly Expenses</span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shrink-0">
-              <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-500" />
-            </div>
+            <ArrowUpRight className="w-4 h-4 text-error shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
+            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -456,7 +466,7 @@ export function FinanceManager() {
                       {bw.card_label || 'REKENING'}
                     </span>
                   </div>
-                  <div className="mt-4 flex items-center justify-between text-xs opacity-90 font-mono">
+                  <div className="mt-4 flex items-center justify-between text-xs opacity-90 tabular-nums">
                     <span>•••• {bw.account_number || '8492'}</span>
                     <span>{isPrivacyMode ? 'Rp •••••••' : `Rp ${bw.balance.toLocaleString('id-ID')}`}</span>
                   </div>
@@ -512,7 +522,7 @@ export function FinanceManager() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-white/90 pt-1 font-mono">
+                <div className="flex items-center justify-between text-xs text-white/90 pt-1 tabular-nums">
                   <span className="tracking-widest">•••• •••• •••• {activeWallet.account_number || '8492'}</span>
                   <span className="font-sans font-semibold">{activeWallet.holder_name || 'FERREL'}</span>
                 </div>
@@ -728,7 +738,7 @@ export function FinanceManager() {
                     {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
                     Rp {tx.amount.toLocaleString('id-ID')}
                   </span>
-                  <span className="text-[10px] text-on-surface-variant font-mono uppercase truncate max-w-[120px] block">
+                  <span className="text-[10px] text-on-surface-variant font-medium uppercase truncate max-w-[120px] block">
                     {wallets.find((w) => w.id === tx.wallet_id)?.name || tx.wallet_id.replace('w-', '')}
                   </span>
                 </div>
@@ -831,8 +841,8 @@ export function FinanceManager() {
       </div>
 
       {/* Modal Quick Transaction */}
-      {isLoggingOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+      {isLoggingOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
           <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-base text-on-surface">Record Transaction</h3>
@@ -874,7 +884,7 @@ export function FinanceManager() {
                   placeholder="e.g. 50000"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                 />
               </div>
 
@@ -974,12 +984,13 @@ export function FinanceManager() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal: Kelola Rekening & Kartu (Add / Edit) */}
-      {isWalletModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      {isWalletModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 backdrop-blur-sm p-4">
           <div className="bg-surface-container-lowest border border-outline/30 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-2 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">
@@ -1053,7 +1064,7 @@ export function FinanceManager() {
                     placeholder="8492"
                     value={walletForm.account_number}
                     onChange={(e) => setWalletForm({ ...walletForm, account_number: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
                 <div>
@@ -1077,7 +1088,7 @@ export function FinanceManager() {
                     placeholder="11/28"
                     value={walletForm.expiry}
                     onChange={(e) => setWalletForm({ ...walletForm, expiry: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
               </div>
@@ -1091,7 +1102,7 @@ export function FinanceManager() {
                   required
                   value={walletForm.balance}
                   onChange={(e) => setWalletForm({ ...walletForm, balance: Number(e.target.value) || 0 })}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                 />
               </div>
 
@@ -1152,12 +1163,13 @@ export function FinanceManager() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal Add Subscription */}
-      {isAddSubOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+      {isAddSubOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
           <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">Add Active Subscription</h3>
@@ -1197,7 +1209,7 @@ export function FinanceManager() {
                     placeholder="e.g. 54000"
                     value={subCost}
                     onChange={(e) => setSubCost(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
 
@@ -1229,7 +1241,7 @@ export function FinanceManager() {
                     required
                     value={subDate}
                     onChange={(e) => setSubDate(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums"
                   />
                 </div>
 
@@ -1271,7 +1283,8 @@ export function FinanceManager() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       {/* Modal Monthly Payday Budgeting Setup */}
       <PaydayBudgetModal

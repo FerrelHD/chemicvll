@@ -3,19 +3,16 @@
 import React, { useMemo, useState } from 'react';
 import {
   AlertCircle,
-  CalendarClock,
   Check,
-  CheckCircle2,
   Lock,
-  PieChart,
   Plus,
   RotateCcw,
   SlidersHorizontal,
-  Sparkles,
   Wallet,
 } from 'lucide-react';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { computeBudgetProgress } from '@/lib/budget-utils';
+import { PaydayMark } from '@/components/icons/ChemicIcons';
 
 interface PaydayBudgetPanelProps {
   onOpenSetup: (freshCycle?: boolean) => void;
@@ -58,22 +55,15 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
 
   if (!budgetPlan || !progress) {
     return (
-      <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-primary-container/15 flex items-center justify-center text-primary-container shrink-0">
-            <PieChart className="w-5 h-5" />
-          </div>
+      <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <PaydayMark className="w-6 h-6 text-on-surface mt-0.5 shrink-0" />
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-on-surface">
-                Payday Monthly Budgeting
-              </h2>
-              <span className="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-semibold">
-                Auto-Split
-              </span>
-            </div>
-            <p className="text-xs text-on-surface-variant mt-0.5">
-              Masukkan nominal gajian dan pos fix bulanan — sisanya terbagi otomatis dengan hitungan jatah aman harian yang presisi.
+            <h2 className="text-base font-bold text-on-surface tracking-tight">
+              Payday Budgeting
+            </h2>
+            <p className="text-xs text-on-surface-variant mt-1 max-w-xl leading-relaxed">
+              Tetapkan nominal gajian dan pos fix bulanan sekali di awal, lalu sistem membagi sisa dana dan jatah aman harian secara presisi.
             </p>
           </div>
         </div>
@@ -81,9 +71,9 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
         <button
           type="button"
           onClick={() => onOpenSetup(true)}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0"
+          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
-          <Sparkles className="w-3.5 h-3.5 text-primary-container" />
+          <Plus className="w-3.5 h-3.5" />
           <span>Atur Budget Gajian</span>
         </button>
       </div>
@@ -92,37 +82,37 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
 
   const { timeline, allocation } = progress;
 
+  // Build proportional segments across 100% of salary for the single allocation track
+  const salaryTotal = Math.max(1, allocation.salaryAmount);
+  const fixedSharePct =
+    allocation.fixedTotal > 0 ? Math.min(100, (allocation.fixedTotal / salaryTotal) * 100) : 0;
+
   return (
-    <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-5">
-      {/* Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="w-9 h-9 rounded-2xl bg-primary-container/15 flex items-center justify-center text-primary-container shrink-0">
-            <PieChart className="w-4 h-4" />
-          </div>
+    <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento space-y-6">
+      {/* Header Strip */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-outline">
+        <div className="flex items-start gap-3">
+          <PaydayMark className="w-6 h-6 text-on-surface mt-0.5 shrink-0" />
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-on-surface">
-                Payday Budget Cockpit
+              <h2 className="text-base font-bold text-on-surface tracking-tight">
+                Payday Ledger
               </h2>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-medium">
-                <CalendarClock className="w-3 h-3" />
-                {formatShortDate(budgetPlan.cycleStartDate)} -{' '}
-                {formatShortDate(budgetPlan.cycleEndDate)}
+              <span className="text-xs text-on-surface-variant font-medium tabular-nums">
+                {formatShortDate(budgetPlan.cycleStartDate)} - {formatShortDate(budgetPlan.cycleEndDate)}
               </span>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                className={`text-[11px] font-semibold tabular-nums px-2 py-0.5 rounded-md ${
                   timeline.isExpired
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'bg-emerald-50 text-emerald-700'
+                    ? 'bg-amber-100 text-amber-900'
+                    : 'bg-surface-container-low text-on-surface-variant'
                 }`}
               >
-                {timeline.isExpired ? 'Siklus Selesai' : `Sisa ${timeline.daysRemaining} Hari`}
+                {timeline.isExpired
+                  ? 'Siklus selesai'
+                  : `Hari ${timeline.daysElapsed}/${timeline.totalDays} (${timeline.daysRemaining} hari lagi)`}
               </span>
             </div>
-            <p className="text-[11px] text-on-surface-variant mt-0.5">
-              Hari ke-{timeline.daysElapsed} dari {timeline.totalDays} hari &bull; Pengeluaran di Vault &amp; Quick Capture memotong pos terkait secara otomatis.
-            </p>
           </div>
         </div>
 
@@ -130,7 +120,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           <button
             type="button"
             onClick={() => onOpenSetup(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95"
+            className="inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-[36px] px-4 py-2 sm:py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Gajian Baru</span>
@@ -138,10 +128,10 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           <button
             type="button"
             onClick={() => onOpenSetup(false)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/30 text-on-surface text-xs font-semibold transition"
+            className="inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container border border-outline text-on-surface text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Edit Plan</span>
+            <span>Edit</span>
           </button>
           <button
             type="button"
@@ -150,7 +140,8 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                 resetBudgetPlan();
               }
             }}
-            className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-rose-600 transition"
+            className="w-11 h-11 sm:w-9 sm:h-9 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-error flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            aria-label="Reset Budget Plan"
             title="Reset Budget Plan"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -160,170 +151,185 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
 
       {/* Cycle Expired Prompt */}
       {timeline.isExpired && (
-        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-900">
+        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
             <span>
-              Periode gajian ini sudah berakhir pada{' '}
-              <strong>{formatShortDate(budgetPlan.cycleEndDate)}</strong>. Mulai siklus baru agar
-              hitungan harian aktif kembali.
+              Periode gajian berakhir pada <strong>{formatShortDate(budgetPlan.cycleEndDate)}</strong>. Mulai siklus baru agar batas harian kembali aktif.
             </span>
           </div>
           <button
             type="button"
             onClick={() => onOpenSetup(true)}
-            className="px-3 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold shrink-0 self-start sm:self-auto transition"
+            className="min-h-[40px] px-4 py-1.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold shrink-0 self-start sm:self-auto transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             Mulai Siklus Baru
           </button>
         </div>
       )}
 
-      {/* 4 Summary Tiles */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-        <div className="p-3.5 rounded-2xl bg-surface-container-low/80 border border-outline/20">
-          <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider block">
-            Gaji Siklus Ini
-          </span>
-          <span className="text-sm sm:text-base font-bold text-on-surface font-mono mt-1 block truncate">
-            {formatRp(allocation.salaryAmount)}
-          </span>
-          <span className="text-[11px] text-on-surface-variant mt-0.5 block">
-            {allocation.fixedTotal > 0
-              ? `${Math.round((allocation.disposableAmount / Math.max(1, allocation.salaryAmount)) * 100)}% dana bebas`
-              : '100% teralokasi'}
-          </span>
+      {/* Single Focal Point: Daily Allowance Hero + Segmented Salary Track */}
+      <div className="space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+          {/* Focal Number */}
+          <div>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant block">
+              Jatah Aman Hari Ini
+            </span>
+            <div className="flex flex-wrap items-baseline gap-2.5 mt-1">
+              <span
+                className={`text-2xl sm:text-4xl font-bold tracking-tight tabular-nums ${
+                  progress.remainingToday < 0 ? 'text-error' : 'text-on-surface'
+                }`}
+              >
+                {formatRp(progress.remainingToday)}
+              </span>
+              <span className="text-xs text-on-surface-variant tabular-nums">
+                dari batas {formatRp(progress.dailyAllowanceToday)} / hari
+              </span>
+            </div>
+          </div>
+
+          {/* Inline Scannable Summary Strip (Replaces Duplicate 4-Box Grid) */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs border-t lg:border-t-0 pt-3 lg:pt-0 border-outline">
+            <div>
+              <span className="text-on-surface-variant block text-[11px]">Gaji Siklus</span>
+              <span className="font-bold text-on-surface tabular-nums">
+                {formatRp(allocation.salaryAmount)}
+              </span>
+            </div>
+            <div>
+              <span className="text-on-surface-variant block text-[11px]">
+                Pos Fix ({progress.fixedPaidCount}/{budgetPlan.fixedItems.length})
+              </span>
+              <span className="font-bold text-on-surface tabular-nums">
+                {formatRp(allocation.fixedTotal)}
+              </span>
+            </div>
+            <div>
+              <span className="text-on-surface-variant block text-[11px]">Sisa Belanja</span>
+              <span
+                className={`font-bold tabular-nums ${
+                  progress.variableRemaining < 0 ? 'text-error' : 'text-on-surface'
+                }`}
+              >
+                {formatRp(progress.variableRemaining)}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-surface-container-low/80 border border-outline/20">
-          <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider block">
-            Pos Fix Terkunci
-          </span>
-          <span className="text-sm sm:text-base font-bold text-on-surface font-mono mt-1 block truncate">
-            {formatRp(allocation.fixedTotal)}
-          </span>
-          <span className="text-[11px] text-on-surface-variant mt-0.5 block">
-            {budgetPlan.fixedItems.length === 0
-              ? 'Tidak ada pos fix'
-              : `${progress.fixedPaidCount}/${budgetPlan.fixedItems.length} sudah lunas`}
-          </span>
-        </div>
+        {/* Tactile Segmented Payday Allocation Track */}
+        <div className="space-y-2 pt-1">
+          <div className="w-full h-3 rounded-full bg-surface-container overflow-hidden flex gap-0.5 p-0.5 border border-outline">
+            {fixedSharePct > 0 && (
+              <div
+                className="h-full rounded-l-full bg-inverse-surface transition-all duration-300"
+                style={{ width: `${fixedSharePct}%` }}
+                title={`Pos Fix: ${Math.round(fixedSharePct)}%`}
+              />
+            )}
+            {allocation.buckets.map((b, idx) => {
+              const sharePct = (b.allocatedAmount / salaryTotal) * 100;
+              if (sharePct <= 0) return null;
+              const isFirst = fixedSharePct === 0 && idx === 0;
+              const isLast = idx === allocation.buckets.length - 1;
+              return (
+                <div
+                  key={b.rule.id}
+                  className={`h-full transition-all duration-300 ${isFirst ? 'rounded-l-full' : ''} ${
+                    isLast ? 'rounded-r-full' : ''
+                  }`}
+                  style={{ width: `${sharePct}%`, backgroundColor: b.rule.color }}
+                  title={`${b.rule.name}: ${Math.round(sharePct)}%`}
+                />
+              );
+            })}
+          </div>
 
-        <div className="p-3.5 rounded-2xl bg-surface-container-low/80 border border-outline/20">
-          <span className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider block">
-            Sisa Dana Belanja
-          </span>
-          <span
-            className={`text-sm sm:text-base font-bold font-mono mt-1 block truncate ${
-              progress.variableRemaining < 0 ? 'text-rose-600' : 'text-on-surface'
-            }`}
-          >
-            {formatRp(progress.variableRemaining)}
-          </span>
-          <span className="text-[11px] text-on-surface-variant mt-0.5 block truncate">
-            Terpakai {formatRp(progress.variableSpent)}
-          </span>
-        </div>
-
-        <div
-          className={`p-3.5 rounded-2xl border ${
-            progress.remainingToday < 0
-              ? 'bg-rose-50/70 border-rose-200'
-              : 'bg-emerald-50/60 border-emerald-200/80'
-          }`}
-        >
-          <span
-            className={`text-[10px] font-semibold uppercase tracking-wider block ${
-              progress.remainingToday < 0 ? 'text-rose-700' : 'text-emerald-800'
-            }`}
-          >
-            Jatah Aman Hari Ini
-          </span>
-          <span
-            className={`text-sm sm:text-base font-bold font-mono mt-1 block truncate ${
-              progress.remainingToday < 0 ? 'text-rose-700' : 'text-emerald-800'
-            }`}
-          >
-            {formatRp(progress.remainingToday)}
-          </span>
-          <span
-            className={`text-[11px] mt-0.5 block truncate ${
-              progress.remainingToday < 0 ? 'text-rose-600' : 'text-emerald-700'
-            }`}
-          >
-            Batas hari ini {formatRp(progress.dailyAllowanceToday)}
-          </span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-on-surface-variant">
+            {allocation.fixedTotal > 0 && (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-sm bg-inverse-surface inline-block" />
+                <span>Pos Fix</span>
+                <span className="font-semibold text-on-surface tabular-nums">
+                  {Math.round(fixedSharePct)}%
+                </span>
+              </span>
+            )}
+            {allocation.buckets.map((b) => (
+              <span key={b.rule.id} className="inline-flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-sm inline-block"
+                  style={{ backgroundColor: b.rule.color }}
+                />
+                <span>{b.rule.name}</span>
+                <span className="font-semibold text-on-surface tabular-nums">
+                  {Math.round((b.allocatedAmount / salaryTotal) * 100)}%
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Main Split Content: Fixed Bills Checklist (Left) + Auto-Split Buckets (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left: Pos Fix Bulanan Checklist */}
-        <div className="lg:col-span-5 rounded-2xl bg-surface-container-low/50 border border-outline/20 p-4 space-y-3">
-          <div className="flex items-center justify-between">
+      {/* Hairline Editorial Split Ledger */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-outline">
+        {/* Left: Checklist Pos Fix */}
+        <div className="lg:col-span-5 space-y-2">
+          <div className="flex items-center justify-between pb-1">
             <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-              Checklist Pos Fix
+              Pos Fix Bulanan
             </h3>
-            <span className="text-[11px] text-on-surface-variant font-medium">
-              {progress.fixedPaidCount}/{budgetPlan.fixedItems.length} Lunas
+            <span className="text-[11px] text-on-surface-variant font-medium tabular-nums">
+              {progress.fixedPaidCount}/{budgetPlan.fixedItems.length} lunas
             </span>
           </div>
 
           {budgetPlan.fixedItems.length === 0 ? (
-            <p className="text-xs text-on-surface-variant py-4 text-center">
-              Belum ada pos fix. Klik Edit Plan untuk menambahkan kos, cicilan, atau subscriptions.
+            <p className="text-xs text-on-surface-variant py-4 border-t border-outline">
+              Tidak ada pos fix di siklus ini.
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="divide-y divide-outline border-t border-outline">
               {budgetPlan.fixedItems.map((item) => {
                 const isPickingWallet = payingItemId === item.id;
                 return (
-                  <div
-                    key={item.id}
-                    className={`p-2.5 rounded-xl border text-xs transition ${
-                      item.isPaid
-                        ? 'bg-emerald-50/50 border-emerald-200/70'
-                        : 'bg-surface-container-lowest border-outline/20'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
+                  <div key={item.id} className="py-1.5">
+                    <div className="flex items-center justify-between gap-2 min-h-[44px]">
                       <button
                         type="button"
                         onClick={() => toggleFixedItemPaid(item.id)}
-                        className="flex items-center gap-2 min-w-0 text-left flex-1"
+                        className="flex items-center gap-2.5 min-w-0 text-left flex-1 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded-lg"
                       >
                         <span
-                          className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition ${
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition ${
                             item.isPaid
-                              ? 'bg-emerald-600 border-emerald-600 text-white'
-                              : 'border-outline/50 bg-surface-container-low'
+                              ? 'bg-emerald-700 border-emerald-700 text-white'
+                              : 'border-on-surface-variant/40 bg-surface-container-low'
                           }`}
                         >
                           {item.isPaid && <Check className="w-3 h-3 stroke-[3]" />}
                         </span>
                         <span
-                          className={`font-semibold truncate ${
-                            item.isPaid
-                              ? 'line-through text-on-surface-variant'
-                              : 'text-on-surface'
+                          className={`text-xs font-semibold truncate ${
+                            item.isPaid ? 'line-through text-on-surface-variant' : 'text-on-surface'
                           }`}
                         >
                           {item.name}
                         </span>
                       </button>
 
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-mono font-bold text-on-surface">
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <span className="text-xs font-bold text-on-surface tabular-nums">
                           {formatRp(item.amount)}
                         </span>
                         {!item.isPaid && wallets.length > 0 && (
                           <button
                             type="button"
-                            onClick={() =>
-                              setPayingItemId(isPickingWallet ? null : item.id)
-                            }
-                            className="px-2 py-0.5 rounded-full bg-surface-container-high hover:bg-inverse-surface hover:text-white text-[10px] font-semibold text-on-surface transition"
-                            title="Bayar & potong saldo dompet"
+                            onClick={() => setPayingItemId(isPickingWallet ? null : item.id)}
+                            className="min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-inverse-surface hover:text-white border border-outline text-[11px] font-semibold text-on-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                            title="Bayar dan potong saldo dompet"
                           >
                             Bayar
                           </button>
@@ -332,13 +338,13 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                     </div>
 
                     {isPickingWallet && !item.isPaid && (
-                      <div className="mt-2 pt-2 border-t border-outline/20 flex items-center justify-between gap-2">
+                      <div className="mb-2 p-2.5 rounded-xl bg-surface-container-low border border-outline flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <Wallet className="w-3 h-3 text-on-surface-variant shrink-0" />
+                          <Wallet className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
                           <select
                             value={selectedWalletId}
                             onChange={(e) => setSelectedWalletId(e.target.value)}
-                            className="flex-1 min-w-0 bg-surface-container-low border border-outline/30 rounded-lg px-2 py-1 text-[11px] font-medium text-on-surface outline-none"
+                            className="flex-1 min-w-0 bg-surface-container-lowest border border-outline rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                           >
                             {wallets.map((w) => (
                               <option key={w.id} value={w.id}>
@@ -353,7 +359,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                             toggleFixedItemPaid(item.id, selectedWalletId);
                             setPayingItemId(null);
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-inverse-surface text-white text-[11px] font-semibold hover:bg-black transition shrink-0"
+                          className="min-h-[36px] px-3 py-1 rounded-lg bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                         >
                           Potong Saldo
                         </button>
@@ -366,95 +372,80 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           )}
         </div>
 
-        {/* Right: Auto-Split Buckets & Live Spending Progress */}
-        <div className="lg:col-span-7 rounded-2xl bg-surface-container-low/50 border border-outline/20 p-4 space-y-3">
-          <div className="flex items-center justify-between">
+        {/* Right: Alokasi Sisa Gajian */}
+        <div className="lg:col-span-7 space-y-2">
+          <div className="flex items-center justify-between pb-1">
             <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-              Alokasi Otomatis Sisa Gajian
+              Realisasi Pos Sisa Gajian
             </h3>
-            <span className="text-[11px] text-on-surface-variant font-mono">
+            <span className="text-xs text-on-surface-variant font-semibold tabular-nums">
               {formatRp(allocation.disposableAmount)}
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="divide-y divide-outline border-t border-outline">
             {progress.buckets.map((bucket) => {
               const barColor =
                 bucket.status === 'exceeded'
-                  ? 'bg-rose-500'
+                  ? 'bg-error'
                   : bucket.status === 'warning'
-                  ? 'bg-amber-500'
+                  ? 'bg-amber-600'
                   : bucket.rule.isSavings
-                  ? 'bg-emerald-500'
+                  ? 'bg-emerald-700'
                   : 'bg-primary-container';
 
               const barWidth = Math.min(100, Math.max(0, bucket.percentUsed));
 
               return (
-                <div
-                  key={bucket.rule.id}
-                  className="p-3 rounded-xl bg-surface-container-lowest border border-outline/20 space-y-2"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div key={bucket.rule.id} className="py-3 space-y-2">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        className="w-2.5 h-2.5 rounded-sm shrink-0"
                         style={{ backgroundColor: bucket.rule.color }}
                       />
-                      <span className="font-bold text-on-surface truncate">
+                      <span className="text-xs sm:text-sm font-bold text-on-surface truncate">
                         {bucket.rule.name}
                       </span>
-                      <span className="px-1.5 py-0.5 rounded-md bg-surface-container-high text-[10px] font-mono font-semibold text-on-surface-variant">
+                      <span className="text-[11px] font-semibold text-on-surface-variant tabular-nums">
                         {bucket.rule.percentage}%
                       </span>
                       {bucket.rule.isSavings && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-semibold">
-                          <Lock className="w-2.5 h-2.5" />
-                          Tabungan
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#027A48]">
+                          <Lock className="w-3 h-3" />
+                          Terkunci
                         </span>
                       )}
                     </div>
 
-                    <div className="text-right font-mono">
+                    <div className="text-right tabular-nums text-xs">
                       <span
                         className={`font-bold ${
-                          bucket.remaining < 0 ? 'text-rose-600' : 'text-on-surface'
+                          bucket.remaining < 0 ? 'text-error' : 'text-on-surface'
                         }`}
                       >
                         Sisa {formatRp(bucket.remaining)}
                       </span>
-                      <span className="text-[11px] text-on-surface-variant ml-1.5">
+                      <span className="text-on-surface-variant ml-1.5">
                         / {formatRp(bucket.allocatedAmount)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-surface-container overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-300 ${barColor}`}
                       style={{ width: `${barWidth}%` }}
                     />
                   </div>
 
-                  {/* Footer line: Category tags + spent summary */}
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-on-surface-variant">
-                    <div className="flex flex-wrap items-center gap-1">
-                      {bucket.rule.categories.length > 0 ? (
-                        bucket.rule.categories.map((cat) => (
-                          <span
-                            key={cat}
-                            className="px-1.5 py-0.5 rounded bg-surface-container-low border border-outline/20 text-[10px]"
-                          >
-                            {cat}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-[10px] italic">Belum ada kategori terhubung</span>
-                      )}
-                    </div>
-
-                    <span className="font-mono text-[11px]">
+                    <span className="truncate">
+                      {bucket.rule.categories.length > 0
+                        ? bucket.rule.categories.join(' · ')
+                        : 'Belum ada kategori terhubung'}
+                    </span>
+                    <span className="tabular-nums font-medium shrink-0">
                       Terpakai {formatRp(bucket.spent)} ({bucket.percentUsed}%)
                     </span>
                   </div>
@@ -463,14 +454,9 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
             })}
 
             {progress.unmappedSpent > 0 && (
-              <div className="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between gap-2 text-xs text-amber-900">
-                <div className="flex items-center gap-2 min-w-0">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span className="truncate">
-                    Pengeluaran di luar kategori pos (otomatis kurangi Sisa Dana Belanja)
-                  </span>
-                </div>
-                <span className="font-mono font-bold shrink-0">
+              <div className="py-3 flex items-center justify-between gap-2 text-xs text-amber-900">
+                <span>Pengeluaran di luar kategori pos (otomatis potong sisa belanja)</span>
+                <span className="font-bold tabular-nums shrink-0">
                   {formatRp(progress.unmappedSpent)}
                 </span>
               </div>

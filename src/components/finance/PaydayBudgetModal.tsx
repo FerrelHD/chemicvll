@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   AlertTriangle,
-  Calculator,
   CheckCircle2,
   Plus,
   RefreshCw,
@@ -15,6 +14,7 @@ import {
 import { BudgetSplitRule, FixedAllocation } from '@/types/database';
 import { DEFAULT_BUDGET_RULES, useFinanceStore } from '@/stores/useFinanceStore';
 import { allocateNetBudget, computePaydayCycle, toLocalDateKey } from '@/lib/budget-utils';
+import { PaydayMark } from '@/components/icons/ChemicIcons';
 
 interface PaydayBudgetModalProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ interface PaydayBudgetModalProps {
   startFreshCycle?: boolean;
 }
 
-const PRESET_COLORS = ['#FF6B00', '#10B981', '#7C3AED', '#3B82F6', '#EC4899', '#F59E0B'];
+const PRESET_COLORS = ['#FF6B00', '#027A48', '#5B3FD3', '#0066CC', '#C4320A', '#854D0E'];
 
 export function PaydayBudgetModal({
   isOpen,
@@ -49,6 +49,15 @@ export function PaydayBudgetModal({
 
   useEffect(() => {
     if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const todayKey = toLocalDateKey();
 
     if (budgetPlan && !startFreshCycle) {
@@ -58,7 +67,6 @@ export function PaydayBudgetModal({
       setRules(budgetPlan.rules.map((r) => ({ ...r, categories: [...r.categories] })));
       setLogToWallet(false);
     } else if (budgetPlan && startFreshCycle) {
-      // New payday: carry over fixed bill templates (reset isPaid) & saved split rules
       setSalaryInput(String(budgetPlan.salaryAmount));
       setCycleStartDate(todayKey);
       setFixedItems(budgetPlan.fixedItems.map((f) => ({ ...f, isPaid: false })));
@@ -89,9 +97,7 @@ export function PaydayBudgetModal({
   }, [isOpen, startFreshCycle, budgetPlan, budgetRules, activeWalletId, wallets]);
 
   const parsedSalary = Math.max(0, Math.round(Number(salaryInput) || 0));
-
   const cyclePreview = useMemo(() => computePaydayCycle(cycleStartDate), [cycleStartDate]);
-
   const allocation = useMemo(
     () => allocateNetBudget(parsedSalary, fixedItems, rules),
     [parsedSalary, fixedItems, rules]
@@ -149,7 +155,7 @@ export function PaydayBudgetModal({
     setFixedItems(nextItems);
     setSubNotice(
       addedCount > 0
-        ? `${addedCount} langganan aktif berhasil ditarik ke Pos Fix.`
+        ? `${addedCount} langganan aktif ditarik ke Pos Fix.`
         : 'Semua langganan aktif sudah ada di daftar Pos Fix.'
     );
   };
@@ -197,7 +203,6 @@ export function PaydayBudgetModal({
       );
       return;
     }
-    // Proportional normalization if preceding rules exceed 100%
     const total = rules.reduce((s, r) => s + Math.max(0, Number(r.percentage) || 0), 0);
     if (total <= 0) {
       setRules(DEFAULT_BUDGET_RULES.map((r) => ({ ...r, categories: [...r.categories] })));
@@ -242,27 +247,35 @@ export function PaydayBudgetModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payday-modal-title"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface-container-lowest rounded-3xl border border-outline shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 pb-3 sm:pb-4 border-b border-outline/20 shrink-0">
+        <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-outline shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container shrink-0">
-              <Calculator className="w-5 h-5" />
-            </div>
+            <PaydayMark className="w-6 h-6 text-on-surface shrink-0" />
             <div>
-              <h3 className="font-bold text-base text-on-surface">
-                {startFreshCycle ? 'Mulai Siklus Gajian Baru' : 'Atur Payday Budgeting Otomatis'}
+              <h3 id="payday-modal-title" className="font-bold text-base text-on-surface">
+                {startFreshCycle ? 'Mulai Siklus Gajian Baru' : 'Atur Payday Budgeting'}
               </h3>
               <p className="text-xs text-on-surface-variant">
-                Input nominal gajian &amp; pos fix — sisa dana otomatis terbagi presisi hingga Rp 1.
+                Masukkan nominal gaji dan pos fix, lalu atur porsi pembagian sisanya.
               </p>
             </div>
           </div>
           <button
             type="button"
+            aria-label="Tutup dialog"
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition"
+            className="w-10 h-10 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-on-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <X className="w-4 h-4" />
           </button>
@@ -292,11 +305,11 @@ export function PaydayBudgetModal({
                   placeholder="cth. 8000000"
                   value={salaryInput}
                   onChange={(e) => setSalaryInput(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs font-mono font-semibold text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-sm tabular-nums font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                 />
                 {parsedSalary > 0 && (
-                  <span className="text-[11px] text-on-surface-variant mt-1 block font-mono">
-                    = Rp {parsedSalary.toLocaleString('id-ID')}
+                  <span className="text-[11px] text-on-surface-variant mt-1 block tabular-nums font-medium">
+                    Rp {parsedSalary.toLocaleString('id-ID')}
                   </span>
                 )}
               </div>
@@ -310,23 +323,22 @@ export function PaydayBudgetModal({
                   required
                   value={cycleStartDate}
                   onChange={(e) => setCycleStartDate(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                 />
-                <span className="text-[11px] text-on-surface-variant mt-1 block">
-                  Siklus aktif: {formatCycleDateLabel(cyclePreview.cycleStartDate)} -{' '}
+                <span className="text-[11px] text-on-surface-variant mt-1 block tabular-nums">
+                  Periode: {formatCycleDateLabel(cyclePreview.cycleStartDate)} s/d{' '}
                   {formatCycleDateLabel(cyclePreview.cycleEndDate)}
                 </span>
               </div>
             </div>
 
-            {/* Optional Wallet Income Recording */}
-            <div className="p-3 rounded-2xl bg-surface-container-low/70 border border-outline/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <label className="flex items-center gap-2 text-xs font-medium text-on-surface cursor-pointer select-none">
+            <div className="p-3 rounded-xl bg-surface-container-low border border-outline flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <label className="flex items-center gap-2.5 text-xs font-medium text-on-surface cursor-pointer select-none min-h-[32px]">
                 <input
                   type="checkbox"
                   checked={logToWallet}
                   onChange={(e) => setLogToWallet(e.target.checked)}
-                  className="rounded border-outline text-primary-container focus:ring-primary-container"
+                  className="w-4 h-4 rounded border-outline text-primary-container focus:ring-primary-container"
                 />
                 <span>Sekaligus catat gaji ini sebagai pemasukan ke dompet</span>
               </label>
@@ -335,7 +347,7 @@ export function PaydayBudgetModal({
                 <select
                   value={targetWalletId}
                   onChange={(e) => setTargetWalletId(e.target.value)}
-                  className="bg-surface-container-lowest border border-outline/30 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-on-surface outline-none"
+                  className="min-h-[38px] bg-surface-container-lowest border border-outline rounded-xl px-3 py-1.5 text-xs font-semibold text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 >
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -348,11 +360,11 @@ export function PaydayBudgetModal({
           </div>
 
           {/* Section 2: Pos Fix Bulanan */}
-          <div className="space-y-3 pt-2 border-t border-outline/20">
+          <div className="space-y-3 pt-4 border-t border-outline">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                  2. Pos Fix (Tagihan / Kewajiban Pasti)
+                  2. Pos Fix (Kewajiban Pasti)
                 </h4>
                 <p className="text-[11px] text-on-surface-variant">
                   Dipotong di awal sebelum sisa gaji dibagi otomatis.
@@ -361,7 +373,7 @@ export function PaydayBudgetModal({
               <button
                 type="button"
                 onClick={handleImportSubscriptions}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface transition"
+                className="inline-flex items-center gap-1.5 min-h-[36px] px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container border border-outline text-xs font-semibold text-on-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <RefreshCw className="w-3 h-3 text-primary-container" />
                 <span>Tarik Subscriptions</span>
@@ -369,17 +381,16 @@ export function PaydayBudgetModal({
             </div>
 
             {subNotice && (
-              <p className="text-[11px] text-primary-container font-medium">{subNotice}</p>
+              <p className="text-[11px] text-primary font-semibold">{subNotice}</p>
             )}
 
-            {/* Add new Fixed Item inline */}
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 placeholder="Nama pos fix (cth. Kos, Cicilan, Orang Tua)"
                 value={newFixedName}
                 onChange={(e) => setNewFixedName(e.target.value)}
-                className="flex-1 bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="flex-1 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
               />
               <div className="flex gap-2">
                 <input
@@ -394,12 +405,12 @@ export function PaydayBudgetModal({
                       handleAddFixedItem();
                     }
                   }}
-                  className="w-36 bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-36 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                 />
                 <button
                   type="button"
                   onClick={handleAddFixedItem}
-                  className="px-3.5 py-2 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition flex items-center gap-1 shrink-0"
+                  className="min-h-[44px] px-4 py-2 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition flex items-center gap-1 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Tambah</span>
@@ -408,11 +419,11 @@ export function PaydayBudgetModal({
             </div>
 
             {fixedItems.length > 0 && (
-              <div className="space-y-2">
+              <div className="divide-y divide-outline border-y border-outline">
                 {fixedItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-surface-container-low border border-outline/20"
+                    className="flex items-center justify-between gap-2 py-2"
                   >
                     <input
                       type="text"
@@ -422,22 +433,22 @@ export function PaydayBudgetModal({
                           prev.map((f) => (f.id === item.id ? { ...f, name: e.target.value } : f))
                         )
                       }
-                      className="flex-1 min-w-0 bg-transparent text-xs font-semibold text-on-surface focus:outline-none"
+                      className="flex-1 min-w-0 min-h-[36px] bg-transparent text-xs font-semibold text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded px-1"
                     />
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[11px] text-on-surface-variant font-mono">Rp</span>
+                      <span className="text-[11px] text-on-surface-variant">Rp</span>
                       <input
                         type="number"
                         min={0}
                         value={item.amount}
                         onChange={(e) => handleUpdateFixedAmount(item.id, e.target.value)}
-                        className="w-28 bg-surface-container-lowest border border-outline/30 rounded-lg px-2 py-1 text-xs font-mono text-right text-on-surface focus:outline-none focus:border-primary-container"
+                        className="w-28 min-h-[36px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs tabular-nums font-semibold text-right text-on-surface focus:outline-none focus:border-primary-container"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveFixed(item.id)}
-                        className="p-1 rounded-lg text-on-surface-variant hover:text-rose-600 transition"
-                        title="Hapus pos fix"
+                        className="w-9 h-9 rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container-low flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                        aria-label={`Hapus ${item.name}`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -447,30 +458,29 @@ export function PaydayBudgetModal({
               </div>
             )}
 
-            {/* Net Disposable Summary Strip */}
             <div
-              className={`p-3 rounded-2xl border text-xs flex flex-wrap items-center justify-between gap-2 ${
+              className={`p-3 rounded-xl border text-xs flex flex-wrap items-center justify-between gap-2 ${
                 allocation.isOverAllocated
-                  ? 'bg-rose-50 border-rose-200 text-rose-800'
-                  : 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+                  ? 'bg-error-container/50 border-error/30 text-error'
+                  : 'bg-[#D1FADF]/40 border-[#027A48]/20 text-on-surface'
               }`}
             >
               <div>
-                <span className="font-semibold">Total Pos Fix: </span>
-                <span className="font-mono font-bold">
+                <span className="font-medium text-on-surface-variant">Total Pos Fix: </span>
+                <span className="tabular-nums font-bold text-on-surface">
                   Rp {allocation.fixedTotal.toLocaleString('id-ID')}
                 </span>
               </div>
               <div>
                 {allocation.isOverAllocated ? (
-                  <span className="font-bold flex items-center gap-1 text-rose-700">
+                  <span className="font-bold inline-flex items-center gap-1 tabular-nums">
                     <AlertTriangle className="w-3.5 h-3.5" />
-                    Defisit Rp {allocation.deficitAmount.toLocaleString('id-ID')} (Pos fix melebihi gaji)
+                    Defisit Rp {allocation.deficitAmount.toLocaleString('id-ID')}
                   </span>
                 ) : (
                   <>
-                    <span className="font-semibold">Sisa Dana Dibagi Otomatis: </span>
-                    <span className="font-mono font-bold">
+                    <span className="font-medium text-on-surface-variant">Sisa Dibagi Otomatis: </span>
+                    <span className="tabular-nums font-bold text-[#027A48]">
                       Rp {allocation.disposableAmount.toLocaleString('id-ID')}
                     </span>
                   </>
@@ -480,23 +490,23 @@ export function PaydayBudgetModal({
           </div>
 
           {/* Section 3: Aturan Auto-Split Sisa Gajian (%) */}
-          <div className="space-y-3 pt-2 border-t border-outline/20">
+          <div className="space-y-3 pt-4 border-t border-outline">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider">
                   3. Aturan Auto-Split Sisa Gajian (%)
                 </h4>
                 <p className="text-[11px] text-on-surface-variant">
-                  Total persentase harus tepat 100% agar pembagian Rupiah akurat.
+                  Total persentase harus tepat 100% agar pembagian Rupiah presisi.
                 </p>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold tabular-nums ${
                     allocation.isValidRules
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-rose-100 text-rose-700'
+                      ? 'bg-[#D1FADF] text-[#027A48]'
+                      : 'bg-error-container text-error'
                   }`}
                 >
                   {allocation.isValidRules ? (
@@ -504,14 +514,14 @@ export function PaydayBudgetModal({
                   ) : (
                     <AlertTriangle className="w-3 h-3" />
                   )}
-                  Total: {allocation.totalRulePercentage}%
+                  Total {allocation.totalRulePercentage}%
                 </span>
 
                 {!allocation.isValidRules && (
                   <button
                     type="button"
                     onClick={handleAutoBalance100}
-                    className="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold hover:opacity-90 transition"
+                    className="min-h-[32px] px-2.5 py-1 rounded-md bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-semibold hover:opacity-90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                   >
                     Auto-Pas 100%
                   </button>
@@ -522,7 +532,8 @@ export function PaydayBudgetModal({
                   onClick={() =>
                     setRules(DEFAULT_BUDGET_RULES.map((r) => ({ ...r, categories: [...r.categories] })))
                   }
-                  className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                  className="w-9 h-9 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                  aria-label="Reset aturan default"
                   title="Reset aturan default"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -530,28 +541,25 @@ export function PaydayBudgetModal({
               </div>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="divide-y divide-outline border-y border-outline">
               {allocation.buckets.map(({ rule, allocatedAmount }) => (
-                <div
-                  key={rule.id}
-                  className="p-3 rounded-2xl bg-surface-container-low border border-outline/20 space-y-2"
-                >
+                <div key={rule.id} className="py-3 space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-[160px]">
                       <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        className="w-2.5 h-2.5 rounded-sm shrink-0"
                         style={{ backgroundColor: rule.color }}
                       />
                       <input
                         type="text"
                         value={rule.name}
                         onChange={(e) => handleUpdateRule(rule.id, { name: e.target.value })}
-                        className="flex-1 min-w-0 bg-surface-container-lowest border border-outline/20 rounded-lg px-2.5 py-1 text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container"
+                        className="flex-1 min-w-0 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container"
                       />
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex items-center gap-1 bg-surface-container-lowest border border-outline/30 rounded-lg px-2 py-1">
+                      <div className="flex items-center gap-1 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2 py-1">
                         <input
                           type="number"
                           min={0}
@@ -563,12 +571,12 @@ export function PaydayBudgetModal({
                               percentage: Math.max(0, Number(e.target.value) || 0),
                             })
                           }
-                          className="w-11 text-xs font-mono font-bold text-right text-on-surface bg-transparent focus:outline-none"
+                          className="w-11 text-xs tabular-nums font-bold text-right text-on-surface bg-transparent focus:outline-none"
                         />
                         <span className="text-xs font-semibold text-on-surface-variant">%</span>
                       </div>
 
-                      <span className="text-xs font-mono font-bold text-on-surface min-w-[105px] text-right">
+                      <span className="text-xs tabular-nums font-bold text-on-surface min-w-[105px] text-right">
                         Rp {allocatedAmount.toLocaleString('id-ID')}
                       </span>
 
@@ -576,8 +584,8 @@ export function PaydayBudgetModal({
                         <button
                           type="button"
                           onClick={() => handleRemoveRule(rule.id)}
-                          className="p-1 rounded-lg text-on-surface-variant hover:text-rose-600 transition"
-                          title="Hapus pos"
+                          className="w-9 h-9 rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container-low flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                          aria-label={`Hapus ${rule.name}`}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -585,7 +593,7 @@ export function PaydayBudgetModal({
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-outline/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pl-4">
                     <input
                       type="text"
                       placeholder="Kategori transaksi (pisah koma: Makan & Minum, Transportasi)"
@@ -598,7 +606,7 @@ export function PaydayBudgetModal({
                             .filter(Boolean),
                         })
                       }
-                      className="flex-1 bg-transparent text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none"
+                      className="flex-1 min-h-[32px] bg-transparent text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none"
                     />
 
                     <label className="inline-flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant cursor-pointer shrink-0 select-none">
@@ -608,7 +616,7 @@ export function PaydayBudgetModal({
                         onChange={(e) =>
                           handleUpdateRule(rule.id, { isSavings: e.target.checked })
                         }
-                        className="rounded border-outline text-emerald-600 focus:ring-emerald-600"
+                        className="w-3.5 h-3.5 rounded border-outline text-emerald-700 focus:ring-emerald-700"
                       />
                       <span>Kunci sebagai Tabungan</span>
                     </label>
@@ -620,31 +628,31 @@ export function PaydayBudgetModal({
             <button
               type="button"
               onClick={handleAddRule}
-              className="w-full py-2 rounded-2xl border border-dashed border-outline/40 hover:border-outline text-xs font-semibold text-on-surface-variant hover:text-on-surface transition flex items-center justify-center gap-1.5"
+              className="w-full min-h-[44px] py-2 rounded-xl border border-dashed border-outline hover:border-on-surface-variant text-xs font-semibold text-on-surface-variant hover:text-on-surface transition flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Tambah Pos Pembagian Otomatis</span>
+              <span>Tambah Pos Pembagian</span>
             </button>
           </div>
         </form>
 
         {/* Sticky Footer */}
-        <div className="flex items-center justify-between gap-3 p-4 sm:px-6 sm:py-3.5 border-t border-outline/20 bg-surface-container-lowest shrink-0">
+        <div className="flex items-center justify-between gap-3 p-4 sm:px-6 sm:py-3.5 border-t border-outline bg-surface-container-lowest shrink-0">
           <span className="text-[11px] text-on-surface-variant hidden sm:inline">
             {!canSubmit
               ? parsedSalary <= 0
                 ? 'Masukkan nominal gajian terlebih dahulu.'
                 : allocation.isOverAllocated
-                ? 'Kurangi Pos Fix agar tidak melebihi nominal gajian.'
-                : 'Pastikan total aturan split tepat 100%.'
-              : 'Semua hitungan sudah seimbang & siap diterapkan.'}
+                ? 'Kurangi Pos Fix agar tidak melebihi gaji.'
+                : 'Total persentase harus tepat 100%.'
+              : 'Siap diterapkan.'}
           </span>
 
           <div className="flex items-center gap-2.5 ml-auto">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+              className="min-h-[44px] px-5 py-2 rounded-full border border-outline text-xs font-medium text-on-surface-variant hover:bg-surface-container-low transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             >
               Cancel
             </button>
@@ -652,10 +660,10 @@ export function PaydayBudgetModal({
               type="submit"
               form="payday-budget-form"
               disabled={!canSubmit}
-              className={`px-6 py-2 rounded-full text-xs font-semibold shadow-md transition ${
+              className={`min-h-[44px] px-6 py-2 rounded-full text-xs font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
                 canSubmit
                   ? 'bg-inverse-surface text-white hover:bg-black active:scale-95'
-                  : 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                  : 'bg-surface-container text-on-surface-variant cursor-not-allowed'
               }`}
             >
               Terapkan Budget Gajian
