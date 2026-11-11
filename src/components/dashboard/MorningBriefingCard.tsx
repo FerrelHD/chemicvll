@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDevStore } from '@/stores/useDevStore';
+import { BriefingMark } from '@/components/icons/ChemicIcons';
 
 interface MorningBriefingCardProps {
   onNavigate?: (tab: string) => void;
@@ -73,6 +74,7 @@ export function MorningBriefingCard({
     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pt-1 pb-1">
       <div>
         <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-1">
+          <BriefingMark className="w-4 h-4 text-on-surface shrink-0" />
           <span>Personal OS</span>
           <span>•</span>
           <span className="text-primary-container">Cockpit Overview</span>
@@ -86,7 +88,7 @@ export function MorningBriefingCard({
       </div>
 
       <div className="flex items-center gap-2 self-start sm:self-auto">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline/30 text-[11px] font-mono text-on-surface-variant">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline/30 text-[11px] font-semibold tabular-nums text-on-surface-variant">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>WIB (UTC+7)</span>
         </span>

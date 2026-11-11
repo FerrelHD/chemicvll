@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useNotesStore, NoteItem, ContentIdea } from '@/stores/useNotesStore';
+import { LedgerNoteMark } from '@/components/icons/ChemicIcons';
 import {
   BookOpen,
   Video,
@@ -86,15 +87,10 @@ export function NotesAndContentStudio() {
       {/* Top Banner & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-outline/20">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-primary-fixed/50 flex items-center justify-center text-primary-container shadow-xs">
-            <BookOpen className="w-5 h-5" />
-          </div>
+          <LedgerNoteMark active className="w-6 h-6 text-on-surface shrink-0" />
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-on-surface flex items-center gap-2">
-              <span>Second Brain &amp; Content Studio</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-primary-fixed/60 text-primary-container font-mono font-semibold">
-                Vault
-              </span>
+            <h2 className="text-xl font-bold tracking-tight text-on-surface">
+              Second Brain &amp; Content Studio
             </h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
               Repositori catatan teknis, AI prompts, code snippets, dan pipeline ide konten video.
@@ -181,7 +177,7 @@ export function NotesAndContentStudio() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2 rounded-2xl bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white font-semibold shadow-sm shadow-primary/20 text-xs active:scale-95 transition-all"
+                className="px-5 py-2 rounded-full bg-inverse-surface hover:bg-black text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
               >
                 Simpan Catatan
               </button>
@@ -198,7 +194,7 @@ export function NotesAndContentStudio() {
                 }`}
               >
                 <div className="flex items-center justify-between text-xs pb-2 border-b border-outline/10">
-                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold">
                     {n.type === 'snippet' && <Code className="w-3.5 h-3.5 text-purple-600" />}
                     {n.type === 'prompt' && <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />}
                     {n.type === 'bookmark' && <Bookmark className="w-3.5 h-3.5 text-blue-600" />}
@@ -309,7 +305,7 @@ export function NotesAndContentStudio() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2 rounded-2xl bg-gradient-to-r from-primary to-orange-500 hover:from-primary/95 hover:to-orange-500/95 text-white font-semibold shadow-sm shadow-primary/20 text-xs active:scale-95 transition-all"
+                className="px-5 py-2 rounded-full bg-inverse-surface hover:bg-black text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
               >
                 Simpan Ide Konten
               </button>

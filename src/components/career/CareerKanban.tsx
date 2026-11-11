@@ -9,10 +9,8 @@ import { CareerCard } from './CareerCard';
 import { CategoryFilter } from './CategoryFilter';
 import { CareerModal } from './CareerModal';
 import { CareerFollowUpModal } from './CareerFollowUpModal';
+import { PipelineMark, VaultMark, FocusMark } from '@/components/icons/ChemicIcons';
 import {
-  Briefcase,
-  Flag,
-  Wallet,
   Plus,
   TrendingUp,
   Download,
@@ -151,7 +149,7 @@ export function CareerKanban() {
               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface text-white hover:bg-black shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Record Application</span>
+              <span>Record Application</span>
             </button>
           </div>
         </div>
@@ -182,12 +180,10 @@ export function CareerKanban() {
               </span>
               <span className="text-xs sm:text-base font-bold text-on-surface truncate">Active Applications</span>
             </div>
-            <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container shrink-0">
-              <Briefcase className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-            </div>
+            <PipelineMark active className="w-5 h-5 text-on-surface shrink-0" />
           </div>
           <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-            <span className="text-xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
+            <span className="text-xl sm:text-3xl font-bold text-on-surface leading-none font-sans tabular-nums">
               {activeCount}
             </span>
             <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
@@ -206,12 +202,10 @@ export function CareerKanban() {
               </span>
               <span className="text-xs sm:text-base font-bold text-on-surface truncate">Daily Focus</span>
             </div>
-            <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container shrink-0">
-              <Flag className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-            </div>
+            <FocusMark active className="w-5 h-5 text-on-surface shrink-0" />
           </div>
           <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-            <span className="text-xl sm:text-3xl font-bold text-on-surface leading-none font-sans">
+            <span className="text-xl sm:text-3xl font-bold text-on-surface leading-none font-sans tabular-nums">
               {urgentFollowUpCount}
             </span>
             <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
@@ -229,13 +223,11 @@ export function CareerKanban() {
               </span>
               <span className="text-xs sm:text-base font-bold text-on-surface truncate">Wallet Balance</span>
             </div>
-            <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface shrink-0">
-              <Wallet className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-            </div>
+            <VaultMark active className="w-5 h-5 text-on-surface shrink-0" />
           </div>
           <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-2xl font-bold text-on-surface leading-none font-sans">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface leading-none font-sans tabular-nums">
                 {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
               </span>
               <button

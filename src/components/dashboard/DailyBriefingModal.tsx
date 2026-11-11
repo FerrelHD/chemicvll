@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDevStore } from '@/stores/useDevStore';
-import { Sun, CheckCircle2, Video, Calendar, ArrowRight, X } from 'lucide-react';
+import { CheckCircle2, Video, Calendar, ArrowRight, X } from 'lucide-react';
+import { BriefingMark } from '@/components/icons/ChemicIcons';
 
 interface DailyBriefingModalProps {
   isOpen: boolean;
@@ -23,6 +24,15 @@ export function DailyBriefingModal({
   const tasks = useTaskStore((state) => state.tasks);
   const projects = useDevStore((state) => state.projects);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onDismiss();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onDismiss]);
+
   if (!isOpen) return null;
 
   const todayStr = new Date().toLocaleDateString('en-US', {
@@ -37,15 +47,13 @@ export function DailyBriefingModal({
   const activePorts = projects.map((p) => `:${p.default_port}`).join(', ');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
       <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-lg w-full p-6 space-y-5">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-outline/20">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
-              <Sun className="w-5 h-5" />
-            </div>
+            <BriefingMark className="w-6 h-6 text-on-surface shrink-0" />
             <div>
               <h3 className="font-bold text-base text-on-surface">
                 Good Morning, Ferrel

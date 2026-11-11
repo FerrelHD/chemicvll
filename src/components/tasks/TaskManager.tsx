@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
+import { FocusMark } from '@/components/icons/ChemicIcons';
 import {
   Timer,
   Play,
@@ -183,13 +184,11 @@ export function TaskManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between gap-1">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Task Done</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-emerald-600">
-              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
+            <FocusMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {completionRate}%
               </span>
               <span className="text-[10px] sm:text-xs text-emerald-600 font-semibold">+6%</span>
@@ -224,7 +223,7 @@ export function TaskManager() {
             </div>
             <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
               <span className="truncate">Record: 14d</span>
-              <span className="font-semibold text-primary-container shrink-0">🔥 Best</span>
+              <span className="font-semibold text-primary-container shrink-0">Best</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
@@ -258,11 +257,11 @@ export function TaskManager() {
 
             {/* Timer Display Block */}
             <div className="my-6 sm:my-8 flex flex-col items-center justify-center text-center">
-              <div className="text-5xl sm:text-7xl font-bold font-mono text-on-surface tracking-tight">
+              <div className="text-5xl sm:text-7xl font-bold tabular-nums text-on-surface tracking-tight">
                 {formatTimer(timeLeft)}
               </div>
               <span className="text-xs text-on-surface-variant font-medium mt-2">
-                {timerRunning ? 'Focus session in progress — minimize distractions' : 'Ready for deep work sprint'}
+                {timerRunning ? 'Focus session in progress, minimize distractions' : 'Ready for deep work sprint'}
               </span>
             </div>
 

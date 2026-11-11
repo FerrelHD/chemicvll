@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
+import { RelayMark } from '@/components/icons/ChemicIcons';
 import {
-  CloudUpload,
   Copy,
   Check,
   Pin,
@@ -15,10 +15,8 @@ import {
   Timer,
   Share2,
   FolderArchive,
-  Flame,
   Plus,
   Terminal,
-  Zap,
 } from 'lucide-react';
 
 export function DropzonePanel() {
@@ -75,9 +73,12 @@ export function DropzonePanel() {
             <span className="w-1.5 h-1.5 rounded-full bg-primary-container" />
             <span className="text-[11px] font-semibold text-primary-container">Active Session</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-            Dropzone <span className="text-primary-container">&amp; Staging Vault</span>
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <RelayMark active className="w-6 h-6 text-on-surface shrink-0" />
+            <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+              Dropzone <span className="text-primary-container">&amp; Staging Vault</span>
+            </h1>
+          </div>
         </div>
 
         {/* Quick Actions Pill Bar */}
@@ -158,13 +159,11 @@ export function DropzonePanel() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Expiring Soon</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 shrink-0 flex items-center justify-center text-rose-600">
-              <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
+            <Timer className="w-4 h-4 text-error shrink-0" />
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans tabular-nums">
                 {items.filter((i) => !i.is_pinned).length}
               </span>
               <span className="bg-rose-50 text-rose-600 text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-semibold shrink-0">
@@ -267,7 +266,7 @@ export function DropzonePanel() {
                     <div>
                       {/* Meta header */}
                       <div className="flex items-center justify-between text-xs pb-2 border-b border-outline/10">
-                        <div className="flex items-center gap-1.5 font-mono text-[11px] text-on-surface-variant">
+                        <div className="flex items-center gap-1.5 text-[11px] text-on-surface-variant font-medium">
                           {isLink && <ExternalLink className="w-3 h-3 text-blue-600" />}
                           {isCode && <Code className="w-3 h-3 text-primary-container" />}
                           {!isLink && !isCode && <FileText className="w-3 h-3 text-zinc-500" />}

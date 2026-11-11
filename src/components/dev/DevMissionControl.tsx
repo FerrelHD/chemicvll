@@ -5,6 +5,7 @@ import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
 import { checkPortHealth, PortHealth } from '@/lib/port-checker';
 import { daemonRelay } from '@/lib/daemon-relay';
+import { ConsoleMark } from '@/components/icons/ChemicIcons';
 import {
   Terminal,
   Play,
@@ -259,7 +260,8 @@ export function DevMissionControl() {
       {/* Welcome & Top Action Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
         <div className="flex flex-col">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <ConsoleMark active className="w-6 h-6 text-on-surface shrink-0" />
             <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
               Local Environment
             </h1>

@@ -7,10 +7,12 @@ import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useDevStore } from '@/stores/useDevStore';
 import { MorningBriefingCard } from './MorningBriefingCard';
 import {
-  Briefcase,
-  Wallet,
-  CheckCircle2,
-  Terminal,
+  PipelineMark,
+  VaultMark,
+  FocusMark,
+  ConsoleMark,
+} from '@/components/icons/ChemicIcons';
+import {
   ArrowRight,
   TrendingUp,
   CreditCard,
@@ -102,18 +104,16 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Career Pipeline
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
-              <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-container" />
-            </div>
+            <PipelineMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
 
           <div className="my-2 sm:my-3">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">{activeCareerCount}</span>
+              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans tabular-nums">{activeCareerCount}</span>
               <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">Active Applications</span>
             </div>
             <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-mono text-[10px] font-bold whitespace-nowrap shrink-0">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary-fixed text-on-primary-fixed-variant tabular-nums text-[10px] font-bold whitespace-nowrap shrink-0">
                 {interviewCount} Interview
               </span>
               <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">advanced stage</span>
@@ -135,22 +135,20 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Tracked Balance
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-primary-container transition-colors shrink-0">
-              <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-container" />
-            </div>
+            <VaultMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
 
           <div className="my-2 sm:my-3">
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1">
                 {isPrivacyMode ? (
-                  <span className="text-base sm:text-2xl font-bold font-mono text-on-surface">
+                  <span className="text-base sm:text-2xl font-bold font-sans tabular-nums text-on-surface">
                     Rp •••••••
                   </span>
                 ) : (
                   <>
                     <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant">Rp</span>
-                    <span className="text-base sm:text-2xl font-bold font-mono text-on-surface truncate">
+                    <span className="text-base sm:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
                       {totalBalance.toLocaleString('id-ID')}
                     </span>
                   </>
@@ -162,14 +160,14 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   e.stopPropagation();
                   togglePrivacyMode();
                 }}
-                className="p-1 sm:p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition shrink-0"
+                className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
               </button>
             </div>
             <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-mono text-[10px] font-semibold whitespace-nowrap shrink-0">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-container text-on-surface tabular-nums text-[10px] font-semibold whitespace-nowrap shrink-0">
                 {wallets.length} Wallets
               </span>
               <span className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold flex items-center gap-0.5 whitespace-nowrap shrink-0">
@@ -193,14 +191,12 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Daily Target
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
-              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-            </div>
+            <FocusMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
 
           <div className="my-2 sm:my-3">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans tabular-nums">
                 {completedTasks}/{totalTasks}
               </span>
               <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">Completed</span>
@@ -234,9 +230,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Dev Ports
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-surface-container-low group-hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors shrink-0">
-              <Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
-            </div>
+            <ConsoleMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
 
           <div className="my-2 sm:my-3">
@@ -361,7 +355,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold text-xs tracking-wider text-white/95 font-mono uppercase">
+              <span className="font-bold text-xs tracking-wider text-white/95 uppercase">
                 {activeWallet?.name || 'BANK BCA'}
               </span>
               <CreditCard className="w-5 h-5 text-white/90" />
@@ -369,24 +363,24 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
             <div className="pt-2 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-white/80 font-mono block uppercase">
+                <span className="text-[10px] text-white/80 block uppercase font-medium tracking-wider">
                   {activeWallet?.card_label || 'MAIN BALANCE'}
                 </span>
-                <span className="text-xl font-bold font-mono tracking-tight text-white block">
+                <span className="text-xl font-bold tabular-nums tracking-tight text-white block">
                   {isPrivacyMode ? 'Rp •••••••' : `Rp ${(activeWallet?.balance || 0).toLocaleString('id-ID')}`}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={togglePrivacyMode}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition focus:outline-none"
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 title={isPrivacyMode ? 'Reveal balance' : 'Hide balance'}
               >
                 {isPrivacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
-            <div className="flex items-center justify-between pt-1 text-xs font-mono text-white/90">
+            <div className="flex items-center justify-between pt-1 text-xs tabular-nums text-white/90">
               <span>•••• {activeWallet?.account_number || '8492'}</span>
               <span>{activeWallet?.expiry || '11/28'}</span>
             </div>
@@ -438,7 +432,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                         ADVANCED INTERVIEW
                       </span>
                       {interviewItem.next_follow_up_date && (
-                        <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">
+                        <span className="text-xs text-on-surface-variant tabular-nums font-medium whitespace-nowrap shrink-0">
                           {interviewItem.next_follow_up_date}
                         </span>
                       )}
@@ -507,7 +501,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold whitespace-nowrap shrink-0">
                         P{activeTask.priority} DEEP WORK
                       </span>
-                      <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">Daily Priority</span>
+                      <span className="text-xs text-on-surface-variant font-medium whitespace-nowrap shrink-0">Daily Priority</span>
                     </div>
                     <h4 className="text-sm font-semibold text-on-surface leading-snug">
                       {activeTask.title}
