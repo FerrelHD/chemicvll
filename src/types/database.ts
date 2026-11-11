@@ -112,3 +112,32 @@ export interface DropzoneItem {
   created_at?: string;
 }
 
+export interface FixedAllocation {
+  id: string;
+  name: string;
+  amount: number;
+  isPaid: boolean;
+  sourceSubId?: string | null;
+}
+
+export interface BudgetSplitRule {
+  id: string;
+  name: string;
+  percentage: number;
+  categories: string[];
+  color: string;
+  isSavings?: boolean;
+}
+
+export interface MonthlyBudgetPlan {
+  id: string;
+  cycleStartDate: string; // YYYY-MM-DD
+  cycleEndDate: string;   // YYYY-MM-DD
+  salaryAmount: number;
+  fixedItems: FixedAllocation[];
+  rules: BudgetSplitRule[];
+  created_at: string;
+  updated_at: string;
+}
+
+
