@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   AlertCircle,
   Check,
@@ -9,9 +10,14 @@ import {
   RotateCcw,
   SlidersHorizontal,
   Wallet,
+  X,
 } from 'lucide-react';
 import { useFinanceStore } from '@/stores/useFinanceStore';
-import { computeBudgetProgress } from '@/lib/budget-utils';
+import {
+  computeBudgetProgress,
+  getReversibleCycleTransactionIds,
+} from '@/lib/budget-utils';
+import { useSyncStore } from '@/lib/supabase-sync';
 import { PaydayMark } from '@/components/icons/ChemicIcons';
 
 interface PaydayBudgetPanelProps {
@@ -28,16 +34,49 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
     toggleFixedItemPaid,
     resetBudgetPlan,
   } = useFinanceStore();
+  const budgetCloudStatus = useSyncStore((s) => s.budgetCloudStatus);
 
   const [payingItemId, setPayingItemId] = useState<string | null>(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string>(
     activeWalletId || wallets[0]?.id || 'w-bca'
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isResetModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsResetModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isResetModalOpen]);
 
   const progress = useMemo(() => {
     if (!budgetPlan) return null;
     return computeBudgetProgress(budgetPlan, transactions);
   }, [budgetPlan, transactions]);
+
+  const reversibleTransactions = useMemo(() => {
+    if (!budgetPlan) return [];
+    const idSet = new Set(getReversibleCycleTransactionIds(budgetPlan, transactions));
+    return transactions.filter((tx) => idSet.has(tx.id));
+  }, [budgetPlan, transactions]);
+
+  const migrationNotice =
+    budgetCloudStatus === 'migration_needed' ? (
+      <div className="px-3.5 py-2.5 rounded-2xl bg-amber-50/90 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-900">
+        <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+        <p className="leading-relaxed">
+          Tabel <code className="font-mono font-semibold">budget_plans</code> belum tersedia di Supabase. Jalankan migrasi{' '}
+          <code className="font-mono font-semibold">supabase/migrations/20261111_budget_plans.sql</code> via Supabase SQL Editor agar status plan & reset tersinkron ke cloud.
+        </p>
+      </div>
+    ) : null;
 
   const formatRp = (val: number) => {
     if (isPrivacyMode) return 'Rp •••••••';
@@ -55,27 +94,31 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
 
   if (!budgetPlan || !progress) {
     return (
-      <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start gap-3.5">
-          <PaydayMark className="w-6 h-6 text-on-surface mt-0.5 shrink-0" />
-          <div>
-            <h2 className="text-base font-bold text-on-surface tracking-tight">
-              Payday Budgeting
-            </h2>
-            <p className="text-xs text-on-surface-variant mt-1 max-w-xl leading-relaxed">
-              Tetapkan nominal gajian dan pos fix bulanan sekali di awal, lalu sistem membagi sisa dana dan jatah aman harian secara presisi.
-            </p>
+      <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <PaydayMark className="w-6 h-6 text-on-surface mt-0.5 shrink-0" />
+            <div>
+              <h2 className="text-base font-bold text-on-surface tracking-tight">
+                Payday Budgeting
+              </h2>
+              <p className="text-xs text-on-surface-variant mt-1 max-w-xl leading-relaxed">
+                Tetapkan nominal gajian dan pos fix bulanan sekali di awal, lalu sistem membagi sisa dana dan jatah aman harian secara presisi.
+              </p>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => onOpenSetup(true)}
+            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Atur Budget Gajian</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => onOpenSetup(true)}
-          className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Atur Budget Gajian</span>
-        </button>
+        {migrationNotice}
       </div>
     );
   }
@@ -135,19 +178,18 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              if (window.confirm('Reset budget gajian aktif saat ini?')) {
-                resetBudgetPlan();
-              }
-            }}
-            className="w-11 h-11 sm:w-9 sm:h-9 rounded-full hover:bg-surface-container-low text-on-surface-variant hover:text-error flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            onClick={() => setIsResetModalOpen(true)}
+            className="inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 rounded-full bg-surface-container-low hover:bg-rose-50 border border-outline hover:border-rose-200 text-on-surface-variant hover:text-error text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             aria-label="Reset Budget Plan"
             title="Reset Budget Plan"
           >
             <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset</span>
           </button>
         </div>
       </div>
+
+      {migrationNotice}
 
       {/* Cycle Expired Prompt */}
       {timeline.isExpired && (
@@ -464,6 +506,116 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           </div>
         </div>
       </div>
+
+      {mounted &&
+        isResetModalOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-[2px] sm:p-4"
+            onClick={() => setIsResetModalOpen(false)}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="reset-budget-title"
+              onClick={(e) => e.stopPropagation()}
+              className="w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+            >
+              <div className="p-5 border-b border-outline flex items-start justify-between gap-3">
+                <div>
+                  <h3
+                    id="reset-budget-title"
+                    className="text-base font-bold text-on-surface tracking-tight"
+                  >
+                    Reset Budget Siklus Ini
+                  </h3>
+                  <p className="text-xs text-on-surface-variant mt-1 tabular-nums">
+                    Periode {formatShortDate(budgetPlan.cycleStartDate)} - {formatShortDate(budgetPlan.cycleEndDate)} ({formatRp(budgetPlan.salaryAmount)})
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsResetModalOpen(false)}
+                  aria-label="Tutup dialog reset"
+                  className="min-w-[44px] min-h-[44px] -mr-2 -mt-2 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-3">
+                {reversibleTransactions.length > 0 && (
+                  <div className="p-3.5 rounded-2xl bg-surface-container-low border border-outline space-y-2 text-xs">
+                    <div className="flex items-center justify-between font-semibold text-on-surface">
+                      <span>Transaksi terkait siklus ditemukan</span>
+                      <span className="tabular-nums">{reversibleTransactions.length} mutasi</span>
+                    </div>
+                    <ul className="space-y-1 text-[11px] text-on-surface-variant">
+                      {reversibleTransactions.slice(0, 3).map((tx) => (
+                        <li key={tx.id} className="flex items-center justify-between gap-2">
+                          <span className="truncate">{tx.category}</span>
+                          <span className="tabular-nums font-medium shrink-0 text-on-surface">
+                            {tx.type === 'income' ? '+' : '-'}{formatRp(tx.amount)}
+                          </span>
+                        </li>
+                      ))}
+                      {reversibleTransactions.length > 3 && (
+                        <li className="text-[11px] text-on-surface-variant">
+                          +{reversibleTransactions.length - 3} transaksi siklus lainnya
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="space-y-2.5 pt-1">
+                  {reversibleTransactions.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetBudgetPlan({ revertTransactions: true });
+                        setIsResetModalOpen(false);
+                      }}
+                      className="w-full min-h-[44px] px-4 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-left transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                    >
+                      <span className="block text-xs font-bold">
+                        Reset & Batalkan Transaksi Siklus Ini
+                      </span>
+                      <span className="block text-[11px] text-rose-100 mt-0.5 leading-snug">
+                        Hapus plan gajian, kembalikan saldo rekening terkait, dan hapus mutasi gajian/pos fix dari cloud.
+                      </span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetBudgetPlan({ revertTransactions: false });
+                      setIsResetModalOpen(false);
+                    }}
+                    className="w-full min-h-[44px] px-4 py-3 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-outline text-left transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                  >
+                    <span className="block text-xs font-bold text-on-surface">
+                      Reset Plan Saja
+                    </span>
+                    <span className="block text-[11px] text-on-surface-variant mt-0.5 leading-snug">
+                      Kosongkan panel Payday Budgeting tanpa menghapus mutasi atau mengubah saldo rekening.
+                    </span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsResetModalOpen(false)}
+                  className="w-full min-h-[44px] mt-1 px-4 py-2.5 rounded-full text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

@@ -44,6 +44,7 @@ export function FinanceManager() {
     isPrivacyMode,
     togglePrivacyMode,
     addTransaction,
+    deleteTransaction,
     addSubscription,
     deleteSubscription,
   } = useFinanceStore();
@@ -698,10 +699,10 @@ export function FinanceManager() {
 
           <div className="divide-y divide-outline/20">
             {transactions.slice(0, 6).map((tx) => (
-              <div key={tx.id} className="py-2.5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3">
+              <div key={tx.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                       tx.type === 'income'
                         ? 'bg-emerald-50 text-emerald-600'
                         : tx.type === 'expense'
@@ -717,30 +718,50 @@ export function FinanceManager() {
                       <ArrowRightLeft className="w-4 h-4" />
                     )}
                   </div>
-                  <div>
-                    <span className="font-semibold text-on-surface block">{tx.category}</span>
-                    <span className="text-[11px] text-on-surface-variant">
+                  <div className="min-w-0">
+                    <span className="font-semibold text-on-surface block truncate">{tx.category}</span>
+                    <span className="text-[11px] text-on-surface-variant block truncate">
                       {tx.note || new Date(tx.transaction_date || Date.now()).toLocaleDateString('id-ID')}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <span
-                    className={`font-bold block ${
-                      tx.type === 'income'
-                        ? 'text-emerald-600'
-                        : tx.type === 'expense'
-                        ? 'text-on-surface'
-                        : 'text-zinc-600'
-                    }`}
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="text-right tabular-nums">
+                    <span
+                      className={`font-bold block ${
+                        tx.type === 'income'
+                          ? 'text-emerald-600'
+                          : tx.type === 'expense'
+                          ? 'text-on-surface'
+                          : 'text-zinc-600'
+                      }`}
+                    >
+                      {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
+                      Rp {tx.amount.toLocaleString('id-ID')}
+                    </span>
+                    <span className="text-[10px] text-on-surface-variant font-medium uppercase truncate max-w-[120px] block ml-auto">
+                      {wallets.find((w) => w.id === tx.wallet_id)?.name || tx.wallet_id.replace('w-', '')}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const signedAmount = `${tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}Rp ${tx.amount.toLocaleString('id-ID')}`;
+                      if (
+                        window.confirm(
+                          `Batalkan dan hapus transaksi "${tx.category}" (${signedAmount})? Saldo rekening terkait akan otomatis dikembalikan.`
+                        )
+                      ) {
+                        deleteTransaction(tx.id);
+                      }
+                    }}
+                    aria-label={`Hapus transaksi ${tx.category}`}
+                    title="Undo / Hapus transaksi dan kembalikan saldo"
+                    className="min-w-[36px] min-h-[36px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                   >
-                    {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
-                    Rp {tx.amount.toLocaleString('id-ID')}
-                  </span>
-                  <span className="text-[10px] text-on-surface-variant font-medium uppercase truncate max-w-[120px] block">
-                    {wallets.find((w) => w.id === tx.wallet_id)?.name || tx.wallet_id.replace('w-', '')}
-                  </span>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             ))}
