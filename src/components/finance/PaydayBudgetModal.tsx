@@ -554,12 +554,12 @@ export function PaydayBudgetModal({
                         type="text"
                         value={rule.name}
                         onChange={(e) => handleUpdateRule(rule.id, { name: e.target.value })}
-                        className="flex-1 min-w-0 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container"
+                        className="flex-1 min-w-0 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                       />
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex items-center gap-1 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2 py-1">
+                      <div className="flex items-center gap-1 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2 py-1 focus-within:border-primary-container focus-within:ring-2 focus-within:ring-primary-fixed">
                         <input
                           type="number"
                           min={0}
@@ -606,7 +606,7 @@ export function PaydayBudgetModal({
                             .filter(Boolean),
                         })
                       }
-                      className="flex-1 min-h-[32px] bg-transparent text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none"
+                      className="flex-1 min-h-[32px] bg-transparent rounded px-1.5 text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                     />
 
                     <label className="inline-flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant cursor-pointer shrink-0 select-none">
