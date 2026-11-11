@@ -361,3 +361,34 @@ export function computeBudgetProgress(
     buckets,
   };
 }
+
+/**
+ * Returns deduplicated expense category suggestions combining configured
+ * budget split rules with standard quick-capture defaults.
+ */
+export function getAvailableBudgetCategories(rules: BudgetSplitRule[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  const pushUnique = (cat: string) => {
+    const clean = cat.trim();
+    if (!clean) return;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    result.push(clean);
+  };
+
+  for (const rule of rules) {
+    if (rule.isSavings) continue;
+    for (const cat of rule.categories) {
+      pushUnique(cat);
+    }
+  }
+
+  for (const fallback of ['Makan & Minum', 'Transportasi', 'Belanja', 'Tagihan', 'Dev / Tech', 'Lainnya']) {
+    pushUnique(fallback);
+  }
+
+  return result;
+}

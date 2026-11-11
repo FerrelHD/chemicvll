@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useFinanceStore } from '@/stores/useFinanceStore';
+import { getAvailableBudgetCategories } from '@/lib/budget-utils';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
 import { X, Wallet, CheckCircle2, Zap, ArrowRight, CornerDownLeft, ChevronDown } from 'lucide-react';
@@ -41,6 +42,9 @@ export function QuickCaptureModal({
   const wallets = useFinanceStore((s) => s.wallets);
   const activeWalletId = useFinanceStore((s) => s.activeWalletId);
   const addTransaction = useFinanceStore((s) => s.addTransaction);
+  const budgetPlan = useFinanceStore((s) => s.budgetPlan);
+  const budgetRules = useFinanceStore((s) => s.budgetRules);
+  const expenseCategories = getAvailableBudgetCategories(budgetPlan?.rules || budgetRules);
 
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseCategory, setExpenseCategory] = useState(EXPENSE_CATEGORIES[0]);
@@ -279,7 +283,7 @@ export function QuickCaptureModal({
                   Kategori
                 </label>
                 <div className="flex flex-wrap gap-1.5">
-                  {EXPENSE_CATEGORIES.map((cat) => (
+                  {expenseCategories.map((cat) => (
                     <button
                       key={cat}
                       type="button"

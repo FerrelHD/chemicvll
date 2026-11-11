@@ -6,6 +6,7 @@ import {
   computeBudgetProgress,
   toLocalDateKey,
   parseFixedPaymentCategory,
+  getAvailableBudgetCategories,
 } from '../budget-utils';
 import { BudgetSplitRule, FixedAllocation, MonthlyBudgetPlan, Transaction } from '../../types/database';
 
@@ -145,5 +146,16 @@ console.log('Test 5 Passed: Transaction cycle filter, transfer exclusion, Pos Fi
 // Test 6: Local date key preserves YYYY-MM-DD directly
 assert.strictEqual(toLocalDateKey('2026-11-06'), '2026-11-06');
 console.log('Test 6 Passed: Local date key consistency');
+
+// Test 7: Available expense category suggestions exclude savings & deduplicate case-insensitively
+const catSuggestions = getAvailableBudgetCategories([
+  { id: 'r1', name: 'Needs', percentage: 50, categories: ['Makan & Minum', 'Kopi'], color: '#000' },
+  { id: 'r2', name: 'Save', percentage: 30, categories: ['Tabungan'], color: '#111', isSavings: true },
+  { id: 'r3', name: 'Fun', percentage: 20, categories: ['kopi', 'Belanja'], color: '#222' },
+]);
+assert.ok(catSuggestions.includes('Kopi'));
+assert.ok(!catSuggestions.includes('Tabungan'), 'Savings category must not appear in daily expense chips');
+assert.strictEqual(catSuggestions.filter((c) => c.toLowerCase() === 'kopi').length, 1);
+console.log('Test 7 Passed: Category suggestions exclude savings & deduplicate cleanly');
 
 console.log('All Payday Budgeting Math & Accuracy tests passed successfully!');

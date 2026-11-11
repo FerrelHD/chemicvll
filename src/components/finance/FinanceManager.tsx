@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { useFinanceStore } from '@/stores/useFinanceStore';
+import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
+import { PaydayBudgetPanel } from './PaydayBudgetPanel';
+import { PaydayBudgetModal } from './PaydayBudgetModal';
 import {
   Wallet,
   PiggyBank,
@@ -23,6 +26,7 @@ import {
   BarChart3,
   Eye,
   EyeOff,
+  PieChart,
 } from 'lucide-react';
 
 export function FinanceManager() {
@@ -35,6 +39,8 @@ export function FinanceManager() {
     deleteWallet,
     transactions,
     subscriptions,
+    budgetPlan,
+    budgetRules,
     isPrivacyMode,
     togglePrivacyMode,
     addTransaction,
@@ -43,6 +49,8 @@ export function FinanceManager() {
   } = useFinanceStore();
 
   const [isLoggingOpen, setIsLoggingOpen] = useState(false);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [isBudgetFreshCycle, setIsBudgetFreshCycle] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [editingWallet, setEditingWallet] = useState<any>(null);
   const [walletForm, setWalletForm] = useState({
@@ -96,6 +104,19 @@ export function FinanceManager() {
   };
 
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
+  const investmentBalance = wallets
+    .filter((w) => w.type === 'investment')
+    .reduce((acc, w) => acc + w.balance, 0);
+  const budgetProgress = budgetPlan ? computeBudgetProgress(budgetPlan, transactions) : null;
+  const allocatedSavingsTarget = budgetProgress?.savingsAllocated ?? 0;
+  const displaySavings = investmentBalance > 0 ? investmentBalance : allocatedSavingsTarget;
+
+  const expenseCategoryOptions = getAvailableBudgetCategories(budgetPlan?.rules || budgetRules);
+
+  const handleOpenBudgetSetup = (freshCycle = false) => {
+    setIsBudgetFreshCycle(freshCycle);
+    setIsBudgetModalOpen(true);
+  };
 
   // Calculate monthly stats from transactions
   const totalIncome = transactions
@@ -244,8 +265,17 @@ export function FinanceManager() {
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
             <Calendar className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
-            <span>Nov 2026</span>
+            <span>{now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
           </div>
+
+          <button
+            type="button"
+            onClick={() => handleOpenBudgetSetup(!budgetPlan)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container-high border border-outline/30 text-on-surface text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
+          >
+            <PieChart className="w-3.5 h-3.5 text-primary-container shrink-0" />
+            <span>{budgetPlan ? 'Payday Budget' : 'Atur Budget Gajian'}</span>
+          </button>
 
           <button
             type="button"
@@ -316,11 +346,15 @@ export function FinanceManager() {
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
             <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans truncate">
-              {isPrivacyMode ? 'Rp •••••••' : 'Rp 0'}
+              {isPrivacyMode ? 'Rp •••••••' : `Rp ${displaySavings.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
-                Cash Allocation
+                {investmentBalance > 0
+                  ? 'Investment Vault'
+                  : allocatedSavingsTarget > 0
+                  ? 'Payday Target'
+                  : 'Cash Allocation'}
               </span>
               <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Ready</span>
             </div>
@@ -369,6 +403,9 @@ export function FinanceManager() {
           </div>
         </div>
       </div>
+
+      {/* Monthly Payday Budgeting Cockpit */}
+      <PaydayBudgetPanel onOpenSetup={handleOpenBudgetSetup} />
 
       {/* Row 2: Middle Bento Cockpit (Wallet Card Stack + Bento Capsule Chart) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -843,6 +880,24 @@ export function FinanceManager() {
 
               <div>
                 <label className="block text-xs font-semibold text-on-surface mb-1">Category</label>
+                {txType === 'expense' && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {expenseCategoryOptions.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setCategory(cat)}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition border ${
+                          category.trim().toLowerCase() === cat.trim().toLowerCase()
+                            ? 'bg-inverse-surface text-white border-inverse-surface'
+                            : 'bg-surface-container-low text-on-surface-variant border-outline/30 hover:text-on-surface'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <input
                   type="text"
                   value={category}
@@ -1218,6 +1273,12 @@ export function FinanceManager() {
           </div>
         </div>
       )}
+      {/* Modal Monthly Payday Budgeting Setup */}
+      <PaydayBudgetModal
+        isOpen={isBudgetModalOpen}
+        startFreshCycle={isBudgetFreshCycle}
+        onClose={() => setIsBudgetModalOpen(false)}
+      />
     </section>
   );
 }
