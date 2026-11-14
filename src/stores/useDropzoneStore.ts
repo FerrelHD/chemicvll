@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { DropzoneItem } from '@/types/database';
 import { purgeExpiredDropzoneItems } from '@/lib/dropzone-purger';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 interface DropzoneState {
   items: DropzoneItem[];
@@ -39,8 +40,10 @@ export const useDropzoneStore = create<DropzoneState>()(
 
         set((state) => ({ items: [newItem, ...state.items] }));
       },
-      deleteItem: (id) =>
-        set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
+      deleteItem: (id) => {
+        set((state) => ({ items: state.items.filter((item) => item.id !== id) }));
+        deleteFromCloud('dropzone_items', id);
+      },
       togglePin: (id) =>
         set((state) => ({
           items: state.items.map((item) =>
@@ -48,11 +51,16 @@ export const useDropzoneStore = create<DropzoneState>()(
           ),
         })),
       purgeExpired: () => {
-        const { retainedItems, purgedCount } = purgeExpiredDropzoneItems(
-          useDropzoneStore.getState().items
-        );
+        const currentItems = useDropzoneStore.getState().items;
+        const { retainedItems, purgedCount } = purgeExpiredDropzoneItems(currentItems);
         if (purgedCount > 0) {
+          const retainedIds = new Set(retainedItems.map((item) => item.id));
           set({ items: retainedItems });
+          currentItems.forEach((item) => {
+            if (!retainedIds.has(item.id)) {
+              deleteFromCloud('dropzone_items', item.id);
+            }
+          });
         }
         return purgedCount;
       },

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 export interface NoteItem {
   id: string;
@@ -80,8 +81,10 @@ export const useNotesStore = create<NotesState>()(
             ...state.notes,
           ],
         })),
-      deleteNote: (id) =>
-        set((state) => ({ notes: state.notes.filter((n) => n.id !== id) })),
+      deleteNote: (id) => {
+        set((state) => ({ notes: state.notes.filter((n) => n.id !== id) }));
+        deleteFromCloud('notes', id);
+      },
       togglePinNote: (id) =>
         set((state) => ({
           notes: state.notes.map((n) =>

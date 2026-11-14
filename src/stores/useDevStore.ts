@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Project } from '@/types/database';
 import { daemonRelay } from '@/lib/daemon-relay';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 export interface DevProject extends Project {
   serverState: 'running' | 'stopped' | 'error';
@@ -376,11 +377,13 @@ export const useDevStore = create<DevState>()(
           ],
         })),
 
-      deleteProject: (id) =>
+      deleteProject: (id) => {
         set((state) => ({
           projects: state.projects.filter((p) => p.id !== id),
           activeLogProjectId: state.activeLogProjectId === id ? null : state.activeLogProjectId,
-        })),
+        }));
+        deleteFromCloud('projects', id);
+      },
     }),
     {
       name: 'chemicvll-dev-storage',

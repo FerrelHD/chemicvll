@@ -6,7 +6,11 @@ export type SyncTable =
   | 'transactions'
   | 'subscriptions'
   | 'tasks'
-  | 'budget_plans';
+  | 'budget_plans'
+  | 'projects'
+  | 'dropzone_items'
+  | 'notes'
+  | 'content_ideas';
 
 export interface PendingDeletion {
   table: SyncTable;
