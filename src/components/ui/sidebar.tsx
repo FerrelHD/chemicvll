@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
@@ -103,9 +103,53 @@ export const DesktopSidebar = ({
 export const MobileSidebar = ({
   className,
   children,
-  ...props
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
+
+  // Edge-zone swipe from left (<= 56px) opens drawer on mobile without fighting vertical/horizontal scroll
+  useEffect(() => {
+    if (open) return;
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (window.innerWidth >= 768 || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      if (touch.clientX > 56) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select")) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      tracking = true;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!tracking) return;
+      tracking = false;
+      const touch = e.changedTouches[0];
+      if (!touch) return;
+      const dx = touch.clientX - startX;
+      const dy = Math.abs(touch.clientY - startY);
+      if (dx >= 50 && dx > dy * 1.5) {
+        setOpen(true);
+      }
+    };
+
+    const onTouchCancel = () => {
+      tracking = false;
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchCancel, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchCancel);
+    };
+  }, [open, setOpen]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -130,8 +174,17 @@ export const MobileSidebar = ({
               damping: 28,
               stiffness: 300,
             }}
+            drag="x"
+            dragDirectionLock
+            dragConstraints={{ left: -288, right: 0 }}
+            dragElastic={{ left: 0.1, right: 0 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -70 || info.velocity.x < -300) {
+                setOpen(false);
+              }
+            }}
             className={cn(
-              "fixed inset-y-0 left-0 w-72 max-w-[85vw] h-full bg-surface-container-low p-5 z-[100] flex flex-col justify-between md:hidden shadow-2xl border-r border-outline/30 select-none",
+              "fixed inset-y-0 left-0 w-72 max-w-[85vw] h-full bg-surface-container-low p-5 z-[100] flex flex-col justify-between md:hidden shadow-2xl border-r border-outline/30 select-none touch-pan-y",
               className
             )}
           >
