@@ -168,6 +168,12 @@ export const useFinanceStore = create<FinanceState>()(
           const filtered = state.wallets.filter((w) => w.id !== id);
           return {
             wallets: filtered,
+            transactions: state.transactions
+              .filter((tx) => tx.wallet_id !== id)
+              .map((tx) => (tx.to_wallet_id === id ? { ...tx, to_wallet_id: null } : tx)),
+            subscriptions: state.subscriptions.map((s) =>
+              s.wallet_id === id ? { ...s, wallet_id: null } : s
+            ),
             activeWalletId: state.activeWalletId === id ? (filtered[0]?.id || '') : state.activeWalletId,
           };
         });
