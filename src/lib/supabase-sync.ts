@@ -12,9 +12,31 @@ import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import type { MonthlyBudgetPlan } from '@/types/database';
+import { useDropzoneStore } from '@/stores/useDropzoneStore';
+import { useNotesStore } from '@/stores/useNotesStore';
+import { DevProject, useDevStore } from '@/stores/useDevStore';
 import { create } from 'zustand';
 
 export { budgetPlanToRow, isMissingTableError, rowToBudgetPlan };
+
+function toProjectPayload(project: DevProject) {
+  return {
+    id: project.id,
+    user_id: 'ferrel',
+    name: project.name,
+    description: project.description,
+    status: project.status,
+    color_code: project.color_code,
+    repo_url: project.repo_url ?? null,
+    prod_url: project.prod_url ?? null,
+    local_path: project.local_path ?? null,
+    start_command: project.start_command ?? null,
+    default_port: project.default_port ?? null,
+    target_date: project.target_date ?? null,
+    created_at: project.created_at,
+    updated_at: project.updated_at,
+  };
+}
 
 export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline' | 'error';
 export type BudgetCloudStatus = 'unknown' | 'synced' | 'migration_needed';
@@ -63,7 +85,18 @@ export async function pullFromCloud(): Promise<boolean> {
     await flushPendingDeletions();
 
     // Parallel fetch with 10s timeout to allow cold connection handshake
-    const [careerRes, walletRes, txRes, subRes, taskRes, budgetRes] = await Promise.race([
+    const [
+      careerRes,
+      walletRes,
+      txRes,
+      subRes,
+      taskRes,
+      budgetRes,
+      dropzoneRes,
+      notesRes,
+      contentRes,
+      projectRes,
+    ] = await Promise.race([
       Promise.all([
         supabase.from('career_pipelines').select('*'),
         supabase.from('wallets').select('*'),
@@ -71,6 +104,10 @@ export async function pullFromCloud(): Promise<boolean> {
         supabase.from('subscriptions').select('*'),
         supabase.from('tasks').select('*'),
         supabase.from('budget_plans').select('*'),
+        supabase.from('dropzone_items').select('*'),
+        supabase.from('notes').select('*'),
+        supabase.from('content_ideas').select('*'),
+        supabase.from('projects').select('*'),
       ]),
       new Promise<never>((_, reject) =>
         setTimeout(
@@ -80,21 +117,19 @@ export async function pullFromCloud(): Promise<boolean> {
       ),
     ]);
 
-    const hasCoreError =
+    const firstErr =
       careerRes.error ||
       walletRes.error ||
       txRes.error ||
       subRes.error ||
-      taskRes.error;
+      taskRes.error ||
+      dropzoneRes.error ||
+      notesRes.error ||
+      contentRes.error ||
+      projectRes.error;
 
-    if (hasCoreError) {
-      const firstErr =
-        careerRes.error ||
-        walletRes.error ||
-        txRes.error ||
-        subRes.error ||
-        taskRes.error;
-      const errMsg = firstErr?.message || 'Database query error';
+    if (firstErr) {
+      const errMsg = firstErr.message || 'Database query error';
       console.warn('Supabase fetch error, fallback to local cache:', errMsg);
       useSyncStore.getState().setErrorMessage(errMsg);
       useSyncStore.getState().setStatus('offline');
@@ -126,6 +161,18 @@ export async function pullFromCloud(): Promise<boolean> {
     const filteredTasks = (taskRes.data || []).filter(
       (task: any) => !isPendingDeletion('tasks', task.id)
     );
+    const filteredDropzone = (dropzoneRes.data || []).filter(
+      (item: any) => !isPendingDeletion('dropzone_items', item.id)
+    );
+    const filteredNotes = (notesRes.data || []).filter(
+      (note: any) => !isPendingDeletion('notes', note.id)
+    );
+    const filteredContentIdeas = (contentRes.data || []).filter(
+      (idea: any) => !isPendingDeletion('content_ideas', idea.id)
+    );
+    const filteredProjects = (projectRes.data || []).filter(
+      (project: any) => !isPendingDeletion('projects', project.id)
+    );
 
     const filteredBudgetRows = !budgetRes.error
       ? (budgetRes.data || [])
@@ -149,7 +196,11 @@ export async function pullFromCloud(): Promise<boolean> {
       filteredCareer.length > 0 ||
       filteredWallets.length > 0 ||
       filteredTasks.length > 0 ||
-      filteredBudgetRows.length > 0;
+      filteredBudgetRows.length > 0 ||
+      filteredDropzone.length > 0 ||
+      filteredNotes.length > 0 ||
+      filteredContentIdeas.length > 0 ||
+      filteredProjects.length > 0;
 
     let shouldPushLocalPlan = false;
 
@@ -213,6 +264,31 @@ export async function pullFromCloud(): Promise<boolean> {
       if (taskRes.data) {
         useTaskStore.setState({ tasks: filteredTasks });
       }
+      if (dropzoneRes.data) {
+        useDropzoneStore.setState({ items: filteredDropzone });
+      }
+      if (notesRes.data && filteredNotes.length > 0) {
+        useNotesStore.setState({ notes: filteredNotes });
+      }
+      if (contentRes.data && filteredContentIdeas.length > 0) {
+        useNotesStore.setState({ contentIdeas: filteredContentIdeas });
+      }
+      if (projectRes.data && filteredProjects.length > 0) {
+        const existingById = new Map(
+          useDevStore.getState().projects.map((p) => [p.id, p])
+        );
+        const mergedProjects: DevProject[] = filteredProjects.map((remote: any) => {
+          const local = existingById.get(remote.id);
+          return {
+            ...remote,
+            serverState: local?.serverState ?? 'stopped',
+            pid: local?.pid,
+            logs: local?.logs ?? [],
+            encryptedEnv: local?.encryptedEnv,
+          };
+        });
+        useDevStore.setState({ projects: mergedProjects });
+      }
       if (shouldPushLocalPlan) {
         await pushAllToCloud(true);
       }
@@ -262,6 +338,9 @@ export async function pushAllToCloud(force = false): Promise<void> {
       budgetHistory,
     } = useFinanceStore.getState();
     const tasks = useTaskStore.getState().tasks;
+    const dropzoneItems = useDropzoneStore.getState().items;
+    const { notes, contentIdeas } = useNotesStore.getState();
+    const projects = useDevStore.getState().projects;
 
     const coreUpserts = [];
 
@@ -302,6 +381,36 @@ export async function pushAllToCloud(force = false): Promise<void> {
         supabase.from('tasks').upsert(
           tasks.map((task) => ({ ...task, user_id: 'ferrel' }))
         )
+      );
+    }
+
+    if (dropzoneItems.length > 0) {
+      coreUpserts.push(
+        supabase.from('dropzone_items').upsert(
+          dropzoneItems.map((item) => ({ ...item, user_id: 'ferrel' }))
+        )
+      );
+    }
+
+    if (notes.length > 0) {
+      coreUpserts.push(
+        supabase.from('notes').upsert(
+          notes.map((note) => ({ ...note, user_id: 'ferrel' }))
+        )
+      );
+    }
+
+    if (contentIdeas.length > 0) {
+      coreUpserts.push(
+        supabase.from('content_ideas').upsert(
+          contentIdeas.map((idea) => ({ ...idea, user_id: 'ferrel' }))
+        )
+      );
+    }
+
+    if (projects.length > 0) {
+      coreUpserts.push(
+        supabase.from('projects').upsert(projects.map(toProjectPayload))
       );
     }
 
@@ -399,5 +508,23 @@ export function initSupabaseSync(): void {
 
   useTaskStore.subscribe(() => {
     if (!isSyncingDown) debouncePushToCloud();
+  });
+
+  useDropzoneStore.subscribe(() => {
+    if (!isSyncingDown) debouncePushToCloud();
+  });
+
+  useNotesStore.subscribe(() => {
+    if (!isSyncingDown) debouncePushToCloud();
+  });
+
+  useDevStore.subscribe((state, prevState) => {
+    if (isSyncingDown) return;
+    if (
+      JSON.stringify(state.projects.map(toProjectPayload)) !==
+      JSON.stringify(prevState.projects.map(toProjectPayload))
+    ) {
+      debouncePushToCloud();
+    }
   });
 }
