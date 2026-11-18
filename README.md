@@ -121,6 +121,24 @@ The user interface follows the Warm Bento Fintech design paradigm specified in D
    node local-daemon/daemon.js
    ```
 
+7. Setup the Telegram Hybrid Bridge (optional for mobile natural capture & daily digest):
+   - Create a bot via `@BotFather` on Telegram and copy `TELEGRAM_BOT_TOKEN`.
+   - Find your personal numeric chat ID (e.g., via `@userinfobot`) and set `TELEGRAM_ALLOWED_CHAT_ID`.
+   - Set `SUPABASE_SERVICE_ROLE_KEY`, `TELEGRAM_WEBHOOK_SECRET`, `CRON_SECRET`, and `NEXT_PUBLIC_APP_URL` in your Vercel project environment variables.
+   - Register the Telegram webhook once after deploying:
+     ```bash
+     curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+       -H "Content-Type: application/json" \
+       -d '{"url":"https://<your-app>.vercel.app/api/telegram/webhook","secret_token":"<TELEGRAM_WEBHOOK_SECRET>"}'
+     ```
+   - Natural inputs supported in Telegram:
+     - `kopi 25k bca` / `+500k freelance bca` (logs transaction & updates wallet balance)
+     - `task revisi cv !high` (adds P1 daily focus task)
+     - `loker Gojek - Frontend #internship https://...` (adds to Career Wishlist)
+     - Any link or plain text (saved to Dropzone for laptop triage)
+     - `today` or `saldo` (instant summary in chat)
+   - Automated digests run via `vercel.json` Cron at `01:30 UTC` (08:30 WIB) and `14:00 UTC` (21:00 WIB).
+
 ---
 
 ## Available Scripts
