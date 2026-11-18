@@ -1,16 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useDevStore } from '@/stores/useDevStore';
+import { useDropzoneStore } from '@/stores/useDropzoneStore';
 import { MorningBriefingCard } from './MorningBriefingCard';
 import {
   PipelineMark,
   VaultMark,
   FocusMark,
   ConsoleMark,
+  RelayMark,
 } from '@/components/icons/ChemicIcons';
 import {
   ArrowRight,
@@ -22,6 +24,12 @@ import {
   BarChart3,
   Eye,
   EyeOff,
+  Copy,
+  Check,
+  Smartphone,
+  Monitor,
+  ExternalLink,
+  X,
 } from 'lucide-react';
 
 interface DashboardCockpitProps {
@@ -38,6 +46,75 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
   const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
   const projects = useDevStore((state) => state.projects);
+  const dropzoneItems = useDropzoneStore((state) => state.items);
+  const deleteDropzoneItem = useDropzoneStore((state) => state.deleteItem);
+  const addTask = useTaskStore((state) => state.addTask);
+  const addCareerItem = useCareerStore((state) => state.addItem);
+
+  const [feedbackId, setFeedbackId] = useState<string | null>(null);
+
+  const recentDrops = React.useMemo(() => {
+    return [...dropzoneItems]
+      .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')))
+      .slice(0, 3);
+  }, [dropzoneItems]);
+
+  const openQuickTab = (tab: 'expense' | 'task' | 'drop') => {
+    window.dispatchEvent(new CustomEvent('open-quick-capture', { detail: { tab } }));
+  };
+
+  const flashFeedback = (key: string) => {
+    setFeedbackId(key);
+    setTimeout(() => setFeedbackId((prev) => (prev === key ? null : prev)), 1500);
+  };
+
+  const handleCopyDrop = async (id: string, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      flashFeedback(`copy-${id}`);
+    } catch {
+      // Clipboard blocked in non-secure context
+    }
+  };
+
+  const handlePromoteDropToTask = (id: string, content: string) => {
+    const cleanTitle = content.replace(/\s+/g, ' ').trim().slice(0, 140);
+    addTask(cleanTitle, 2, false);
+    flashFeedback(`task-${id}`);
+  };
+
+  const handlePromoteDropToCareer = (id: string, content: string, type: 'text' | 'link' | 'code') => {
+    const isLink = type === 'link' || /^https?:\/\//i.test(content.trim());
+    let entity = 'New Opportunity';
+    if (isLink) {
+      try {
+        entity = new URL(content.trim()).hostname.replace(/^www\./, '');
+      } catch {
+        entity = 'Saved Link';
+      }
+    } else {
+      entity = content.trim().slice(0, 60);
+    }
+
+    addCareerItem({
+      entity_name: entity,
+      role_or_program: 'Review from Dropzone',
+      category: 'internship',
+      stage: 'wishlist',
+      applied_date: null,
+      deadline: null,
+      platform_source: 'Dropzone',
+      work_type: 'onsite',
+      location: null,
+      resume_version: null,
+      stipend_or_salary: null,
+      contact_person: null,
+      next_follow_up_date: null,
+      portal_url: isLink ? content.trim() : null,
+      notes: isLink ? null : content,
+    });
+    flashFeedback(`career-${id}`);
+  };
 
   const activeCareerCount = careerItems.filter(
     (i) => i.stage !== 'rejected' && i.stage !== 'offer'
@@ -91,6 +168,167 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       
       {/* Morning Briefing & Unified Header */}
       <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
+
+      {/* Mobile 1-Tap Action Strip (hidden on desktop) */}
+      <div className="md:hidden grid grid-cols-4 gap-2">
+        <button
+          type="button"
+          onClick={() => openQuickTab('expense')}
+          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-inverse-surface text-white text-[11px] font-semibold shadow-sm active:scale-95 transition"
+        >
+          <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
+          <span className="truncate">Jajan</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => openQuickTab('task')}
+          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition"
+        >
+          <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
+          <span className="truncate">Task</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => openQuickTab('drop')}
+          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition"
+        >
+          <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
+          <span className="truncate">Drop</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onNavigate('dropzone')}
+          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-primary-fixed/50 border border-primary-container/25 text-on-primary-fixed-variant text-[11px] font-semibold active:scale-95 transition"
+        >
+          <RelayMark active className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Vault</span>
+        </button>
+      </div>
+
+      {/* Cross-Device Dropzone Handoff Strip */}
+      {recentDrops.length > 0 && (
+        <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-4 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <RelayMark active className="w-4 h-4 text-primary-container shrink-0" />
+              <span className="text-xs font-bold text-on-surface truncate">
+                Tangkapan Terbaru (Dropzone)
+              </span>
+              <span className="px-1.5 py-0.5 rounded-md bg-surface-container text-[10px] font-bold text-on-surface-variant tabular-nums shrink-0">
+                {dropzoneItems.length}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('dropzone')}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-on-surface-variant hover:text-primary-container transition shrink-0"
+            >
+              <span>Buka Semua</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="divide-y divide-outline/20">
+            {recentDrops.map((item) => {
+              const safeHref = /^https?:\/\//i.test(item.content.trim())
+                ? item.content.trim()
+                : null;
+              return (
+                <div
+                  key={item.id}
+                  className="py-2 first:pt-0.5 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-container text-[10px] font-semibold text-on-surface-variant shrink-0"
+                      title={`Dari ${item.device_source}`}
+                    >
+                      {item.device_source === 'mobile' ? (
+                        <Smartphone className="w-3 h-3 text-primary-container" />
+                      ) : (
+                        <Monitor className="w-3 h-3" />
+                      )}
+                      <span>{item.device_source === 'mobile' ? 'HP' : 'PC'}</span>
+                    </span>
+                    {safeHref ? (
+                      <a
+                        href={safeHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-on-surface hover:text-primary-container truncate inline-flex items-center gap-1 min-w-0"
+                      >
+                        <span className="truncate">{item.content}</span>
+                        <ExternalLink className="w-3 h-3 shrink-0 text-on-surface-variant" />
+                      </a>
+                    ) : (
+                      <span className="text-xs font-medium text-on-surface truncate">
+                        {item.content}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyDrop(item.id, item.content)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                    >
+                      {feedbackId === `copy-${item.id}` ? (
+                        <>
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePromoteDropToTask(item.id, item.content)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                    >
+                      {feedbackId === `task-${item.id}` ? (
+                        <>
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Added</span>
+                        </>
+                      ) : (
+                        <span>→ Task</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePromoteDropToCareer(item.id, item.content, item.type)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                    >
+                      {feedbackId === `career-${item.id}` ? (
+                        <>
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Saved</span>
+                        </>
+                      ) : (
+                        <span>→ Career</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteDropzoneItem(item.id)}
+                      className="p-1 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition"
+                      title="Hapus dari Dropzone"
+                      aria-label="Hapus dari Dropzone"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Row 1: 4 Quick Stats Bento Cards (Compact 2x2 on Mobile, 4x1 on Desktop) */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
