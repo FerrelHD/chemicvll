@@ -13,11 +13,23 @@ import { DevMissionControl } from '@/components/dev/DevMissionControl';
 import { DropzonePanel } from '@/components/dropzone/DropzonePanel';
 import { NotesAndContentStudio } from '@/components/notes/NotesAndContentStudio';
 import { CommandBar } from '@/components/cmd/CommandBar';
-import { QuickCaptureModal } from '@/components/layout/QuickCaptureModal';
+import { QuickCaptureModal, QuickCaptureTab } from '@/components/layout/QuickCaptureModal';
 import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { initSupabaseSync } from '@/lib/supabase-sync';
 import { motion } from 'framer-motion';
+
+const VALID_TABS = new Set([
+  'dashboard',
+  'career',
+  'tasks',
+  'finance',
+  'dev',
+  'dropzone',
+  'notes',
+]);
+
+const VALID_QUICK_TABS = new Set<QuickCaptureTab>(['expense', 'task', 'drop']);
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -25,6 +37,7 @@ export default function HomePage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [isBriefingOpen, setIsBriefingOpen] = useState(false);
   const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
+  const [quickCaptureTab, setQuickCaptureTab] = useState<QuickCaptureTab>('expense');
   const [rolledOverCount, setRolledOverCount] = useState(0);
   const executeDailyRollover = useTaskStore((state) => state.executeDailyRollover);
 
@@ -39,11 +52,16 @@ export default function HomePage() {
 
       if (!isInput && (e.key === 'q' || e.key === 'Q') && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
+        setQuickCaptureTab('expense');
         setIsQuickCaptureOpen(true);
       }
     };
 
-    const handleCustomOpen = () => setIsQuickCaptureOpen(true);
+    const handleCustomOpen = (e: Event) => {
+      const tab = (e as CustomEvent<{ tab?: QuickCaptureTab }>).detail?.tab;
+      setQuickCaptureTab(tab && VALID_QUICK_TABS.has(tab) ? tab : 'expense');
+      setIsQuickCaptureOpen(true);
+    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('open-quick-capture', handleCustomOpen);
@@ -54,8 +72,25 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    let hasDeepLink = false;
     if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      const quickParam = params.get('quick') as QuickCaptureTab | null;
+
+      if (tabParam && VALID_TABS.has(tabParam)) {
+        setActiveTab(tabParam);
+        hasDeepLink = true;
+      }
+      if (quickParam && VALID_QUICK_TABS.has(quickParam)) {
+        setQuickCaptureTab(quickParam);
+        setIsQuickCaptureOpen(true);
+        hasDeepLink = true;
+      }
+      if (hasDeepLink) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
     }
     initSupabaseSync();
 
@@ -64,7 +99,7 @@ export default function HomePage() {
       const lastDate = localStorage.getItem('personal_os_last_briefing');
       if (todayStr !== lastDate) {
         const res = executeDailyRollover(todayStr, lastDate);
-        if (res.shouldBrief) {
+        if (res.shouldBrief && !hasDeepLink) {
           setRolledOverCount(res.rolledOverCount);
           setIsBriefingOpen(true);
         }
@@ -152,6 +187,7 @@ export default function HomePage() {
         onClose={() => setIsQuickCaptureOpen(false)}
         onNavigate={setActiveTab}
         onShowNotice={showNotification}
+        initialTab={quickCaptureTab}
       />
       <DailyBriefingModal
         isOpen={isBriefingOpen}
