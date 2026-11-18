@@ -66,8 +66,10 @@ export const useSyncStore = create<SyncState>((set) => ({
 let isInitialized = false;
 let isSyncingDown = false;
 let syncTimeout: NodeJS.Timeout | null = null;
+let lastVisibilityPullAt = 0;
 
 const SYNC_TIMEOUT_MS = 10000;
+const VISIBILITY_PULL_COOLDOWN_MS = 15000;
 
 export async function pullFromCloud(): Promise<boolean> {
   const supabase = createBrowserClient();
@@ -496,6 +498,19 @@ export function initSupabaseSync(): void {
 
   // Initial pull from cloud on startup
   pullFromCloud();
+  lastVisibilityPullAt = Date.now();
+
+  // Pull fresh cloud updates (e.g., Telegram mobile captures) when PWA/tab returns to foreground
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return;
+      if (syncTimeout || isSyncingDown) return;
+      const now = Date.now();
+      if (now - lastVisibilityPullAt < VISIBILITY_PULL_COOLDOWN_MS) return;
+      lastVisibilityPullAt = now;
+      void pullFromCloud();
+    });
+  }
 
   // Subscribe to changes in local stores to auto-push
   useCareerStore.subscribe(() => {
