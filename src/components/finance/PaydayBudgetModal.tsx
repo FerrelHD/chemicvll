@@ -14,6 +14,7 @@ import {
 import { BudgetSplitRule, FixedAllocation } from '@/types/database';
 import { DEFAULT_BUDGET_RULES, useFinanceStore } from '@/stores/useFinanceStore';
 import { allocateNetBudget, computePaydayCycle, toLocalDateKey } from '@/lib/budget-utils';
+import { formatRupiahInput, parseRupiahInput } from '@/lib/utils';
 import { PaydayMark } from '@/components/icons/ChemicIcons';
 
 interface PaydayBudgetModalProps {
@@ -61,13 +62,13 @@ export function PaydayBudgetModal({
     const todayKey = toLocalDateKey();
 
     if (budgetPlan && !startFreshCycle) {
-      setSalaryInput(String(budgetPlan.salaryAmount));
+      setSalaryInput(formatRupiahInput(budgetPlan.salaryAmount));
       setCycleStartDate(budgetPlan.cycleStartDate);
       setFixedItems(budgetPlan.fixedItems.map((f) => ({ ...f })));
       setRules(budgetPlan.rules.map((r) => ({ ...r, categories: [...r.categories] })));
       setLogToWallet(false);
     } else if (budgetPlan && startFreshCycle) {
-      setSalaryInput(String(budgetPlan.salaryAmount));
+      setSalaryInput(formatRupiahInput(budgetPlan.salaryAmount));
       setCycleStartDate(todayKey);
       setFixedItems(budgetPlan.fixedItems.map((f) => ({ ...f, isPaid: false })));
       setRules(
@@ -96,7 +97,7 @@ export function PaydayBudgetModal({
     setSubNotice(null);
   }, [isOpen, startFreshCycle, budgetPlan, budgetRules, activeWalletId, wallets]);
 
-  const parsedSalary = Math.max(0, Math.round(Number(salaryInput) || 0));
+  const parsedSalary = parseRupiahInput(salaryInput);
   const cyclePreview = useMemo(() => computePaydayCycle(cycleStartDate), [cycleStartDate]);
   const allocation = useMemo(
     () => allocateNetBudget(parsedSalary, fixedItems, rules),
@@ -107,7 +108,7 @@ export function PaydayBudgetModal({
 
   const handleAddFixedItem = () => {
     const cleanName = newFixedName.trim();
-    const cleanAmt = Math.max(0, Math.round(Number(newFixedAmount) || 0));
+    const cleanAmt = parseRupiahInput(newFixedAmount);
     if (!cleanName || cleanAmt <= 0) return;
 
     setFixedItems((prev) => [
@@ -161,7 +162,7 @@ export function PaydayBudgetModal({
   };
 
   const handleUpdateFixedAmount = (id: string, val: string) => {
-    const amt = Math.max(0, Math.round(Number(val) || 0));
+    const amt = parseRupiahInput(val);
     setFixedItems((prev) => prev.map((f) => (f.id === id ? { ...f, amount: amt } : f)));
   };
 
@@ -298,20 +299,20 @@ export function PaydayBudgetModal({
                 <label className="block text-xs font-semibold text-on-surface mb-1">
                   Nominal Gajian Masuk (Rp) *
                 </label>
-                <input
-                  type="number"
-                  min={1}
-                  required
-                  placeholder="cth. 8000000"
-                  value={salaryInput}
-                  onChange={(e) => setSalaryInput(e.target.value)}
-                  className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-sm tabular-nums font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
-                />
-                {parsedSalary > 0 && (
-                  <span className="text-[11px] text-on-surface-variant mt-1 block tabular-nums font-medium">
-                    Rp {parsedSalary.toLocaleString('id-ID')}
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant pointer-events-none">
+                    Rp
                   </span>
-                )}
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    placeholder="cth. 8.000.000"
+                    value={salaryInput}
+                    onChange={(e) => setSalaryInput(formatRupiahInput(e.target.value))}
+                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-9 pr-3 py-2 text-sm tabular-nums font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                  />
+                </div>
               </div>
 
               <div>
@@ -393,20 +394,25 @@ export function PaydayBudgetModal({
                 className="flex-1 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
               />
               <div className="flex gap-2">
-                <input
-                  type="number"
-                  min={1}
-                  placeholder="Nominal (Rp)"
-                  value={newFixedAmount}
-                  onChange={(e) => setNewFixedAmount(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddFixedItem();
-                    }
-                  }}
-                  className="w-36 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
-                />
+                <div className="relative flex-1 sm:flex-none sm:w-40 min-w-0">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-on-surface-variant pointer-events-none">
+                    Rp
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Nominal"
+                    value={newFixedAmount}
+                    onChange={(e) => setNewFixedAmount(formatRupiahInput(e.target.value))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddFixedItem();
+                      }
+                    }}
+                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-8 pr-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={handleAddFixedItem}
@@ -423,7 +429,7 @@ export function PaydayBudgetModal({
                 {fixedItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between gap-2 py-2"
+                    className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 py-2"
                   >
                     <input
                       type="text"
@@ -433,16 +439,17 @@ export function PaydayBudgetModal({
                           prev.map((f) => (f.id === item.id ? { ...f, name: e.target.value } : f))
                         )
                       }
-                      className="flex-1 min-w-0 min-h-[36px] bg-transparent text-xs font-semibold text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded px-1"
+                      className="flex-1 min-w-[140px] min-h-[36px] bg-transparent text-xs font-semibold text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded px-1"
                     />
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 ml-auto shrink-0">
                       <span className="text-[11px] text-on-surface-variant">Rp</span>
                       <input
-                        type="number"
-                        min={0}
-                        value={item.amount}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="0"
+                        value={item.amount > 0 ? formatRupiahInput(item.amount) : ''}
                         onChange={(e) => handleUpdateFixedAmount(item.id, e.target.value)}
-                        className="w-28 min-h-[36px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs tabular-nums font-semibold text-right text-on-surface focus:outline-none focus:border-primary-container"
+                        className="w-28 sm:w-32 min-h-[36px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs tabular-nums font-semibold text-right text-on-surface focus:outline-none focus:border-primary-container"
                       />
                       <button
                         type="button"
