@@ -7,6 +7,7 @@ import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budge
 import { formatBillingDate, formatRupiahInput, getDaysUntilDate, parseRupiahInput } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
+import { SubscriptionIcon } from './SubscriptionIcon';
 import { PaydayMark, VaultMark } from '@/components/icons/ChemicIcons';
 import {
   PiggyBank,
@@ -820,9 +821,7 @@ export function FinanceManager() {
                     className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-on-surface shrink-0 uppercase">
-                        {sub.name[0]}
-                      </div>
+                      <SubscriptionIcon name={sub.name} />
                       <div className="min-w-0">
                         <span className="font-semibold text-on-surface block truncate">{sub.name}</span>
                         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-on-surface-variant">
@@ -1236,14 +1235,19 @@ export function FinanceManager() {
                 <label className="block text-xs font-semibold text-on-surface mb-1">
                   Service Name *
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Netflix, Spotify, ChatGPT Plus, iCloud"
-                  value={subName}
-                  onChange={(e) => setSubName(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
-                />
+                <div className="relative flex items-center">
+                  <div className="absolute left-2.5 pointer-events-none flex items-center">
+                    <SubscriptionIcon name={subName} size="sm" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Netflix, Spotify, ChatGPT Plus, iCloud"
+                    value={subName}
+                    onChange={(e) => setSubName(e.target.value)}
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-10 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
