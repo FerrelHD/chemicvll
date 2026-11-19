@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useDevStore, DevProject } from '@/stores/useDevStore';
 import { encryptVault, decryptVault } from '@/lib/crypto-vault';
 import { checkPortHealth, PortHealth } from '@/lib/port-checker';
@@ -51,7 +52,12 @@ export function DevMissionControl() {
     deleteProject,
   } = useDevStore();
 
+  const [mounted, setMounted] = useState(false);
   const [vaultProjectId, setVaultProjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [passphrase, setPassphrase] = useState('');
   const [rawEnv, setRawEnv] = useState('');
   const [vaultStatus, setVaultStatus] = useState<string | null>(null);
@@ -635,9 +641,9 @@ export function DevMissionControl() {
       </div>
 
       {/* Modal .env Vault (Client-Side Encrypted) */}
-      {vaultProjectId && vaultProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-lg w-full p-6 space-y-4">
+      {vaultProjectId && vaultProject && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-primary-container" />
@@ -790,13 +796,14 @@ export function DevMissionControl() {
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal Tambah Port / Project */}
-      {isAddProjOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full p-6 space-y-4">
+      {isAddProjOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">Map New Local Port</h3>
               <button
@@ -879,7 +886,7 @@ export function DevMissionControl() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">Port *</label>
                   <input
@@ -930,7 +937,8 @@ export function DevMissionControl() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
