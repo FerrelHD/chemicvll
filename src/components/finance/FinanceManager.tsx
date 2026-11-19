@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
-import { formatBillingDate, getDaysUntilDate } from '@/lib/utils';
+import { formatBillingDate, formatRupiahInput, getDaysUntilDate, parseRupiahInput } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
 import { PaydayMark, VaultMark } from '@/components/icons/ChemicIcons';
@@ -67,7 +67,7 @@ export function FinanceManager() {
     account_number: '',
     holder_name: 'FERREL',
     expiry: '11/28',
-    balance: 0,
+    balance: '',
     color: '#0066CC',
   });
 
@@ -109,10 +109,11 @@ export function FinanceManager() {
 
   const handleCreateSubscription = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subName.trim() || !subCost) return;
+    const parsedCost = parseRupiahInput(subCost);
+    if (!subName.trim() || parsedCost <= 0) return;
     addSubscription({
       name: subName.trim(),
-      cost: parseFloat(subCost),
+      cost: parsedCost,
       billing_cycle: subCycle,
       next_billing_date: subDate,
       wallet_id: subWalletId || null,
@@ -149,7 +150,7 @@ export function FinanceManager() {
 
   const handleRecord = (e: React.FormEvent) => {
     e.preventDefault();
-    const num = parseFloat(amount);
+    const num = parseRupiahInput(amount);
     if (!num || num <= 0) return;
 
     addTransaction({
@@ -175,7 +176,7 @@ export function FinanceManager() {
       account_number: '',
       holder_name: 'FERREL',
       expiry: '11/28',
-      balance: 0,
+      balance: '',
       color: '#0066CC',
     });
     setIsWalletModalOpen(true);
@@ -190,7 +191,7 @@ export function FinanceManager() {
       account_number: w.account_number || '',
       holder_name: w.holder_name || 'FERREL',
       expiry: w.expiry || '11/28',
-      balance: w.balance,
+      balance: formatRupiahInput(w.balance ?? 0),
       color: w.color || '#0066CC',
     });
     setIsWalletModalOpen(true);
@@ -200,6 +201,7 @@ export function FinanceManager() {
     e.preventDefault();
     if (!walletForm.name.trim()) return;
 
+    const parsedBalance = parseRupiahInput(walletForm.balance);
     if (editingWallet) {
       updateWallet(editingWallet.id, {
         name: walletForm.name,
@@ -208,7 +210,7 @@ export function FinanceManager() {
         account_number: walletForm.account_number,
         holder_name: walletForm.holder_name,
         expiry: walletForm.expiry,
-        balance: Number(walletForm.balance) || 0,
+        balance: parsedBalance,
         color: walletForm.color,
       });
     } else {
@@ -219,7 +221,7 @@ export function FinanceManager() {
         account_number: walletForm.account_number,
         holder_name: walletForm.holder_name,
         expiry: walletForm.expiry,
-        balance: Number(walletForm.balance) || 0,
+        balance: parsedBalance,
         color: walletForm.color,
       });
     }
@@ -875,7 +877,7 @@ export function FinanceManager() {
       {/* Modal Quick Transaction */}
       {isLoggingOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-base text-on-surface">Record Transaction</h3>
               <button
@@ -910,14 +912,20 @@ export function FinanceManager() {
                 <label className="block text-xs font-semibold text-on-surface mb-1">
                   Amount (Rp) *
                 </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="e.g. 50000"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant pointer-events-none">
+                    Rp
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    placeholder="e.g. 50.000"
+                    value={amount}
+                    onChange={(e) => setAmount(formatRupiahInput(e.target.value))}
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                  />
+                </div>
               </div>
 
               <div>
@@ -1023,7 +1031,7 @@ export function FinanceManager() {
       {/* Modal: Kelola Rekening & Kartu (Add / Edit) */}
       {isWalletModalOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 backdrop-blur-sm p-4">
-          <div className="bg-surface-container-lowest border border-outline/30 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-surface-container-lowest border border-outline/30 rounded-3xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-2 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">
                 {editingWallet ? 'Edit Account / Card' : 'Add New Account / Card'}
@@ -1085,7 +1093,7 @@ export function FinanceManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Last 4 Digits
@@ -1129,13 +1137,22 @@ export function FinanceManager() {
                 <label className="block text-xs font-semibold text-on-surface mb-1">
                   Account Balance (Rp) *
                 </label>
-                <input
-                  type="number"
-                  required
-                  value={walletForm.balance}
-                  onChange={(e) => setWalletForm({ ...walletForm, balance: Number(e.target.value) || 0 })}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant pointer-events-none">
+                    Rp
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    placeholder="0"
+                    value={walletForm.balance}
+                    onChange={(e) =>
+                      setWalletForm({ ...walletForm, balance: formatRupiahInput(e.target.value) })
+                    }
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                  />
+                </div>
               </div>
 
               <div>
@@ -1202,7 +1219,7 @@ export function FinanceManager() {
       {/* Modal Add Subscription */}
       {isAddSubOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">Add Active Subscription</h3>
               <button
@@ -1229,20 +1246,25 @@ export function FinanceManager() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Cost (IDR) *
                   </label>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    placeholder="e.g. 54000"
-                    value={subCost}
-                    onChange={(e) => setSubCost(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-on-surface-variant pointer-events-none">
+                      Rp
+                    </span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      required
+                      placeholder="e.g. 54.000"
+                      value={subCost}
+                      onChange={(e) => setSubCost(formatRupiahInput(e.target.value))}
+                      className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -1253,7 +1275,7 @@ export function FinanceManager() {
                     <select
                       value={subCycle}
                       onChange={(e) => setSubCycle(e.target.value as 'monthly' | 'yearly')}
-                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full min-h-[42px] appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="yearly">Yearly</option>
@@ -1263,7 +1285,7 @@ export function FinanceManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Next Debit Date *
