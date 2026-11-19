@@ -102,12 +102,12 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full overflow-hidden space-y-0">
+    <div className="fixed inset-0 z-[70] flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden space-y-0">
         
         {/* Input Bar */}
-        <form onSubmit={handleExecute} className="flex items-center px-5 py-4 border-b border-outline/20 gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container">
+        <form onSubmit={handleExecute} className="flex items-center px-3.5 sm:px-5 py-3.5 sm:py-4 border-b border-outline/20 gap-2 sm:gap-3 shrink-0">
+          <div className="w-8 h-8 rounded-full bg-primary-container/15 flex items-center justify-center text-primary-container shrink-0">
             <Command className="w-4 h-4" />
           </div>
           <input
@@ -119,19 +119,20 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
               setFeedback(null);
             }}
             placeholder="Type a command or shortcut... (e.g. /apply Google - SWE)"
-            className="flex-1 bg-transparent text-xs text-on-surface focus:outline-none placeholder:text-on-surface-variant font-sans"
+            className="flex-1 min-w-0 bg-transparent text-xs text-on-surface focus:outline-none placeholder:text-on-surface-variant font-sans"
           />
           <button
             type="submit"
-            className="flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold transition"
+            className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold transition shrink-0"
           >
-            <span>Enter</span>
+            <span className="hidden sm:inline">Enter</span>
             <CornerDownLeft className="w-3 h-3" />
           </button>
           <button
             type="button"
             onClick={close}
-            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface"
+            aria-label="Close command bar"
+            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -139,13 +140,13 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
 
         {/* Feedback or Hints */}
         {feedback && (
-          <div className="px-5 py-2.5 bg-rose-50 border-b border-rose-100 text-xs text-rose-800 font-medium">
+          <div className="px-4 sm:px-5 py-2.5 bg-rose-50 border-b border-rose-100 text-xs text-rose-800 font-medium shrink-0">
             {feedback}
           </div>
         )}
 
         {/* Suggestion List */}
-        <div className="p-3.5 space-y-1 max-h-64 overflow-y-auto">
+        <div className="p-3 sm:p-3.5 space-y-1 flex-1 min-h-0 overflow-y-auto">
           <div className="px-3 py-1 text-[10px] font-semibold text-on-surface-variant uppercase tracking-wider">
             Quick Actions &amp; Suggestions
           </div>
