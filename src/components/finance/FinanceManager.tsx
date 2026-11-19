@@ -818,13 +818,15 @@ export function FinanceManager() {
                 return (
                   <div
                     key={sub.id}
-                    className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
+                    className="flex items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
                       <SubscriptionIcon name={sub.name} />
-                      <div className="min-w-0">
-                        <span className="font-semibold text-on-surface block truncate">{sub.name}</span>
-                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-on-surface-variant">
+                      <div className="min-w-0 flex flex-col gap-1">
+                        <span className="font-semibold text-on-surface leading-tight truncate">
+                          {sub.name}
+                        </span>
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] leading-tight text-on-surface-variant">
                           <span>{cycleLabel}</span>
                           <span aria-hidden="true">•</span>
                           <span className="inline-flex items-center gap-1 tabular-nums font-medium">
@@ -835,13 +837,13 @@ export function FinanceManager() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
-                      <div className="text-right">
-                        <span className="font-bold text-on-surface block tabular-nums">
+                    <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                      <div className="flex flex-col items-end gap-1 text-right">
+                        <span className="font-bold text-on-surface leading-tight tabular-nums whitespace-nowrap">
                           Rp {sub.cost.toLocaleString('id-ID')}
                         </span>
                         <span
-                          className={`inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${
+                          className={`inline-flex items-center text-[10px] leading-none font-semibold px-2 py-1 rounded-full whitespace-nowrap ${
                             isUrgent
                               ? 'bg-rose-100 text-rose-700'
                               : 'bg-surface-container-high text-on-surface-variant'
