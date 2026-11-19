@@ -7,6 +7,7 @@ import { QuickCaptureMark } from '@/components/icons/ChemicIcons';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { computeCycleTimeline } from '@/lib/budget-utils';
+import { formatBillingDate, getDaysUntilDate } from '@/lib/utils';
 
 interface HeaderProps {
   onOpenMobileMenu?: () => void;
@@ -50,8 +51,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
 
   const urgentSubs = subscriptions.filter((sub) => {
     if (!sub.is_active) return false;
-    const diff = Math.ceil((new Date(sub.next_billing_date).getTime() - Date.now()) / 86_400_000);
-    return diff <= 3 && diff >= 0;
+    return getDaysUntilDate(sub.next_billing_date) <= 3;
   });
 
   const isBudgetExpired = budgetPlan
@@ -207,8 +207,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
                       key={sub.id}
                       className="p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-900"
                     >
-                      Tagihan <strong>{sub.name}</strong> jatuh tempo Rp{' '}
-                      <span className="tabular-nums">{sub.cost.toLocaleString('id-ID')}</span>
+                      <div>
+                        Tagihan <strong>{sub.name}</strong> — Rp{' '}
+                        <span className="tabular-nums font-semibold">
+                          {sub.cost.toLocaleString('id-ID')}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-rose-700 mt-0.5 tabular-nums">
+                        Jatuh tempo: {formatBillingDate(sub.next_billing_date)}
+                      </div>
                     </div>
                   ))}
                 </div>

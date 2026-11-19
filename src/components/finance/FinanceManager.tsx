@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
+import { formatBillingDate, getDaysUntilDate } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
 import { PaydayMark, VaultMark } from '@/components/icons/ChemicIcons';
@@ -805,49 +806,59 @@ export function FinanceManager() {
               </div>
             ) : (
               subscriptions.map((sub) => {
-                const diffDays = Math.ceil(
-                  (new Date(sub.next_billing_date).getTime() - new Date().getTime()) /
-                    (1000 * 60 * 60 * 24)
-                );
-                const isUrgent = diffDays <= 3 && diffDays >= 0;
+                const diffDays = getDaysUntilDate(sub.next_billing_date);
+                const isOverdue = diffDays < 0;
+                const isUrgent = diffDays <= 3;
+                const formattedDate = formatBillingDate(sub.next_billing_date);
+                const cycleLabel = sub.billing_cycle === 'yearly' ? 'Yearly' : 'Monthly';
 
                 return (
                   <div
                     key={sub.id}
-                    className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
+                    className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-on-surface">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-on-surface shrink-0 uppercase">
                         {sub.name[0]}
                       </div>
-                      <div>
-                        <span className="font-semibold text-on-surface block">{sub.name}</span>
-                        <span className="text-[11px] text-on-surface-variant">
-                          Cycle: {sub.billing_cycle}
-                        </span>
+                      <div className="min-w-0">
+                        <span className="font-semibold text-on-surface block truncate">{sub.name}</span>
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-on-surface-variant">
+                          <span>{cycleLabel}</span>
+                          <span aria-hidden="true">•</span>
+                          <span className="inline-flex items-center gap-1 tabular-nums font-medium">
+                            <Calendar className="w-3 h-3 shrink-0" />
+                            <span>{formattedDate}</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="text-right flex items-center gap-3">
-                      <div>
-                        <span className="font-bold text-on-surface block">
+                    <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
+                      <div className="text-right">
+                        <span className="font-bold text-on-surface block tabular-nums">
                           Rp {sub.cost.toLocaleString('id-ID')}
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${
+                          className={`inline-block mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0 ${
                             isUrgent
                               ? 'bg-rose-100 text-rose-700'
                               : 'bg-surface-container-high text-on-surface-variant'
                           }`}
                         >
-                          {diffDays <= 0 ? 'Due today' : `Due in ${diffDays} days`}
+                          {isOverdue
+                            ? `Overdue ${Math.abs(diffDays)}d`
+                            : diffDays === 0
+                            ? 'Due today'
+                            : `Due in ${diffDays} ${diffDays === 1 ? 'day' : 'days'}`}
                         </span>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => deleteSubscription(sub.id)}
-                        className="text-on-surface-variant hover:text-error p-1 transition"
+                        className="min-w-[32px] min-h-[32px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 flex items-center justify-center transition shrink-0"
+                        aria-label={`Delete ${sub.name}`}
                         title="Delete subscription"
                       >
                         <X className="w-3.5 h-3.5" />
