@@ -47,8 +47,8 @@ export function DailyBriefingModal({
   const activePorts = projects.map((p) => `:${p.default_port}`).join(', ');
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-lg w-full p-6 space-y-5">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-5">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-outline/20">
