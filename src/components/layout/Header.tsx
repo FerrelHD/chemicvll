@@ -79,7 +79,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-10 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl">
+    <header className="sticky top-0 z-30 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl">
       {/* Left section: Hamburger (Mobile) + Search Bar (Cmd+K) */}
       <div className="flex items-center gap-3">
         <button
@@ -164,6 +164,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           <button
             type="button"
             aria-label="Notifications"
+            aria-expanded={isNotifOpen}
             onClick={() => setIsNotifOpen((prev) => !prev)}
             className="relative w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
@@ -174,7 +175,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-72 bg-surface-container-lowest border border-outline rounded-2xl shadow-lg p-3.5 z-50 space-y-2.5 text-xs">
+            <div className="fixed inset-x-4 top-[4.5rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-surface-container-lowest border border-outline rounded-2xl shadow-lg p-3.5 z-50 space-y-2.5 text-xs">
               <div className="flex items-center justify-between pb-2 border-b border-outline">
                 <span className="font-bold text-on-surface">Radar Notifikasi</span>
                 <span className="text-[11px] font-semibold tabular-nums text-on-surface-variant">
