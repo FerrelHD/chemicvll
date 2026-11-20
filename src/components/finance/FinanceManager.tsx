@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useFinanceStore } from '@/stores/useFinanceStore';
+import { Transaction } from '@/types/database';
 import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
 import { formatBillingDate, formatRupiahInput, getDaysUntilDate, parseRupiahInput } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
@@ -246,6 +247,16 @@ export function FinanceManager() {
     const d = new Date(t.transaction_date);
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
   });
+
+  const recentTransactions = useMemo<Transaction[]>(() => {
+    return [...transactions]
+      .sort(
+        (a, b) =>
+          new Date(b.transaction_date || b.created_at || 0).getTime() -
+          new Date(a.transaction_date || a.created_at || 0).getTime()
+      )
+      .slice(0, 6);
+  }, [transactions]);
 
   const weeklyCapsules = [1, 2, 3, 4].map((weekNum) => {
     const startDay = (weekNum - 1) * 7 + 1;
@@ -702,7 +713,7 @@ export function FinanceManager() {
           </div>
 
           <div className="divide-y divide-outline/20">
-            {transactions.slice(0, 6).map((tx) => (
+            {recentTransactions.map((tx) => (
               <div key={tx.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div

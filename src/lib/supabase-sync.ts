@@ -102,7 +102,7 @@ export async function pullFromCloud(): Promise<boolean> {
       Promise.all([
         supabase.from('career_pipelines').select('*'),
         supabase.from('wallets').select('*'),
-        supabase.from('transactions').select('*'),
+        supabase.from('transactions').select('*').order('transaction_date', { ascending: false }),
         supabase.from('subscriptions').select('*'),
         supabase.from('tasks').select('*'),
         supabase.from('budget_plans').select('*'),
@@ -154,9 +154,13 @@ export async function pullFromCloud(): Promise<boolean> {
     const filteredWallets = (walletRes.data || []).filter(
       (w: any) => !isPendingDeletion('wallets', w.id)
     );
-    const filteredTx = (txRes.data || []).filter(
-      (tx: any) => !isPendingDeletion('transactions', tx.id)
-    );
+    const filteredTx = (txRes.data || [])
+      .filter((tx: any) => !isPendingDeletion('transactions', tx.id))
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.transaction_date || b.created_at || 0).getTime() -
+          new Date(a.transaction_date || a.created_at || 0).getTime()
+      );
     const filteredSubs = (subRes.data || []).filter(
       (s: any) => !isPendingDeletion('subscriptions', s.id)
     );
@@ -500,16 +504,24 @@ export function initSupabaseSync(): void {
   pullFromCloud();
   lastVisibilityPullAt = Date.now();
 
-  // Pull fresh cloud updates (e.g., Telegram mobile captures) when PWA/tab returns to foreground
-  if (typeof document !== 'undefined') {
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState !== 'visible') return;
+  // Pull fresh cloud updates (e.g., Telegram mobile captures) when PWA/tab returns to foreground or periodically
+  if (typeof window !== 'undefined') {
+    const handleFocusOrVisible = () => {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
       if (syncTimeout || isSyncingDown) return;
       const now = Date.now();
       if (now - lastVisibilityPullAt < VISIBILITY_PULL_COOLDOWN_MS) return;
       lastVisibilityPullAt = now;
       void pullFromCloud();
-    });
+    };
+
+    window.addEventListener('focus', handleFocusOrVisible);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleFocusOrVisible);
+    }
+
+    // Periodic pull every 30s when tab is active
+    setInterval(handleFocusOrVisible, 30000);
   }
 
   // Subscribe to changes in local stores to auto-push

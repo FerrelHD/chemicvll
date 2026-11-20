@@ -64,7 +64,13 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
   const reversibleTransactions = useMemo(() => {
     if (!budgetPlan) return [];
     const idSet = new Set(getReversibleCycleTransactionIds(budgetPlan, transactions));
-    return transactions.filter((tx) => idSet.has(tx.id));
+    return transactions
+      .filter((tx) => idSet.has(tx.id))
+      .sort(
+        (a, b) =>
+          new Date(b.transaction_date || b.created_at || 0).getTime() -
+          new Date(a.transaction_date || a.created_at || 0).getTime()
+      );
   }, [budgetPlan, transactions]);
 
   const migrationNotice =
