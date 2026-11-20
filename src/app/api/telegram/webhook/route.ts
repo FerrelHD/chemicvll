@@ -38,9 +38,11 @@ interface TelegramUpdate {
 }
 
 function timingSafeMatch(actual: string | null, expected: string | undefined): boolean {
-  if (!actual || !expected) return false;
-  const a = Buffer.from(actual);
-  const b = Buffer.from(expected);
+  const cleanActual = actual?.trim();
+  const cleanExpected = expected?.trim();
+  if (!cleanActual || !cleanExpected) return false;
+  const a = Buffer.from(cleanActual);
+  const b = Buffer.from(cleanExpected);
   if (a.length !== b.length) return false;
   return crypto.timingSafeEqual(a, b);
 }
