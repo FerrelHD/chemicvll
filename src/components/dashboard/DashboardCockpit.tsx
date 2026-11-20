@@ -174,7 +174,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('expense')}
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-inverse-surface text-white text-[11px] font-semibold shadow-sm active:scale-95 transition"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-inverse-surface text-white text-[11px] font-semibold shadow-sm active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Jajan</span>
@@ -182,7 +182,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('task')}
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Task</span>
@@ -190,7 +190,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('drop')}
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Drop</span>
@@ -198,7 +198,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => onNavigate('dropzone')}
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-primary-fixed/50 border border-primary-container/25 text-on-primary-fixed-variant text-[11px] font-semibold active:scale-95 transition"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-primary-fixed/50 border border-primary-container/25 text-on-primary-fixed-variant text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <RelayMark active className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">Vault</span>

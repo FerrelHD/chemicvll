@@ -210,7 +210,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <select
             value={item.stage}
             onChange={(e) => onMoveStage(item.id, e.target.value as CareerStage)}
-            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface px-2.5 py-1 pr-6 rounded-xl cursor-pointer transition-colors outline-none border border-outline/30 focus:border-primary-container"
+            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface px-2.5 py-1.5 min-h-[32px] pr-6 rounded-xl cursor-pointer transition-colors outline-none border border-outline/30 focus:border-primary-container"
           >
             {stageOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -225,7 +225,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <button
             type="button"
             onClick={() => onOpenFollowUp?.(item)}
-            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             title="Follow-Up Generator (WA / Email / LinkedIn)"
           >
             <Send className="w-3.5 h-3.5" />
@@ -233,7 +233,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <button
             type="button"
             onClick={() => onEdit(item)}
-            className="w-7 h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             title="Edit Application"
           >
             <Pencil className="w-3.5 h-3.5" />
@@ -245,7 +245,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
                 onDelete(item.id);
               }
             }}
-            className="w-7 h-7 rounded-full hover:bg-red-50 hover:text-error flex items-center justify-center text-on-surface-variant transition-colors"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-red-50 hover:text-error flex items-center justify-center text-on-surface-variant transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             title="Delete Application"
           >
             <Trash2 className="w-3.5 h-3.5" />
