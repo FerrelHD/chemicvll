@@ -508,7 +508,7 @@ export function DevMissionControl() {
                       href={`http://localhost:${proj.default_port}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`p-1.5 rounded-lg border transition flex items-center gap-1.5 text-xs font-medium shrink-0 ${
+                      className={`min-h-[32px] px-2 py-1 rounded-lg border transition flex items-center gap-1.5 text-xs font-medium shrink-0 ${
                         isRunning || portStatuses[proj.default_port] === 'healthy'
                           ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-sm'
                           : 'border-outline/40 hover:bg-surface-container-high text-on-surface-variant'
@@ -527,7 +527,7 @@ export function DevMissionControl() {
                         <button
                           type="button"
                           onClick={() => stopServer(proj.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold transition"
+                          className="flex items-center gap-1 min-h-[32px] px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold transition"
                         >
                           <Square className="w-3 h-3 fill-current" />
                           <span>Stop</span>
@@ -536,7 +536,7 @@ export function DevMissionControl() {
                         <button
                           type="button"
                           onClick={() => startServer(proj.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition"
+                          className="flex items-center gap-1 min-h-[32px] px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition"
                         >
                           <Play className="w-3 h-3 fill-current" />
                           <span>Start</span>
@@ -546,7 +546,7 @@ export function DevMissionControl() {
                       <button
                         type="button"
                         onClick={() => restartServer(proj.id)}
-                        className="p-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+                        className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition active:scale-95"
                         title="Restart"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
@@ -555,7 +555,7 @@ export function DevMissionControl() {
                       <button
                         type="button"
                         onClick={() => setActiveLogProjectId(proj.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+                        className={`min-h-[32px] px-3 py-1.5 rounded-full text-xs font-semibold transition ${
                           activeLogProjectId === proj.id
                             ? 'bg-inverse-surface text-white'
                             : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
@@ -570,7 +570,7 @@ export function DevMissionControl() {
                       <button
                         type="button"
                         onClick={() => handleOpenVault(proj)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/20 text-xs font-medium text-on-surface transition"
+                        className="flex items-center gap-1.5 min-h-[32px] px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline/20 text-xs font-medium text-on-surface transition"
                       >
                         <KeyRound className="w-3.5 h-3.5 text-primary-container" />
                         <span>.env Vault</span>
@@ -584,7 +584,7 @@ export function DevMissionControl() {
                               deleteProject(proj.id);
                             }
                           }}
-                          className="p-1.5 rounded-full hover:bg-rose-50 text-on-surface-variant hover:text-rose-600 transition"
+                          className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-rose-50 text-on-surface-variant hover:text-rose-600 flex items-center justify-center transition active:scale-95"
                           title="Hapus Project"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

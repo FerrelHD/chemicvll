@@ -513,10 +513,10 @@ export function FinanceManager() {
                     <button
                       type="button"
                       onClick={() => handleOpenEditWallet(activeWallet)}
-                      className="w-6 h-6 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white transition ml-1"
+                      className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/20 hover:bg-black/40 active:scale-95 flex items-center justify-center text-white transition ml-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                       title="Edit Rekening / Kartu Ini"
                     >
-                      <Pencil className="w-3 h-3" />
+                      <Pencil className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
                     </button>
                   </div>
                 </div>
