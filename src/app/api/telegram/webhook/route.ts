@@ -14,6 +14,7 @@ import {
   sendTelegramMessage,
 } from '@/lib/telegram';
 import { Wallet } from '@/types/database';
+import { downloadTelegramFile, transcribeAudio } from '@/lib/telegram-voice';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,18 @@ interface TelegramUpdate {
     from?: { id: number };
     text?: string;
     caption?: string;
+    voice?: {
+      file_id: string;
+      duration?: number;
+      mime_type?: string;
+      file_size?: number;
+    };
+    audio?: {
+      file_id: string;
+      duration?: number;
+      mime_type?: string;
+      file_size?: number;
+    };
   };
   callback_query?: {
     id: string;
@@ -73,6 +86,7 @@ const HELP_TEXT = [
   '• <code>+500k freelance bca</code> — catat pemasukan',
   '• <code>task revisi cv !high</code> — tambah task P1',
   '• <code>loker Gojek - Frontend</code> — masuk Career Wishlist',
+  '• 🎙️ <i>Voice note</i> — rekam suara langsung (contoh: "kopi 25k bca")',
   '• <i>Kirim link / teks apa aja</i> — masuk Dropzone (muncul di laptop)',
   '',
   'Cek cepat: <code>today</code> atau <code>saldo</code>',
@@ -125,14 +139,52 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  const rawText = (msg.text || msg.caption || '').trim();
+  let rawText = (msg.text || msg.caption || '').trim();
+  let voiceTranscription = '';
+
+  const voiceObj = msg.voice || msg.audio;
+  if (!rawText && voiceObj?.file_id) {
+    if (!process.env.GROQ_API_KEY) {
+      await sendTelegramMessage({
+        chatId,
+        text: '🎙️ Voice note diterima, tapi <code>GROQ_API_KEY</code> belum diset di server (.env.local).\nSilakan pasang Groq API Key gratis dari groq.com untuk mengaktifkan voice note logger.',
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    const file = await downloadTelegramFile(voiceObj.file_id);
+    if (!file) {
+      await sendTelegramMessage({
+        chatId,
+        text: '🎙️ Gagal mengunduh voice note dari Telegram. Coba rekam ulang ya.',
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    const transcribed = await transcribeAudio(file.buffer, file.mimeType);
+    if (!transcribed) {
+      await sendTelegramMessage({
+        chatId,
+        text: '🎙️ Voice note tidak dapat terdengar jelas atau gagal ditranskrip. Coba rekam ulang ya.',
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    rawText = transcribed.trim();
+    voiceTranscription = transcribed.trim();
+  }
+
   if (!rawText) {
     await sendTelegramMessage({
       chatId,
-      text: 'Kirim teks, link, atau catatan pengeluaran (contoh: <code>kopi 25k bca</code>).',
+      text: 'Kirim teks, link, atau voice note pengeluaran (contoh: <code>kopi 25k bca</code>).',
     });
     return NextResponse.json({ ok: true });
   }
+
+  const voicePrefix = voiceTranscription
+    ? `🎙️ <i>"${escapeHtml(voiceTranscription)}"</i>\n\n`
+    : '';
 
   const supabase = createAdminClient();
   if (!supabase) {
@@ -223,7 +275,7 @@ export async function POST(req: NextRequest) {
       await sendTelegramMessage({
         chatId,
         text: [
-          `${emoji} <b>${label} Tercatat</b>`,
+          voicePrefix + `${emoji} <b>${label} Tercatat</b>`,
           `• Nominal: <b>${formatRupiah(intent.amount)}</b>`,
           `• Catatan: ${escapeHtml(intent.note)} (${escapeHtml(intent.category)})`,
           `• Wallet: ${escapeHtml(targetWallet.name)} → sisa <b>${formatRupiah(nextBalance)}</b>`,
@@ -253,7 +305,7 @@ export async function POST(req: NextRequest) {
       const prioLabel = intent.priority === 1 ? 'P1 (Daily Focus)' : `P${intent.priority}`;
       await sendTelegramMessage({
         chatId,
-        text: `✅ <b>Task Ditambahkan</b> [${prioLabel}]\n• ${escapeHtml(intent.title)}`,
+        text: `${voicePrefix}✅ <b>Task Ditambahkan</b> [${prioLabel}]\n• ${escapeHtml(intent.title)}`,
         replyMarkup: buildReplyMarkup([[buildUrlButton('📋 Buka Tasks', '/?tab=tasks')]]),
       });
       return NextResponse.json({ ok: true });
@@ -287,7 +339,7 @@ export async function POST(req: NextRequest) {
 
       await sendTelegramMessage({
         chatId,
-        text: `💼 <b>Masuk Career Wishlist</b>\n• <b>${escapeHtml(intent.entity)}</b> — ${escapeHtml(intent.role)} (#${intent.category})`,
+        text: `${voicePrefix}💼 <b>Masuk Career Wishlist</b>\n• <b>${escapeHtml(intent.entity)}</b> — ${escapeHtml(intent.role)} (#${intent.category})`,
         replyMarkup: buildReplyMarkup([[buildUrlButton('💼 Buka Career', '/?tab=career')]]),
       });
       return NextResponse.json({ ok: true });
@@ -311,7 +363,7 @@ export async function POST(req: NextRequest) {
       intent.content.length > 90 ? `${intent.content.slice(0, 90)}...` : intent.content;
     await sendTelegramMessage({
       chatId,
-      text: `📦 <b>Disimpan ke Dropzone</b> (${intent.itemType})\n${escapeHtml(preview)}`,
+      text: `${voicePrefix}📦 <b>Disimpan ke Dropzone</b> (${intent.itemType})\n${escapeHtml(preview)}`,
       replyMarkup: buildReplyMarkup([[buildUrlButton('📦 Buka Dropzone', '/?tab=dropzone')]]),
     });
     return NextResponse.json({ ok: true });
