@@ -706,22 +706,38 @@ export function FinanceManager() {
                 {/* Vertical Rounded Capsule Bars */}
                 <div className="grid grid-cols-4 gap-3 sm:gap-8 items-end h-56 px-2 sm:px-6">
                   {weeklyCapsules.map((cap) => (
-                    <div key={cap.label} className="flex flex-col items-center gap-2 h-full justify-end group">
+                    <div key={cap.label} className="flex flex-col items-center gap-2 h-full justify-end group relative">
+                      {/* Floating Interactive Tooltip */}
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-30 flex flex-col items-center group-hover:-translate-y-1">
+                        <div className="bg-inverse-surface text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 whitespace-nowrap flex flex-col gap-0.5">
+                          <span className="font-bold pb-0.5 border-b border-white/15">{cap.label}</span>
+                          <div className="flex items-center gap-2 tabular-nums">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#a387f6] shrink-0" />
+                            <span className="text-white/80">In:</span>
+                            <span className="font-medium text-white">{cap.inRp}</span>
+                          </div>
+                          <div className="flex items-center gap-2 tabular-nums">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary-container shrink-0" />
+                            <span className="text-white/80">Out:</span>
+                            <span className="font-medium text-white">{cap.outRp}</span>
+                          </div>
+                        </div>
+                        <div className="w-2 h-2 bg-inverse-surface rotate-45 -mt-1" />
+                      </div>
+
                       <div className="w-8 sm:w-10 bg-surface-container-low rounded-full p-1 sm:p-1.5 flex flex-col justify-end gap-1 sm:gap-1.5 h-44 shadow-inner relative">
                         {/* Income capsule (Purple) */}
                         <div
-                          className="w-full bg-[#a387f6] rounded-full transition-all duration-500 group-hover:opacity-90"
+                          className="w-full bg-[#a387f6] rounded-full transition-all duration-500 group-hover:opacity-90 group-hover:scale-y-[1.02]"
                           style={{ height: `${cap.inVal}%` }}
-                          title={`In: ${cap.inRp}`}
                         />
                         {/* Expense capsule (Orange) */}
                         <div
                           className="w-full bg-primary-container rounded-full transition-all duration-500 group-hover:scale-105"
                           style={{ height: `${cap.outVal}%` }}
-                          title={`Out: ${cap.outRp}`}
                         />
                       </div>
-                      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant group-hover:text-on-surface tracking-tight mt-0.5">
+                      <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant group-hover:text-on-surface tracking-tight mt-0.5 transition-colors">
                         {cap.label}
                       </span>
                     </div>
@@ -755,7 +771,7 @@ export function FinanceManager() {
             </span>
           </div>
 
-          <div className="divide-y divide-outline/20">
+          <div className="divide-y divide-outline/20 max-h-[380px] overflow-y-auto scroll-container bento-fade-mask pr-1">
             {recentTransactions.map((tx) => (
               <div key={tx.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-3 min-w-0 flex-1">

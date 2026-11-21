@@ -62,3 +62,14 @@ input, button, select, textarea {
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0px);
 }
+
+/* Bento list bottom fade mask for elegant scroll dissolution */
+.bento-fade-mask {
+  mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+.bento-fade-mask-y {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+}
