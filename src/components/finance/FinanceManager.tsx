@@ -8,6 +8,7 @@ import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budge
 import { formatBillingDate, formatRupiahInput, getDaysUntilDate, parseRupiahInput } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
+import { SplitBillPanel } from './SplitBillPanel';
 import { SubscriptionIcon } from './SubscriptionIcon';
 import { PaydayMark, VaultMark } from '@/components/icons/ChemicIcons';
 import {
@@ -927,6 +928,9 @@ export function FinanceManager() {
           </div>
         </div>
       </div>
+
+      {/* Row 4: Split Bill & Talangan Teman */}
+      <SplitBillPanel />
 
       {/* Modal Quick Transaction */}
       {isLoggingOpen && mounted && createPortal(
