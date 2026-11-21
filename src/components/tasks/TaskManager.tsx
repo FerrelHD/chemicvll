@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { FocusMark } from '@/components/icons/ChemicIcons';
+import { HabitTrackerCard } from './HabitTrackerCard';
 import {
   Timer,
   Play,
@@ -317,6 +318,9 @@ export function TaskManager() {
               </div>
             </div>
           </div>
+
+          {/* Daily Habit Tracker & Streaks */}
+          <HabitTrackerCard />
 
           {/* Mental Energy Rhythm Stack */}
           <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-3">
