@@ -51,15 +51,16 @@ export function Sidebar({
           {/* Logo Header */}
           <button
             type="button"
-            className="flex items-center gap-3 px-1.5 py-1.5 rounded-xl cursor-pointer select-none text-left hover:bg-surface-container-high/50 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            className="flex items-center justify-start md:justify-center lg:justify-start gap-3 px-1.5 py-1.5 rounded-xl cursor-pointer select-none text-left hover:bg-surface-container-high/50 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             onClick={() => onTabChange('dashboard')}
+            title="Personal OS (Dashboard)"
           >
             <img
               src="/icon-192.png"
               alt="logo"
               className="w-8 h-8 rounded-xl object-contain shadow-sm flex-shrink-0"
             />
-            <div className="flex flex-col leading-tight whitespace-nowrap">
+            <div className="flex md:hidden lg:flex flex-col leading-tight whitespace-nowrap">
               <span className="font-bold text-sm text-on-surface tracking-tight">
                 Personal OS
               </span>

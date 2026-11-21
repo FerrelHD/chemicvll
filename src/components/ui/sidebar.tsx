@@ -90,7 +90,7 @@ export const DesktopSidebar = ({
   return (
     <div
       className={cn(
-        "h-full px-3 py-4 hidden md:flex md:flex-col bg-surface-container-low w-[240px] flex-shrink-0 transition-colors select-none",
+        "h-full px-2 lg:px-3 py-4 hidden md:flex md:flex-col bg-surface-container-low w-[64px] lg:w-[240px] flex-shrink-0 transition-all duration-300 select-none",
         className
       )}
       {...props}
@@ -220,7 +220,7 @@ export const SidebarLink = ({
       </div>
       <span
         className={cn(
-          "text-sm whitespace-nowrap inline-block !p-0 !m-0",
+          "text-sm whitespace-nowrap inline-block md:hidden lg:inline-block !p-0 !m-0",
           link.isActive ? "text-on-surface" : "text-on-surface-variant group-hover/sidebar:text-on-surface"
         )}
       >
@@ -230,7 +230,7 @@ export const SidebarLink = ({
   );
 
   const baseClass = cn(
-    "flex items-center justify-start gap-3 group/sidebar min-h-[44px] py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container",
+    "flex items-center justify-start md:justify-center lg:justify-start gap-3 group/sidebar min-h-[44px] py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container",
     link.isActive
       ? "bg-surface-container-lowest text-on-surface font-semibold shadow-sm border border-outline/40"
       : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60",
@@ -242,6 +242,7 @@ export const SidebarLink = ({
       <button
         type="button"
         onClick={link.onClick}
+        title={link.label}
         className={baseClass}
         {...props}
       >
@@ -253,6 +254,7 @@ export const SidebarLink = ({
   return (
     <Link
       href={link.href || "#"}
+      title={link.label}
       className={baseClass}
       {...props}
     >
