@@ -196,7 +196,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                   placeholder="e.g. Tokopedia, Traveloka, BCA"
                   value={formData.entity_name}
                   onChange={(e) => setFormData({ ...formData, entity_name: e.target.value })}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
             </div>
@@ -211,7 +211,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 placeholder="e.g. Software Engineer Intern"
                 value={formData.role_or_program}
                 onChange={(e) => setFormData({ ...formData, role_or_program: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
@@ -262,7 +262,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 placeholder="LinkedIn, Glints, Referral..."
                 value={formData.platform_source}
                 onChange={(e) => setFormData({ ...formData, platform_source: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
@@ -279,7 +279,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                   placeholder="e.g. CV-SE-v2.pdf, CV-Backend-Go.pdf"
                   value={formData.resume_version}
                   onChange={(e) => setFormData({ ...formData, resume_version: e.target.value })}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
             </div>
@@ -293,7 +293,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 placeholder="e.g. Rp 4.500.000 / mo"
                 value={formData.stipend_or_salary}
                 onChange={(e) => setFormData({ ...formData, stipend_or_salary: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
@@ -308,7 +308,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 type="date"
                 value={formData.applied_date}
                 onChange={(e) => setFormData({ ...formData, applied_date: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
 
@@ -320,7 +320,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
 
@@ -332,7 +332,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 type="date"
                 value={formData.next_follow_up_date}
                 onChange={(e) => setFormData({ ...formData, next_follow_up_date: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
@@ -348,7 +348,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 placeholder="https://..."
                 value={formData.portal_url}
                 onChange={(e) => setFormData({ ...formData, portal_url: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
 
@@ -361,7 +361,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 placeholder="HR name or email..."
                 value={formData.contact_person}
                 onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
-                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
             </div>
           </div>
@@ -376,7 +376,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
               placeholder="Stack notes, take-home challenge progress, interview tips..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container resize-none"
+              className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container resize-none"
             />
           </div>
         </form>

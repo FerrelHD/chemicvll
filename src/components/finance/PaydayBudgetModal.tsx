@@ -391,7 +391,7 @@ export function PaydayBudgetModal({
                 placeholder="Nama pos fix (cth. Kos, Cicilan, Orang Tua)"
                 value={newFixedName}
                 onChange={(e) => setNewFixedName(e.target.value)}
-                className="flex-1 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                className="flex-1 min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
               />
               <div className="flex gap-2">
                 <div className="relative flex-1 sm:flex-none sm:w-40 min-w-0">
@@ -410,7 +410,7 @@ export function PaydayBudgetModal({
                         handleAddFixedItem();
                       }
                     }}
-                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-8 pr-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-8 pr-3 py-2 text-base sm:text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                   />
                 </div>
                 <button

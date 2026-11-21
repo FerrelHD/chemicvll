@@ -274,7 +274,7 @@ export function QuickCaptureModal({
                   placeholder="cth. Es Kopi Susu, Bensin Shell..."
                   value={expenseNote}
                   onChange={(e) => setExpenseNote(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/40 rounded-xl px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container transition"
+                  className="w-full bg-surface-container-low border border-outline/40 rounded-xl px-3.5 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container transition"
                 />
               </div>
 
@@ -349,7 +349,7 @@ export function QuickCaptureModal({
                   placeholder="cth. Review PR fersya-shop, Bayar internet..."
                   value={taskTitle}
                   onChange={(e) => setTaskTitle(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/40 rounded-2xl px-4 py-2.5 text-sm font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition"
+                  className="w-full bg-surface-container-low border border-outline/40 rounded-2xl px-4 py-2.5 text-base sm:text-sm font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition"
                 />
               </div>
 
