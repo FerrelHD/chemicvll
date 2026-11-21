@@ -14,6 +14,7 @@ import { useTaskStore } from '@/stores/useTaskStore';
 import type { MonthlyBudgetPlan } from '@/types/database';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
 import { useNotesStore } from '@/stores/useNotesStore';
+import { useHabitStore } from '@/stores/useHabitStore';
 import { DevProject, useDevStore } from '@/stores/useDevStore';
 import { create } from 'zustand';
 
@@ -98,6 +99,8 @@ export async function pullFromCloud(): Promise<boolean> {
       notesRes,
       contentRes,
       projectRes,
+      habitRes,
+      debtRes,
     ] = await Promise.race([
       Promise.all([
         supabase.from('career_pipelines').select('*'),
@@ -110,6 +113,8 @@ export async function pullFromCloud(): Promise<boolean> {
         supabase.from('notes').select('*'),
         supabase.from('content_ideas').select('*'),
         supabase.from('projects').select('*'),
+        supabase.from('habits').select('*'),
+        supabase.from('debt_trackers').select('*'),
       ]),
       new Promise<never>((_, reject) =>
         setTimeout(
@@ -128,7 +133,9 @@ export async function pullFromCloud(): Promise<boolean> {
       dropzoneRes.error ||
       notesRes.error ||
       contentRes.error ||
-      projectRes.error;
+      projectRes.error ||
+      (habitRes.error && !isMissingTableError(habitRes.error) ? habitRes.error : null) ||
+      (debtRes.error && !isMissingTableError(debtRes.error) ? debtRes.error : null);
 
     if (firstErr) {
       const errMsg = firstErr.message || 'Database query error';
@@ -179,6 +186,16 @@ export async function pullFromCloud(): Promise<boolean> {
     const filteredProjects = (projectRes.data || []).filter(
       (project: any) => !isPendingDeletion('projects', project.id)
     );
+    const filteredHabits = !habitRes.error
+      ? (habitRes.data || []).filter(
+          (h: any) => !isPendingDeletion('habits', h.id)
+        )
+      : [];
+    const filteredDebts = !debtRes.error
+      ? (debtRes.data || []).filter(
+          (d: any) => !isPendingDeletion('debt_trackers', d.id)
+        )
+      : [];
 
     const filteredBudgetRows = !budgetRes.error
       ? (budgetRes.data || [])
@@ -206,7 +223,9 @@ export async function pullFromCloud(): Promise<boolean> {
       filteredDropzone.length > 0 ||
       filteredNotes.length > 0 ||
       filteredContentIdeas.length > 0 ||
-      filteredProjects.length > 0;
+      filteredProjects.length > 0 ||
+      filteredHabits.length > 0 ||
+      filteredDebts.length > 0;
 
     let shouldPushLocalPlan = false;
 
@@ -295,6 +314,12 @@ export async function pullFromCloud(): Promise<boolean> {
         });
         useDevStore.setState({ projects: mergedProjects });
       }
+      if (filteredHabits.length > 0) {
+        useHabitStore.getState().setHabitsFromCloud(filteredHabits);
+      }
+      if (filteredDebts.length > 0) {
+        useFinanceStore.setState({ debts: filteredDebts });
+      }
       if (shouldPushLocalPlan) {
         await pushAllToCloud(true);
       }
@@ -347,6 +372,8 @@ export async function pushAllToCloud(force = false): Promise<void> {
     const dropzoneItems = useDropzoneStore.getState().items;
     const { notes, contentIdeas } = useNotesStore.getState();
     const projects = useDevStore.getState().projects;
+    const habits = useHabitStore.getState().habits;
+    const debts = useFinanceStore.getState().debts || [];
 
     const coreUpserts = [];
 
@@ -436,11 +463,23 @@ export async function pushAllToCloud(force = false): Promise<void> {
         ? supabase.from('budget_plans').upsert(budgetRows)
         : null;
 
-    if (coreUpserts.length > 0 || budgetPromise) {
-      const [coreResults, budgetResult] = await Promise.race([
+    const habitPromise =
+      habits.length > 0
+        ? supabase.from('habits').upsert(habits.map((h) => ({ ...h, user_id: 'ferrel' })))
+        : null;
+
+    const debtPromise =
+      debts.length > 0
+        ? supabase.from('debt_trackers').upsert(debts.map((d) => ({ ...d, user_id: 'ferrel' })))
+        : null;
+
+    if (coreUpserts.length > 0 || budgetPromise || habitPromise || debtPromise) {
+      const [coreResults, budgetResult, habitResult, debtResult] = await Promise.race([
         Promise.all([
           coreUpserts.length > 0 ? Promise.all(coreUpserts) : Promise.resolve([]),
           budgetPromise ?? Promise.resolve(null),
+          habitPromise ?? Promise.resolve(null),
+          debtPromise ?? Promise.resolve(null),
         ]),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('Push timeout')), SYNC_TIMEOUT_MS)
@@ -452,6 +491,14 @@ export async function pushAllToCloud(force = false): Promise<void> {
         console.warn('Supabase push error:', anyCoreError.error);
         useSyncStore.getState().setStatus('offline');
         return;
+      }
+
+      if (habitResult && habitResult.error && !isMissingTableError(habitResult.error)) {
+        console.warn('Supabase habits push error:', habitResult.error.message);
+      }
+
+      if (debtResult && debtResult.error && !isMissingTableError(debtResult.error)) {
+        console.warn('Supabase debt_trackers push error:', debtResult.error.message);
       }
 
       if (budgetResult && budgetResult.error) {
@@ -542,6 +589,10 @@ export function initSupabaseSync(): void {
   });
 
   useNotesStore.subscribe(() => {
+    if (!isSyncingDown) debouncePushToCloud();
+  });
+
+  useHabitStore.subscribe(() => {
     if (!isSyncingDown) debouncePushToCloud();
   });
 
