@@ -30,7 +30,10 @@ import {
   Monitor,
   ExternalLink,
   X,
+  Calendar,
 } from 'lucide-react';
+import { computeBudgetProgress } from '@/lib/budget-utils';
+import { getUnifiedAgenda } from '@/lib/agenda-utils';
 
 interface DashboardCockpitProps {
   onNavigate: (tab: string) => void;
@@ -43,6 +46,8 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const wallets = useFinanceStore((state) => state.wallets);
   const activeWalletId = useFinanceStore((state) => state.activeWalletId);
   const transactions = useFinanceStore((state) => state.transactions);
+  const subscriptions = useFinanceStore((state) => state.subscriptions);
+  const budgetPlan = useFinanceStore((state) => state.budgetPlan);
   const isPrivacyMode = useFinanceStore((state) => state.isPrivacyMode);
   const togglePrivacyMode = useFinanceStore((state) => state.togglePrivacyMode);
   const projects = useDevStore((state) => state.projects);
@@ -52,6 +57,15 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const addCareerItem = useCareerStore((state) => state.addItem);
 
   const [feedbackId, setFeedbackId] = useState<string | null>(null);
+
+  const budgetProgress = React.useMemo(() => {
+    if (!budgetPlan) return null;
+    return computeBudgetProgress(budgetPlan, transactions);
+  }, [budgetPlan, transactions]);
+
+  const unifiedAgenda = React.useMemo(() => {
+    return getUnifiedAgenda(careerItems, subscriptions, tasks);
+  }, [careerItems, subscriptions, tasks]);
 
   const recentDrops = React.useMemo(() => {
     return [...dropzoneItems]
@@ -168,6 +182,62 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       
       {/* Morning Briefing & Unified Header */}
       <MorningBriefingCard onNavigate={onNavigate} onOpenCommand={onOpenCommand} />
+
+      {/* Safe-to-Spend Daily Burn Rate Meter (When Payday budget is active) */}
+      {budgetProgress && (
+        <div
+          onClick={() => onNavigate('finance')}
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-4 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                budgetProgress.remainingToday >= 0
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'bg-rose-50 text-rose-600'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold text-on-surface">Safe-to-Spend Hari Ini</span>
+                <span className="px-2 py-0.5 rounded-full bg-surface-container text-[10px] font-semibold text-on-surface-variant tabular-nums">
+                  {budgetProgress.timeline.daysRemaining} hari ke gajian
+                </span>
+              </div>
+              <p className="text-xs text-on-surface-variant mt-0.5 truncate">
+                Jatah harian:{' '}
+                <span className="font-semibold text-on-surface tabular-nums">
+                  Rp {budgetProgress.dailyAllowanceToday.toLocaleString('id-ID')}
+                </span>{' '}
+                • Terpakai hari ini:{' '}
+                <span className="tabular-nums font-medium">
+                  Rp {budgetProgress.todaySpent.toLocaleString('id-ID')}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-outline/20">
+            <div className="text-left sm:text-right">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant block">
+                Sisa Jajan Aman
+              </span>
+              <span
+                className={`text-base sm:text-lg font-bold font-sans tabular-nums ${
+                  budgetProgress.remainingToday >= 0 ? 'text-emerald-700' : 'text-rose-600'
+                }`}
+              >
+                {isPrivacyMode
+                  ? 'Rp •••••••'
+                  : `Rp ${budgetProgress.remainingToday.toLocaleString('id-ID')}`}
+              </span>
+            </div>
+            <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:text-primary-container group-hover:translate-x-1 transition" />
+          </div>
+        </div>
+      )}
 
       {/* Mobile 1-Tap Action Strip (hidden on desktop) */}
       <div className="md:hidden grid grid-cols-4 gap-2">
@@ -647,139 +717,80 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
       </div>
 
-      {/* Row 3: Timeline Hari Ini & Agenda Interview */}
+      {/* Row 3: Unified Daily Agenda & Schedule */}
       <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <span className="w-2.5 h-2.5 rounded-full bg-primary-container shrink-0"></span>
-            <h3 className="text-sm font-bold text-on-surface truncate">Today&apos;s Schedule &amp; Up Next</h3>
+            <h3 className="text-sm font-bold text-on-surface truncate">
+              Unified Agenda &amp; Upcoming Milestones
+            </h3>
+            <span className="px-2 py-0.5 rounded-full bg-surface-container text-[10px] font-bold text-on-surface-variant tabular-nums shrink-0">
+              {unifiedAgenda.length} agenda
+            </span>
           </div>
-          <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">WIB Timezone</span>
+          <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">
+            WIB Timezone
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-stretch">
-          {/* Timeline Item 1: Interview */}
-          {careerItems.some((i) => i.stage === 'interview') ? (
-            (() => {
-              const interviewItem = careerItems.find((i) => i.stage === 'interview')!;
-              return (
-                <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex flex-col justify-between gap-3 min-h-[120px]">
-                  <div className="space-y-1.5 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold whitespace-nowrap shrink-0">
-                        ADVANCED INTERVIEW
-                      </span>
-                      {interviewItem.next_follow_up_date && (
-                        <span className="text-xs text-on-surface-variant tabular-nums font-medium whitespace-nowrap shrink-0">
-                          {interviewItem.next_follow_up_date}
-                        </span>
-                      )}
-                    </div>
-                    <h4 className="text-sm font-semibold text-on-surface leading-snug">
-                      {interviewItem.entity_name} • {interviewItem.role_or_program}
-                    </h4>
-                    <p className="text-xs text-on-surface-variant line-clamp-2">
-                      {interviewItem.notes || 'Technical interview & CV screening prep'}
-                    </p>
+        {unifiedAgenda.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 text-center flex flex-col items-center justify-center gap-2">
+            <Calendar className="w-6 h-6 text-on-surface-variant" />
+            <p className="text-xs font-semibold text-on-surface">Tidak ada agenda penting terjadwal</p>
+            <p className="text-[11px] text-on-surface-variant">
+              Jadwal interview, deadline coding test, tagihan langganan H-3, dan task P1 akan otomatis muncul di sini.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 items-stretch">
+            {unifiedAgenda.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex flex-col justify-between gap-3 min-h-[120px]"
+              >
+                <div className="space-y-1.5 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 ${item.badgeColor}`}
+                    >
+                      {item.badge}
+                    </span>
+                    <span className="text-xs text-on-surface-variant tabular-nums font-medium whitespace-nowrap shrink-0">
+                      {item.isToday ? 'Hari Ini' : item.dateKey}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-end pt-1">
-                    {interviewItem.portal_url ? (
-                      <a
-                        href={interviewItem.portal_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition active:scale-95 shadow-sm"
-                      >
-                        <Video className="w-3.5 h-3.5" />
-                        <span>Open Meet</span>
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => onNavigate('career')}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
-                      >
-                        View in Pipeline
-                      </button>
-                    )}
-                  </div>
+                  <h4 className="text-sm font-semibold text-on-surface leading-snug truncate">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs text-on-surface-variant line-clamp-2">{item.subtitle}</p>
                 </div>
-              );
-            })()
-          ) : (
-            <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex flex-col justify-between gap-3 min-h-[120px]">
-              <div className="space-y-1">
-                <span className="text-xs font-semibold text-on-surface block">
-                  No interviews scheduled
-                </span>
-                <span className="text-[11px] text-on-surface-variant">
-                  Record new applications or update pipeline status to interview.
-                </span>
-              </div>
-              <div className="flex items-center justify-end pt-1">
-                <button
-                  type="button"
-                  onClick={() => onNavigate('career')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
-                >
-                  + Application
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Timeline Item 2: Pomodoro Deep Work / Priority Task */}
-          {tasks.some((t) => t.status !== 'done') ? (
-            (() => {
-              const activeTask = tasks.find((t) => t.is_daily_focus && t.status !== 'done') || tasks.find((t) => t.status !== 'done')!;
-              return (
-                <div className="p-4 rounded-2xl bg-surface-container-low border border-outline/70 flex flex-col justify-between gap-3 min-h-[120px]">
-                  <div className="space-y-1.5 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold whitespace-nowrap shrink-0">
-                        P{activeTask.priority} DEEP WORK
-                      </span>
-                      <span className="text-xs text-on-surface-variant font-medium whitespace-nowrap shrink-0">Daily Priority</span>
-                    </div>
-                    <h4 className="text-sm font-semibold text-on-surface leading-snug">
-                      {activeTask.title}
-                    </h4>
-                    <p className="text-xs text-on-surface-variant">25-minute sprint with zero distraction</p>
-                  </div>
-                  <div className="flex items-center justify-end pt-1">
+                <div className="flex items-center justify-end pt-1">
+                  {item.actionUrl ? (
+                    <a
+                      href={item.actionUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition active:scale-95 shadow-sm"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      <span>Open Meet</span>
+                    </a>
+                  ) : (
                     <button
                       type="button"
-                      onClick={() => onNavigate('tasks')}
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition active:scale-95"
+                      onClick={() => onNavigate(item.moduleTab)}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
                     >
-                      Start Timer
+                      <span>Buka Detail</span>
+                      <ArrowRight className="w-3 h-3" />
                     </button>
-                  </div>
+                  )}
                 </div>
-              );
-            })()
-          ) : (
-            <div className="p-4 rounded-2xl bg-surface-container-low border border-dashed border-outline/70 flex flex-col justify-between gap-3 min-h-[120px]">
-              <div className="space-y-1">
-                <span className="text-xs font-semibold text-on-surface block">
-                  No active focus tasks running
-                </span>
-                <span className="text-[11px] text-on-surface-variant">
-                  Add today&apos;s priority target in the Tasks &amp; Focus module.
-                </span>
               </div>
-              <div className="flex items-center justify-end pt-1">
-                <button
-                  type="button"
-                  onClick={() => onNavigate('tasks')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
-                >
-                  + Task
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>
