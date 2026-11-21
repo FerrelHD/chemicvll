@@ -455,8 +455,50 @@ export function FinanceManager() {
             </button>
           </div>
 
-          {/* Stacked Cards Visual Representation */}
-          <div className="relative flex flex-col pt-2 min-h-[280px] justify-end">
+          {/* Mobile Horizontal Snap Carousel (< sm) */}
+          <div className="sm:hidden flex gap-3 overflow-x-auto pb-2 snap-x scroll-container">
+            {wallets.map((w) => {
+              const isCurr = w.id === activeWalletId;
+              return (
+                <div
+                  key={w.id}
+                  onClick={() => setActiveWalletId(w.id)}
+                  style={{
+                    background: w.color
+                      ? `linear-gradient(135deg, ${w.color}, #18181B)`
+                      : 'linear-gradient(135deg, #0066CC, #003E8A)',
+                  }}
+                  className={`snap-start flex-shrink-0 w-[82vw] max-w-[290px] rounded-2xl text-white p-4 shadow-md flex flex-col justify-between transition-all cursor-pointer ${
+                    isCurr ? 'ring-2 ring-primary-container ring-offset-2' : 'opacity-80'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs tracking-wider uppercase truncate">{w.name}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-black/25 px-2 py-0.5 rounded-full">
+                      {w.card_label || 'DEBIT'}
+                    </span>
+                  </div>
+                  <div className="my-2.5">
+                    <span className="text-[10px] text-white/70 block">Saldo</span>
+                    <span className="text-xl font-bold font-sans tabular-nums">
+                      {isPrivacyMode ? 'Rp •••••••' : `Rp ${w.balance.toLocaleString('id-ID')}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-white/90 tabular-nums">
+                    <span>•••• {w.account_number || '8492'}</span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                      isCurr ? 'bg-primary-container text-white' : 'bg-white/15'
+                    }`}>
+                      {isCurr ? 'Aktif' : 'Pilih'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Stacked Cards Visual Representation (sm and up) */}
+          <div className="hidden sm:flex relative flex-col pt-2 min-h-[280px] justify-end">
             {/* Background Cards (Up to 2) */}
             {backgroundWallets.slice(0, 2).map((bw, idx) => {
               const isBack2 = idx === 1;
