@@ -160,7 +160,36 @@ export function inferExpenseCategory(note: string, txType: 'income' | 'expense')
   if (txType === 'income') {
     const lower = note.toLowerCase();
     if (lower.includes('gaji') || lower.includes('salary')) return 'Gaji';
-    if (lower.includes('freelance') || lower.includes('project')) return 'Freelance';
+    if (
+      lower.includes('freelance') ||
+      lower.includes('project') ||
+      lower.includes('proyek') ||
+      lower.includes('client') ||
+      lower.includes('klien') ||
+      lower.includes('side gig')
+    ) {
+      return 'Freelance';
+    }
+    if (
+      lower.includes('investasi') ||
+      lower.includes('dividen') ||
+      lower.includes('bunga') ||
+      lower.includes('saham') ||
+      lower.includes('reksadana') ||
+      lower.includes('crypto')
+    ) {
+      return 'Investasi';
+    }
+    if (
+      lower.includes('bonus') ||
+      lower.includes('hadiah') ||
+      lower.includes('thr') ||
+      lower.includes('gift') ||
+      lower.includes('angpau') ||
+      lower.includes('cashback')
+    ) {
+      return 'Bonus';
+    }
     return 'Pemasukan';
   }
 
@@ -322,15 +351,23 @@ function tryParseFinance(
 
   let working = text.trim();
   let txType: 'income' | 'expense' = 'expense';
+  let matchedIncomeKeyword: string | null = null;
 
+  const INCOME_PREFIX =
+    /^(?:(?:catat|tambah|ada)\s+)?(pemasukan|masuk|gaji|salary|income|terima(?:\s+gaji|\s+uang|\s+transferan)?|dapat(?:\s+gaji|\s+uang|\s+transferan)?|transferan\s+masuk|uang\s+masuk)\b[:\s]*/i;
+  const EXPENSE_PREFIX =
+    /^(?:(?:catat|tambah)\s+)?(keluar|pengeluaran|jajan|beli|bayar|exp)\b[:\s]*/i;
+
+  const incomeMatch = working.match(INCOME_PREFIX);
   if (working.startsWith('+')) {
     txType = 'income';
     working = working.slice(1).trim();
-  } else if (/^(masuk|gaji|income)\b/i.test(working)) {
+  } else if (incomeMatch) {
     txType = 'income';
-    working = working.replace(/^(masuk|gaji|income)\b[:\s]*/i, '').trim();
-  } else if (/^(keluar|jajan|beli|exp)\b/i.test(working)) {
-    working = working.replace(/^(keluar|jajan|beli|exp)\b[:\s]*/i, '').trim();
+    matchedIncomeKeyword = incomeMatch[1].toLowerCase();
+    working = working.replace(INCOME_PREFIX, '').trim();
+  } else if (EXPENSE_PREFIX.test(working)) {
+    working = working.replace(EXPENSE_PREFIX, '').trim();
   }
 
   let walletHint: string | null = null;
@@ -383,8 +420,15 @@ function tryParseFinance(
     }
   }
 
-  const note = remaining.join(' ').trim() || (txType === 'income' ? 'Pemasukan' : 'Pengeluaran');
-  const category = inferExpenseCategory(note, txType);
+  const defaultNote =
+    txType === 'income'
+      ? matchedIncomeKeyword && /gaji|salary/i.test(matchedIncomeKeyword)
+        ? 'Gaji'
+        : 'Pemasukan'
+      : 'Pengeluaran';
+  const note = remaining.join(' ').trim() || defaultNote;
+  const categoryContext = matchedIncomeKeyword ? `${note} ${matchedIncomeKeyword}` : note;
+  const category = inferExpenseCategory(categoryContext, txType);
 
   return {
     type: 'finance',

@@ -161,6 +161,55 @@ function runTests() {
     portalUrl: null,
   });
 
+  // 9. Natural spoken income commands (Voice Note & Text)
+  assert.deepEqual(parseTelegramMessage('pemasukan 1.5jt freelance bca'), {
+    type: 'finance',
+    txType: 'income',
+    amount: 1500000,
+    category: 'Freelance',
+    note: 'freelance',
+    walletHint: 'bca',
+  });
+
+  assert.deepEqual(
+    parseTelegramMessage('catat pemasukan lima ratus ribu dari client mandiri'),
+    {
+      type: 'finance',
+      txType: 'income',
+      amount: 500000,
+      category: 'Freelance',
+      note: 'dari client',
+      walletHint: 'mandiri',
+    }
+  );
+
+  assert.deepEqual(parseTelegramMessage('gaji sepuluh juta bca'), {
+    type: 'finance',
+    txType: 'income',
+    amount: 10000000,
+    category: 'Gaji',
+    note: 'Gaji',
+    walletHint: 'bca',
+  });
+
+  assert.deepEqual(parseTelegramMessage('dapat transferan tiga ratus ribu gopay'), {
+    type: 'finance',
+    txType: 'income',
+    amount: 300000,
+    category: 'Pemasukan',
+    note: 'Pemasukan',
+    walletHint: 'gopay',
+  });
+
+  assert.deepEqual(parseTelegramMessage('catat pengeluaran kopi 25k bca'), {
+    type: 'finance',
+    txType: 'expense',
+    amount: 25000,
+    category: 'Makan & Minum',
+    note: 'kopi',
+    walletHint: 'bca',
+  });
+
   console.log('All natural Telegram parser tests passed!');
 }
 
