@@ -54,22 +54,28 @@ const mockCareers: CareerPipeline[] = [
 const mockSubs: Subscription[] = [
   {
     id: 's1',
+    user_id: 'ferrel',
+    wallet_id: null,
     name: 'Spotify Family',
     cost: 86000,
     billing_cycle: 'monthly',
     next_billing_date: '2026-11-22',
     is_active: true,
+    created_at: '2026-11-01T00:00:00Z',
   },
 ];
 
 const mockTasks: Task[] = [
   {
     id: 't1',
+    user_id: 'ferrel',
+    project_id: null,
     title: 'Selesaikan API Endpoint',
     status: 'inbox',
     priority: 1,
     is_daily_focus: true,
     due_date: '2026-11-21T00:00:00Z',
+    completed_at: null,
     created_at: '2026-11-21T00:00:00Z',
   },
 ];
