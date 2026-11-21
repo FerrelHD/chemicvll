@@ -97,6 +97,29 @@ async function runTests() {
   assert.strictEqual(hydrated.syncedToCloud, true);
   console.log('Test 7 Passed: budget_plans row serialization round-trip works');
 
+  // Test 8: Schema compatibility - verify SyncTable includes all 12 client-synced tables
+  const expectedTables = [
+    'career_pipelines',
+    'wallets',
+    'transactions',
+    'subscriptions',
+    'tasks',
+    'budget_plans',
+    'projects',
+    'dropzone_items',
+    'notes',
+    'content_ideas',
+    'habits',
+    'debt_trackers',
+  ] as const;
+
+  for (const table of expectedTables) {
+    recordPendingDeletion(table, `test-${table}-1`);
+    assert.strictEqual(isPendingDeletion(table, `test-${table}-1`), true);
+    clearPendingDeletion(table, `test-${table}-1`);
+  }
+  console.log('Test 8 Passed: All 12 sync tables validated with tombstone deletion queue');
+
   console.log('All Supabase Cloud Deletion & Sync helper tests passed successfully!\n');
 }
 

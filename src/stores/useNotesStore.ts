@@ -1,26 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { deleteFromCloud } from '@/lib/supabase-delete';
+import type { NoteItem, ContentIdea } from '@/types/database';
 
-export interface NoteItem {
-  id: string;
-  title: string;
-  content: string;
-  type: 'note' | 'snippet' | 'prompt' | 'bookmark';
-  tags: string[];
-  is_pinned: boolean;
-  updated_at: string;
-}
-
-export interface ContentIdea {
-  id: string;
-  title: string;
-  platform: string;
-  status: 'idea' | 'scripting' | 'filming' | 'editing' | 'posted';
-  hook_text: string | null;
-  script_body: string | null;
-  created_at: string;
-}
+export type { NoteItem, ContentIdea };
 
 interface NotesState {
   notes: NoteItem[];

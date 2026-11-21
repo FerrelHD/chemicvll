@@ -168,5 +168,32 @@ export interface DebtTracker {
   settled_at?: string | null;
 }
 
+export interface NoteItem {
+  id: string;
+  user_id?: string;
+  project_id?: string | null;
+  title: string;
+  content: string;
+  type: 'note' | 'snippet' | 'prompt' | 'bookmark';
+  tags: string[];
+  is_pinned: boolean;
+  created_at?: string;
+  updated_at: string;
+}
+
+export interface ContentIdea {
+  id: string;
+  user_id?: string;
+  title: string;
+  platform: string;
+  status: 'idea' | 'scripting' | 'filming' | 'editing' | 'posted';
+  hook_text: string | null;
+  script_body: string | null;
+  product_or_topic?: string | null;
+  scheduled_date?: string | null;
+  created_at: string;
+}
+
+
 
 
