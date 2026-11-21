@@ -113,14 +113,14 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl">
+    <header className="sticky top-0 z-30 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between px-3.5 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl">
       {/* Left section: Hamburger (Mobile) + Search Bar (Cmd+K) */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           type="button"
           aria-label="Menu"
           onClick={onOpenMobileMenu}
-          className="md:hidden w-11 h-11 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="md:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
         >
           <Menu className="w-4 h-4" />
         </button>
@@ -130,7 +130,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           type="button"
           aria-label="Search"
           onClick={triggerCommand}
-          className="sm:hidden w-11 h-11 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="sm:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
           title="Search (⌘K)"
         >
           <Search className="w-4 h-4 text-on-surface-variant" />
@@ -167,8 +167,8 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
       </div>
 
       {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
-      <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Cloud Sync Status Pill */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Cloud Sync Status Pill (Desktop/Tablet) */}
         <button
           type="button"
           onClick={handleSyncClick}
@@ -209,7 +209,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           type="button"
           aria-label={isDark ? 'Switch to Warm Linen Light Mode' : 'Switch to Warm Obsidian Dark Mode'}
           onClick={toggleTheme}
-          className="w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container cursor-pointer"
+          className="w-9 h-9 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container cursor-pointer shrink-0"
           title={isDark ? 'Light Mode (Warm Linen)' : 'Dark Mode (Warm Obsidian)'}
         >
           {isDark ? (
@@ -226,7 +226,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             aria-label="Notifications"
             aria-expanded={isNotifOpen}
             onClick={() => setIsNotifOpen((prev) => !prev)}
-            className="relative w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            className="relative w-9 h-9 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
           >
             <Bell className="w-4 h-4 text-on-surface-variant" />
             {totalAlerts > 0 && (
@@ -235,60 +235,93 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           </button>
 
           {isNotifOpen && (
-            <div className="fixed inset-x-4 top-[4.5rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-surface-container-lowest border border-outline rounded-2xl shadow-lg p-3.5 z-50 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-outline">
-                <span className="font-bold text-on-surface">Radar Notifikasi</span>
-                <span className="text-[11px] font-semibold tabular-nums text-on-surface-variant">
-                  {totalAlerts} item
-                </span>
-              </div>
+            <>
+              {/* Mobile dismiss backdrop */}
+              <div
+                className="fixed inset-0 bg-black/20 z-40 sm:hidden"
+                onClick={() => setIsNotifOpen(false)}
+              />
 
-              {totalAlerts === 0 ? (
-                <p className="text-on-surface-variant py-2 text-center">
-                  Semua jadwal follow-up, tagihan, dan siklus gaji aman.
-                </p>
-              ) : (
-                <div className="space-y-2 max-h-56 overflow-y-auto">
-                  {isBudgetExpired && (
-                    <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
-                      Siklus Payday Budget sudah selesai. Atur gajian baru di Vault.
-                    </div>
-                  )}
-                  {urgentFollowUps.map((item) => (
-                    <div
-                      key={item.id}
-                      className="p-2 rounded-xl bg-surface-container-low border border-outline text-on-surface"
-                    >
-                      Follow-up <strong>{item.entity_name}</strong> ({item.role_or_program})
-                    </div>
-                  ))}
-                  {urgentSubs.map((sub) => (
-                    <div
-                      key={sub.id}
-                      className="p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-900"
-                    >
-                      <div>
-                        Tagihan <strong>{sub.name}</strong> — Rp{' '}
-                        <span className="tabular-nums font-semibold">
-                          {sub.cost.toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-rose-700 mt-0.5 tabular-nums">
-                        Jatuh tempo: {formatBillingDate(sub.next_billing_date)}
-                      </div>
-                    </div>
-                  ))}
+              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3.5 z-50 space-y-2.5 text-xs max-h-[75vh] flex flex-col">
+                <div className="flex items-center justify-between pb-2 border-b border-outline shrink-0">
+                  <span className="font-bold text-on-surface">Radar Notifikasi</span>
+                  <span className="text-[11px] font-semibold tabular-nums text-on-surface-variant">
+                    {totalAlerts} item
+                  </span>
                 </div>
-              )}
-            </div>
+
+                {totalAlerts === 0 ? (
+                  <p className="text-on-surface-variant py-4 text-center">
+                    Semua jadwal follow-up, tagihan, dan siklus gaji aman.
+                  </p>
+                ) : (
+                  <div className="space-y-2 overflow-y-auto max-h-[60vh]">
+                    {isBudgetExpired && (
+                      <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200">
+                        Siklus Payday Budget sudah selesai. Atur gajian baru di Vault.
+                      </div>
+                    )}
+                    {urgentFollowUps.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-2.5 rounded-2xl bg-surface-container-low border border-outline text-on-surface"
+                      >
+                        Follow-up <strong>{item.entity_name}</strong> ({item.role_or_program})
+                      </div>
+                    ))}
+                    {urgentSubs.map((sub) => (
+                      <div
+                        key={sub.id}
+                        className="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200"
+                      >
+                        <div>
+                          Tagihan <strong>{sub.name}</strong> — Rp{' '}
+                          <span className="tabular-nums font-semibold">
+                            {sub.cost.toLocaleString('id-ID')}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-rose-700 dark:text-rose-300 mt-0.5 tabular-nums">
+                          Jatuh tempo: {formatBillingDate(sub.next_billing_date)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
 
-        {/* User Profile Avatar & Lock */}
-        <div className="flex items-center gap-2 pl-1">
-          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs shadow-sm">
-            F
+        {/* User Profile Avatar with Mobile Sync Indicator & Lock */}
+        <div className="flex items-center gap-1.5 sm:gap-2 pl-0.5">
+          <div
+            className="relative cursor-pointer"
+            onClick={handleSyncClick}
+            title={
+              syncStatus === 'synced'
+                ? 'Cloud Synced'
+                : syncStatus === 'offline'
+                ? 'Offline (Click to sync)'
+                : 'Syncing...'
+            }
+          >
+            <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs shadow-sm">
+              F
+            </div>
+            {/* Mobile-only Mini Cloud Sync LED dot */}
+            <span
+              className={`sm:hidden absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-surface-container-lowest ${
+                syncStatus === 'syncing'
+                  ? 'bg-amber-500 animate-pulse'
+                  : syncStatus === 'synced'
+                  ? 'bg-emerald-600'
+                  : syncStatus === 'offline'
+                  ? 'bg-zinc-400'
+                  : 'bg-primary-container animate-pulse'
+              }`}
+            />
           </div>
+
           <span className="text-xs font-semibold text-on-surface hidden sm:inline">
             Ferrel
           </span>
@@ -296,7 +329,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Lock Workspace"
             onClick={() => window.dispatchEvent(new CustomEvent('personal_os_lock'))}
-            className="w-9 h-9 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Lock Personal OS (Master PIN)"
           >
             <Lock className="w-3.5 h-3.5" />
