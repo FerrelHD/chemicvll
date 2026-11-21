@@ -87,12 +87,34 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
       window.dispatchEvent(new CustomEvent('quick-add-expense', { detail: parsed }));
       onShowNotice?.(`Expense Rp ${parsed.amount.toLocaleString('id-ID')} recorded.`);
       close();
+    } else if (
+      input.trim().toLowerCase() === '/theme' ||
+      input.trim().toLowerCase() === '/dark' ||
+      input.trim().toLowerCase() === '/light'
+    ) {
+      const isCurrentlyDark = document.documentElement.classList.contains('dark');
+      const nextDark = !isCurrentlyDark;
+      if (nextDark) {
+        document.documentElement.classList.add('dark');
+        try {
+          localStorage.setItem('chemicvll_theme', 'dark');
+        } catch {}
+      } else {
+        document.documentElement.classList.remove('dark');
+        try {
+          localStorage.setItem('chemicvll_theme', 'light');
+        } catch {}
+      }
+      window.dispatchEvent(new CustomEvent('theme-changed', { detail: { dark: nextDark } }));
+      onShowNotice?.(`Switched to ${nextDark ? 'Warm Obsidian Dark Mode' : 'Warm Linen Light Mode'}`);
+      close();
     } else {
-      setFeedback(`Unknown command. Try /apply, /task, or /exp.`);
+      setFeedback(`Unknown command. Try /apply, /task, /exp, or /theme.`);
     }
   };
 
   const suggestions = [
+    { cmd: '/theme', desc: 'Toggle Dark Mode (Warm Obsidian)' },
     { cmd: '/apply GoTo - Frontend Intern #internship', desc: 'Quick record internship application' },
     { cmd: '/task Review feedback HR !high', desc: 'Add P1 daily focus task' },
     { cmd: '/exp 35000 Lunch Bento #bca', desc: 'Record instant expense' },

@@ -607,7 +607,7 @@ export function FinanceManager() {
                       setTxType('income');
                       setIsLoggingOpen(true);
                     }}
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-white text-on-surface text-xs font-semibold hover:bg-zinc-100 transition shadow-sm"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-surface-container-lowest text-on-surface text-xs font-semibold hover:bg-surface-container-high transition shadow-sm"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Top Up</span>

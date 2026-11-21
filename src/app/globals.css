@@ -5,6 +5,75 @@
 :root {
   --background: #FAF9F4;
   --foreground: #1B1C19;
+
+  /* Warm Linen Light Tokens */
+  --surface: 250 249 244;
+  --surface-dim: 219 218 213;
+  --surface-bright: 250 249 244;
+  --surface-container-lowest: 255 255 255;
+  --surface-container-low: 245 244 239;
+  --surface-container: 239 238 233;
+  --surface-container-high: 233 232 227;
+  --surface-container-highest: 227 227 222;
+  --on-surface: 27 28 25;
+  --on-surface-variant: 90 65 54;
+  --inverse-surface: 24 24 27;
+  --inverse-on-surface: 242 241 236;
+  --outline: 236 234 226;
+  --outline-variant: 226 191 176;
+  --primary: 160 65 0;
+  --on-primary: 255 255 255;
+  --primary-container: 255 107 0;
+  --primary-fixed: 255 219 204;
+  --on-primary-fixed: 53 16 0;
+  --on-primary-fixed-variant: 122 48 0;
+  --secondary: 95 94 97;
+  --secondary-container: 228 225 230;
+  --secondary-fixed: 228 225 230;
+  --on-secondary-fixed: 27 27 30;
+  --tertiary: 103 75 181;
+  --tertiary-container: 163 135 246;
+  --tertiary-fixed: 232 221 255;
+  --on-tertiary-fixed: 33 0 94;
+  --error: 186 26 26;
+  --error-container: 255 218 214;
+}
+
+.dark {
+  --background: #121214;
+  --foreground: #F4F3EF;
+
+  /* Warm Obsidian Dark Tokens */
+  --surface: 18 18 20;
+  --surface-dim: 13 13 15;
+  --surface-bright: 30 30 34;
+  --surface-container-lowest: 26 26 30;
+  --surface-container-low: 21 21 24;
+  --surface-container: 32 32 36;
+  --surface-container-high: 38 38 43;
+  --surface-container-highest: 46 46 52;
+  --on-surface: 244 243 239;
+  --on-surface-variant: 161 161 170;
+  --inverse-surface: 244 243 239;
+  --inverse-on-surface: 18 18 20;
+  --outline: 42 42 46;
+  --outline-variant: 63 63 70;
+  --primary: 255 107 0;
+  --on-primary: 255 255 255;
+  --primary-container: 255 107 0;
+  --primary-fixed: 56 30 15;
+  --on-primary-fixed: 255 219 204;
+  --on-primary-fixed-variant: 255 140 66;
+  --secondary: 161 161 170;
+  --secondary-container: 46 46 52;
+  --secondary-fixed: 46 46 52;
+  --on-secondary-fixed: 244 243 239;
+  --tertiary: 163 135 246;
+  --tertiary-container: 69 48 117;
+  --tertiary-fixed: 48 32 88;
+  --on-tertiary-fixed: 232 221 255;
+  --error: 248 113 113;
+  --error-container: 69 10 10;
 }
 
 html,
@@ -46,6 +115,13 @@ input, button, select, textarea {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #C8C5CA;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2E2E34;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3F3F46;
 }
 
 /* Smooth Momentum Scrolling */

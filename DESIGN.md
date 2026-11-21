@@ -17,28 +17,28 @@ Personal OS menggabungkan ergonomi visual fintech modern dengan efisiensi workst
 ## 2. Color System Tokens
 
 ### Canvas & Surface Foundations
-- **Base App Canvas:** `#FAF9F4` (Warm Stone / Linen Off-White)
-- **Card & Container Surface:** `#FFFFFF` (Pure Optical White)
-- **Subtle Low Surface:** `#F5F4EF`
-- **Muted Inset Surface:** `#ECEAE2`
-- **Hairline Border & Dividers:** `#E8E6DF` / `#ECEAE2`
+- **Base App Canvas:** `#FAF9F4` (Warm Stone / Linen Off-White) | Dark Mode: `#121214` (Deep Charcoal Obsidian)
+- **Card & Container Surface:** `#FFFFFF` (Pure Optical White) | Dark Mode: `#1A1A1E` (Warm Elevated Charcoal)
+- **Subtle Low Surface:** `#F5F4EF` | Dark Mode: `#151518`
+- **Muted Inset Surface:** `#ECEAE2` | Dark Mode: `#202024`
+- **Hairline Border & Dividers:** `#E8E6DF` / `#ECEAE2` | Dark Mode: `#2A2A2E`
 
 ### Brand & Accents
 - **Primary Accent:** `#FF6B00` (Energetic Warm Citrus Orange — untuk highlight nama, status aktif, progress bar utama)
-- **Primary Inset / Dark:** `#A04100` / `#572000`
-- **Dark Neutral Primary:** `#18181B` / `#1B1C19` (Deep Charcoal Ink — untuk tombol pill utama, navigasi aktif, tooltip)
-- **Secondary Accent:** `#7C3AED` / `#674BB5` (Soft Lavender / Bank Jago Purple)
+- **Primary Inset / Dark:** `#A04100` / `#572000` | Dark Mode Pill: `#381E0F`
+- **Dark Neutral Primary:** `#18181B` / `#1B1C19` (Deep Charcoal Ink — untuk tombol pill utama, navigasi aktif, tooltip) | Dark Mode Inverted: `#F4F3EF`
+- **Secondary Accent:** `#7C3AED` / `#674BB5` (Soft Lavender / Bank Jago Purple) | Dark Mode: `#A387F6`
 - **Category & Pastel Matrix:**
-  - Soft Lavender: Surface `#E3DBFF` • Text/Icon `#5B3FD3`
-  - Mint Spring: Surface `#D1FADF` • Text/Icon `#027A48`
-  - Warm Peach / Rose: Surface `#FFE4D6` • Text/Icon `#C4320A`
-  - Warning / Alert: Surface `#FEF08A` • Text `#854D0E`
-  - Soft Rose Red (Negative metric / danger): Surface `#FEE4E2` • Text `#D92D20`
+  - Soft Lavender: Surface `#E3DBFF` • Text/Icon `#5B3FD3` | Dark Mode: `#302058` / `#E8DDFF`
+  - Mint Spring: Surface `#D1FADF` • Text/Icon `#027A48` | Dark Mode: `#0F3822` / `#D1FADF`
+  - Warm Peach / Rose: Surface `#FFE4D6` • Text/Icon `#C4320A` | Dark Mode: `#3E1810` / `#FFE4D6`
+  - Warning / Alert: Surface `#FEF08A` • Text `#854D0E` | Dark Mode: `#422A00` / `#FEF08A`
+  - Soft Rose Red (Negative metric / danger): Surface `#FEE4E2` • Text `#D92D20` | Dark Mode: `#450A0A` / `#F87171`
 
 ### Text & Content Hierarchy
-- **Primary Text:** `#1B1C19` / `#18181B`
-- **Secondary / Supporting Text:** `#5A4136` / `#71717A`
-- **Muted / Placeholder:** `#8E7164` / `#A1A1AA`
+- **Primary Text:** `#1B1C19` / `#18181B` | Dark Mode: `#F4F3EF`
+- **Secondary / Supporting Text:** `#5A4136` / `#71717A` | Dark Mode: `#A1A1AA`
+- **Muted / Placeholder:** `#8E7164` / `#A1A1AA` | Dark Mode: `#71717A`
 
 ---
 

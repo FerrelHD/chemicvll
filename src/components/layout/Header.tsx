@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Search, Bell, Lock } from 'lucide-react';
+import { Menu, Search, Bell, Lock, Sun, Moon } from 'lucide-react';
 import { useSyncStore, pullFromCloud } from '@/lib/supabase-sync';
 import { QuickCaptureMark } from '@/components/icons/ChemicIcons';
 import { useCareerStore } from '@/stores/useCareerStore';
@@ -23,7 +23,41 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   const budgetPlan = useFinanceStore((s) => s.budgetPlan);
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const notifRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+
+    const handleThemeEvent = (e: Event) => {
+      const customDetail = (e as CustomEvent<{ dark?: boolean }>).detail;
+      if (customDetail?.dark !== undefined) {
+        setIsDark(customDetail.dark);
+      } else {
+        setIsDark(document.documentElement.classList.contains('dark'));
+      }
+    };
+
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add('dark');
+      try {
+        localStorage.setItem('chemicvll_theme', 'dark');
+      } catch {}
+    } else {
+      document.documentElement.classList.remove('dark');
+      try {
+        localStorage.setItem('chemicvll_theme', 'light');
+      } catch {}
+    }
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: { dark: nextDark } }));
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -168,6 +202,21 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
               ? 'Offline'
               : 'Active'}
           </span>
+        </button>
+
+        {/* Warm Obsidian Dark Mode Toggle */}
+        <button
+          type="button"
+          aria-label={isDark ? 'Switch to Warm Linen Light Mode' : 'Switch to Warm Obsidian Dark Mode'}
+          onClick={toggleTheme}
+          className="w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container cursor-pointer"
+          title={isDark ? 'Light Mode (Warm Linen)' : 'Dark Mode (Warm Obsidian)'}
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-primary-container transition-transform hover:rotate-45" />
+          ) : (
+            <Moon className="w-4 h-4 text-on-surface-variant transition-transform hover:-rotate-12" />
+          )}
         </button>
 
         {/* Notifications Popover Trigger */}

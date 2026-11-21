@@ -44,8 +44,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${jakarta.variable} h-full`}>
-      <body className={`${jakarta.className} h-full bg-surface text-on-surface font-sans antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant`}>
+    <html lang="id" className={`${jakarta.variable} h-full`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('chemicvll_theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${jakarta.className} h-full bg-surface text-on-surface font-sans antialiased selection:bg-primary-container selection:text-white`}>
         {children}
       </body>
     </html>

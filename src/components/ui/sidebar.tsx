@@ -232,7 +232,7 @@ export const SidebarLink = ({
   const baseClass = cn(
     "flex items-center justify-start gap-3 group/sidebar min-h-[44px] py-2 px-2.5 rounded-xl transition duration-150 cursor-pointer w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container",
     link.isActive
-      ? "bg-white text-on-surface font-semibold shadow-sm border border-outline/40"
+      ? "bg-surface-container-lowest text-on-surface font-semibold shadow-sm border border-outline/40"
       : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60",
     className
   );
