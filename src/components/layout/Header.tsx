@@ -91,6 +91,17 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           <Menu className="w-4 h-4" />
         </button>
 
+        {/* Mobile Search Button (Cmd+K) */}
+        <button
+          type="button"
+          aria-label="Search"
+          onClick={triggerCommand}
+          className="sm:hidden w-11 h-11 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          title="Search (⌘K)"
+        >
+          <Search className="w-4 h-4 text-on-surface-variant" />
+        </button>
+
         {/* Cmd+K Capsule Input */}
         <button
           type="button"
