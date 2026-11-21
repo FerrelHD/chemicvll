@@ -165,11 +165,12 @@ export async function POST(req: NextRequest) {
     if (!transcribed) {
       await sendTelegramMessage({
         chatId,
-        text: '🎙️ Voice note tidak dapat terdengar jelas atau gagal ditranskrip. Coba rekam ulang ya.',
+        text: '🎙️ Voice note tidak dapat terdengar jelas atau gagal ditranskrip. Coba rekam ulang ya.\n\n💡 <i>Tips: Pastikan mic dekat dan gunakan intonasi wajar, atau ketik langsung seperti:</i> <code>kopi 25k bca</code>',
       });
       return NextResponse.json({ ok: true });
     }
 
+    console.log('[telegram-voice] Transcribed voice note:', transcribed);
     rawText = transcribed.trim();
     voiceTranscription = transcribed.trim();
   }

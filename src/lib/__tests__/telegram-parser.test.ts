@@ -118,6 +118,49 @@ function runTests() {
     itemType: 'code',
   });
 
+  // 8. Spoken Indonesian number parsing & voice note phrases
+  assert.deepEqual(parseTelegramMessage('kopi dua puluh lima ribu bca'), {
+    type: 'finance',
+    txType: 'expense',
+    amount: 25000,
+    category: 'Makan & Minum',
+    note: 'kopi',
+    walletHint: 'bca',
+  });
+
+  assert.deepEqual(parseTelegramMessage('makan siang tiga puluh lima ribu tunai'), {
+    type: 'finance',
+    txType: 'expense',
+    amount: 35000,
+    category: 'Makan & Minum',
+    note: 'makan siang',
+    walletHint: 'tunai',
+  });
+
+  assert.deepEqual(parseTelegramMessage('bensin lima puluh ribu gopay'), {
+    type: 'finance',
+    txType: 'expense',
+    amount: 50000,
+    category: 'Transportasi',
+    note: 'bensin',
+    walletHint: 'gopay',
+  });
+
+  assert.deepEqual(parseTelegramMessage('catat task revisi cv !high'), {
+    type: 'task',
+    title: 'revisi cv',
+    priority: 1,
+    isDailyFocus: true,
+  });
+
+  assert.deepEqual(parseTelegramMessage('tambah loker Traveloka - Backend Engineer #job'), {
+    type: 'apply',
+    entity: 'Traveloka',
+    role: 'Backend Engineer',
+    category: 'job',
+    portalUrl: null,
+  });
+
   console.log('All natural Telegram parser tests passed!');
 }
 

@@ -1,7 +1,16 @@
 import assert from 'node:assert';
-import { downloadTelegramFile, transcribeAudio } from '../telegram-voice';
+import { downloadTelegramFile, getValidAudioFilename, transcribeAudio } from '../telegram-voice';
 
 console.log('Testing Telegram Voice Note Transcriber...');
+
+function testFilenameResolution() {
+  assert.strictEqual(getValidAudioFilename('audio/ogg'), 'audio.ogg');
+  assert.strictEqual(getValidAudioFilename('audio/ogg; codecs=opus'), 'audio.ogg');
+  assert.strictEqual(getValidAudioFilename('audio/mp3'), 'audio.mp3');
+  assert.strictEqual(getValidAudioFilename('audio/wav'), 'audio.wav');
+  assert.strictEqual(getValidAudioFilename('audio/m4a'), 'audio.m4a');
+  assert.strictEqual(getValidAudioFilename('application/octet-stream'), 'audio.ogg');
+}
 
 async function testDownloadMissingToken() {
   const prev = process.env.TELEGRAM_BOT_TOKEN;
@@ -23,7 +32,9 @@ async function testTranscribeMissingKey() {
 async function testTranscribeSuccess() {
   const originalFetch = global.fetch;
   try {
-    global.fetch = (async () => {
+    let capturedBody: FormData | null = null;
+    global.fetch = (async (_url: any, init: any) => {
+      capturedBody = init?.body as FormData;
       return {
         ok: true,
         json: async () => ({ text: 'kopi 25k bca' }),
@@ -31,8 +42,12 @@ async function testTranscribeSuccess() {
     }) as any;
 
     const dummyBuffer = new ArrayBuffer(8);
-    const res = await transcribeAudio(dummyBuffer, 'audio/ogg', 'gsk_fake_key');
+    const res = await transcribeAudio(dummyBuffer, 'audio/ogg; codecs=opus', 'gsk_fake_key');
     assert.strictEqual(res, 'kopi 25k bca', 'Should return parsed text from Groq');
+    assert(capturedBody, 'FormData should be sent to Groq Whisper');
+    assert.strictEqual((capturedBody as any).get('model'), 'whisper-large-v3-turbo');
+    assert.strictEqual((capturedBody as any).get('language'), 'id');
+    assert.strictEqual((capturedBody as any).get('temperature'), '0.2');
   } finally {
     global.fetch = originalFetch;
   }
@@ -58,6 +73,7 @@ async function testTranscribeError() {
 }
 
 async function run() {
+  testFilenameResolution();
   await testDownloadMissingToken();
   await testTranscribeMissingKey();
   await testTranscribeSuccess();

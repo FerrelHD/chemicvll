@@ -396,6 +396,173 @@ function tryParseFinance(
   };
 }
 
+const SPOKEN_NUMBER_WORDS: Record<string, number> = {
+  nol: 0,
+  satu: 1,
+  se: 1,
+  dua: 2,
+  tiga: 3,
+  empat: 4,
+  lima: 5,
+  enam: 6,
+  tujuh: 7,
+  delapan: 8,
+  sembilan: 9,
+  sepuluh: 10,
+  sebelas: 11,
+  seratus: 100,
+  seribu: 1000,
+  sejuta: 1000000,
+};
+
+const SPOKEN_NUMBER_STARTERS = new Set([
+  'nol',
+  'satu',
+  'dua',
+  'tiga',
+  'empat',
+  'lima',
+  'enam',
+  'tujuh',
+  'delapan',
+  'sembilan',
+  'sepuluh',
+  'sebelas',
+  'seratus',
+  'seribu',
+  'sejuta',
+]);
+
+const SPOKEN_NUMBER_TOKENS = new Set([
+  'nol',
+  'satu',
+  'dua',
+  'tiga',
+  'empat',
+  'lima',
+  'enam',
+  'tujuh',
+  'delapan',
+  'sembilan',
+  'sepuluh',
+  'sebelas',
+  'belas',
+  'puluh',
+  'seratus',
+  'ratus',
+  'seribu',
+  'ribu',
+  'sejuta',
+  'juta',
+]);
+
+export function parseSpokenNumberSequence(tokens: string[]): number | null {
+  if (tokens.length === 0) return null;
+
+  let total = 0;
+  let periodTotal = 0;
+  let current = 0;
+
+  for (const token of tokens) {
+    const w = token.toLowerCase();
+
+    if (w === 'juta') {
+      const val = periodTotal + (current || (periodTotal === 0 ? 1 : 0));
+      total += (val === 0 ? 1 : val) * 1_000_000;
+      periodTotal = 0;
+      current = 0;
+    } else if (w === 'ribu') {
+      const val = periodTotal + (current || (periodTotal === 0 ? 1 : 0));
+      total += (val === 0 ? 1 : val) * 1_000;
+      periodTotal = 0;
+      current = 0;
+    } else if (w === 'ratus') {
+      periodTotal += (current || 1) * 100;
+      current = 0;
+    } else if (w === 'puluh') {
+      periodTotal += (current || 1) * 10;
+      current = 0;
+    } else if (w === 'belas') {
+      periodTotal += (current || 1) + 10;
+      current = 0;
+    } else if (SPOKEN_NUMBER_WORDS[w] !== undefined) {
+      const num = SPOKEN_NUMBER_WORDS[w];
+      if (num === 1000000) {
+        total += 1_000_000;
+      } else if (num === 1000) {
+        total += (periodTotal || 1) * 1000;
+        periodTotal = 0;
+      } else if (num === 100) {
+        periodTotal += 100;
+      } else if (num === 10 || num === 11) {
+        periodTotal += num;
+      } else {
+        current = num;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  total += periodTotal + current;
+  return total > 0 ? total : null;
+}
+
+export function normalizeSpokenNumbers(text: string): string {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return text;
+
+  const resultWords: string[] = [];
+  let i = 0;
+
+  while (i < words.length) {
+    const cleanWord = words[i].toLowerCase().replace(/[.,!?;:]/g, '');
+    const prevWord = i > 0 ? words[i - 1].toLowerCase().replace(/[.,!?;:]/g, '') : '';
+    const prevIsDigit = /\d/.test(prevWord);
+
+    if (!prevIsDigit && SPOKEN_NUMBER_STARTERS.has(cleanWord)) {
+      const run: string[] = [];
+      let j = i;
+      let hasMultiplier = false;
+
+      while (j < words.length) {
+        const cur = words[j].toLowerCase().replace(/[.,!?;:]/g, '');
+        if (!SPOKEN_NUMBER_TOKENS.has(cur)) break;
+        run.push(cur);
+        if (
+          cur === 'ribu' ||
+          cur === 'juta' ||
+          cur === 'ratus' ||
+          cur === 'puluh' ||
+          cur === 'belas' ||
+          cur === 'seribu' ||
+          cur === 'seratus' ||
+          cur === 'sejuta' ||
+          cur === 'sepuluh' ||
+          cur === 'sebelas'
+        ) {
+          hasMultiplier = true;
+        }
+        j++;
+      }
+
+      if (hasMultiplier || run.length >= 2) {
+        const parsed = parseSpokenNumberSequence(run);
+        if (parsed !== null && parsed >= 1000) {
+          resultWords.push(String(parsed));
+          i = j;
+          continue;
+        }
+      }
+    }
+
+    resultWords.push(words[i]);
+    i++;
+  }
+
+  return resultWords.join(' ');
+}
+
 /**
  * Parses casual natural-language Telegram messages into Personal OS intents.
  * Anything unrecognized (links, snippets, plain notes) safely falls back to Dropzone.
@@ -404,7 +571,7 @@ export function parseTelegramMessage(
   input: string,
   knownWalletNames: string[] = []
 ): TelegramIntent {
-  const text = input.trim();
+  const text = normalizeSpokenNumbers(input.trim());
   if (!text) {
     return { type: 'help' };
   }
@@ -423,13 +590,13 @@ export function parseTelegramMessage(
     return { type: 'query', target: 'saldo' };
   }
 
-  if (/^(\/task|task:|task\s|tugas:|tugas\s|todo:|todo\s)/i.test(text)) {
-    const body = text.replace(/^(\/task|task|tugas|todo)[:\s]+/i, '');
+  if (/^((?:catat\s+|tambah\s+)?(?:\/task|task|tugas|todo)[:\s]+)/i.test(text)) {
+    const body = text.replace(/^((?:catat\s+|tambah\s+)?(?:\/task|task|tugas|todo)[:\s]+)/i, '');
     return parseTaskText(body);
   }
 
-  if (/^(\/apply|apply:|apply\s|loker:|loker\s|lamar:|lamar\s)/i.test(text)) {
-    const body = text.replace(/^(\/apply|apply|loker|lamar)[:\s]+/i, '');
+  if (/^((?:catat\s+|tambah\s+)?(?:\/apply|apply|loker|lamar)[:\s]+)/i.test(text)) {
+    const body = text.replace(/^((?:catat\s+|tambah\s+)?(?:\/apply|apply|loker|lamar)[:\s]+)/i, '');
     return parseCareerText(body);
   }
 
