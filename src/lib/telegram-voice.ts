@@ -66,7 +66,7 @@ export async function transcribeAudio(
     formData.append('response_format', 'json');
     formData.append(
       'prompt',
-      'Catatan keuangan dan tugas harian: kopi 25k bca, makan siang 35 ribu tunai, beli bensin 50rb gopay, bayar tagihan wifi 300k transfer, task revisi cv !high, loker frontend engineer'
+      'Catatan keuangan dan tugas: pemasukan 1.5jt freelance bca, gaji 10 juta bca, dapat transferan 500k mandiri, kopi 25k bca, makan siang 35 ribu tunai, beli bensin 50rb gopay, bayar wifi 300k transfer, task revisi cv !high, loker frontend engineer'
     );
 
     const res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
