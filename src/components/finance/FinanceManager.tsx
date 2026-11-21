@@ -323,8 +323,8 @@ export function FinanceManager() {
         </div>
       </div>
 
-      {/* Row 1: 4 Key Metric Bento Tiles (Compact 2x2 on Mobile, 4x1 on Desktop) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      {/* Row 1: 4 Key Metric Bento Tiles (Compact 2x2 on Mobile/Tablet, 4x1 on Wide Desktop) */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Tile 1: Saldo Utama */}
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 min-h-[115px] sm:min-h-[130px] flex flex-col justify-between border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition">
           <div className="flex items-center justify-between">
@@ -342,7 +342,7 @@ export function FinanceManager() {
             </div>
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -376,7 +376,7 @@ export function FinanceManager() {
             <PiggyBank className="w-4 h-4 text-on-surface-variant shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${displaySavings.toLocaleString('id-ID')}`}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -399,7 +399,7 @@ export function FinanceManager() {
             <ArrowDownLeft className="w-4 h-4 text-emerald-700 shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -418,7 +418,7 @@ export function FinanceManager() {
             <ArrowUpRight className="w-4 h-4 text-error shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2">

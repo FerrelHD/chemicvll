@@ -123,8 +123,8 @@ export function TaskManager() {
         </div>
       </div>
 
-      {/* Bento KPI Top Row (4 Columns - Mobile 2x2 Grid) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      {/* Bento KPI Top Row (4 Columns - Mobile/Tablet 2x2, Wide Desktop 4x1) */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Metric 1: Pomodoro Sessions */}
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between gap-1">
@@ -135,7 +135,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {sessionsCompleted}
               </span>
               <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium">Sessions</span>
@@ -163,7 +163,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 {p1Remaining}
               </span>
               <span className="text-[10px] sm:text-xs text-rose-600 font-semibold">Left</span>
@@ -189,7 +189,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {completionRate}%
               </span>
               <span className="text-[10px] sm:text-xs text-emerald-600 font-semibold">+6%</span>
@@ -217,7 +217,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 12
               </span>
               <span className="text-[10px] sm:text-xs text-primary-container font-semibold">Days</span>

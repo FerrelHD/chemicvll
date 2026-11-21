@@ -417,7 +417,9 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
           <div className="my-2 sm:my-3">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans tabular-nums">{activeCareerCount}</span>
+              <span className="text-lg sm:text-xl xl:text-2xl font-bold text-on-surface font-sans tabular-nums">
+                {activeCareerCount}
+              </span>
               <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">Active Applications</span>
             </div>
             <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
@@ -450,13 +452,13 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1">
                 {isPrivacyMode ? (
-                  <span className="text-base sm:text-2xl font-bold font-sans tabular-nums text-on-surface">
+                  <span className="text-base sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface">
                     Rp •••••••
                   </span>
                 ) : (
                   <>
                     <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant">Rp</span>
-                    <span className="text-base sm:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
+                    <span className="text-base sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
                       {totalBalance.toLocaleString('id-ID')}
                     </span>
                   </>
