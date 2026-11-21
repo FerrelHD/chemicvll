@@ -54,3 +54,11 @@ input, button, select, textarea {
   overscroll-behavior-y: contain;
   scroll-behavior: smooth;
 }
+
+/* Safe-area insets for mobile & iOS PWA */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}

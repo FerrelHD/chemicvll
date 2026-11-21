@@ -109,8 +109,12 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
   const currentStepIndex = steps.findIndex((s) => s.stage === formData.stage);
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
+        {/* Mobile drag handle */}
+        <div className="pt-3 sm:hidden flex justify-center">
+          <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full" />
+        </div>
         
         {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 pb-3 sm:pb-4 border-b border-outline/20">

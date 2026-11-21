@@ -934,8 +934,11 @@ export function FinanceManager() {
 
       {/* Modal Quick Transaction */}
       {isLoggingOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+            {/* Mobile drag handle */}
+            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
+
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-base text-on-surface">Record Transaction</h3>
               <button
@@ -1088,8 +1091,11 @@ export function FinanceManager() {
 
       {/* Modal: Kelola Rekening & Kartu (Add / Edit) */}
       {isWalletModalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 backdrop-blur-sm p-4">
-          <div className="bg-surface-container-lowest border border-outline/30 rounded-3xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm p-0 sm:p-4">
+          <div className="bg-surface-container-lowest border border-outline/30 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            {/* Mobile drag handle */}
+            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
+
             <div className="flex items-center justify-between pb-2 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">
                 {editingWallet ? 'Edit Account / Card' : 'Add New Account / Card'}
@@ -1276,8 +1282,11 @@ export function FinanceManager() {
 
       {/* Modal Add Subscription */}
       {isAddSubOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+            {/* Mobile drag handle */}
+            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
+
             <div className="flex items-center justify-between pb-3 border-b border-outline/20">
               <h3 className="font-bold text-sm text-on-surface">Add Active Subscription</h3>
               <button

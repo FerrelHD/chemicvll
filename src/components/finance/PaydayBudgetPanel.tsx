@@ -525,8 +525,13 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
               aria-modal="true"
               aria-labelledby="reset-budget-title"
               onClick={(e) => e.stopPropagation()}
-              className="w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+              className="w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
             >
+              {/* Mobile drag handle */}
+              <div className="pt-3 sm:hidden flex justify-center">
+                <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full" />
+              </div>
+
               <div className="p-5 border-b border-outline flex items-start justify-between gap-3">
                 <div>
                   <h3

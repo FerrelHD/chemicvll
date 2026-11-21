@@ -133,8 +133,11 @@ export function CareerFollowUpModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
         transition={{ type: 'spring', damping: 26, stiffness: 350 }}
-        className="w-full sm:max-w-lg bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full sm:max-w-lg bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 overflow-hidden flex flex-col max-h-[92vh]"
       >
+        {/* Mobile drag handle */}
+        <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-3" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-outline/20">
           <div className="flex items-center gap-2.5">

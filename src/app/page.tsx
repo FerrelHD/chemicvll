@@ -149,7 +149,7 @@ export default function HomePage() {
 
         {/* Scrollable Dashboard Body */}
         <div className="flex-1 overflow-y-auto w-full relative z-20 scroll-container">
-          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-32 md:pb-12">
+          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-12">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 6 }}

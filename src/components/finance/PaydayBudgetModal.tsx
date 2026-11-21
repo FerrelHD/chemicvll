@@ -250,15 +250,20 @@ export function PaydayBudgetModal({
   return createPortal(
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="payday-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="bg-surface-container-lowest rounded-3xl border border-outline shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
       >
+        {/* Mobile drag handle */}
+        <div className="pt-3 sm:hidden flex justify-center">
+          <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full" />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-outline shrink-0">
           <div className="flex items-center gap-3">
