@@ -142,4 +142,31 @@ export interface MonthlyBudgetPlan {
   updated_at: string;
 }
 
+export interface Habit {
+  id: string;
+  user_id?: string;
+  title: string;
+  category?: string;
+  streak: number;
+  best_streak: number;
+  last_completed_date: string | null; // YYYY-MM-DD
+  is_archived?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DebtTracker {
+  id: string;
+  user_id?: string;
+  person_name: string;
+  amount: number;
+  description: string;
+  due_date: string | null;
+  is_settled: boolean;
+  target_wallet_id?: string | null;
+  created_at?: string;
+  settled_at?: string | null;
+}
+
+
 
