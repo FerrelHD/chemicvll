@@ -7,6 +7,7 @@ import {
   BudgetSplitRule,
   FixedAllocation,
   MonthlyBudgetPlan,
+  DebtTracker,
 } from '@/types/database';
 import { deleteFromCloud } from '@/lib/supabase-delete';
 import {
@@ -66,6 +67,7 @@ interface FinanceState {
   activeWalletId: string;
   transactions: Transaction[];
   subscriptions: Subscription[];
+  debts: DebtTracker[];
   budgetPlan: MonthlyBudgetPlan | null;
   budgetRules: BudgetSplitRule[];
   budgetHistory: MonthlyBudgetPlan[];
@@ -87,6 +89,9 @@ interface FinanceState {
   deleteTransaction: (id: string) => void;
   addSubscription: (sub: Omit<Subscription, 'id' | 'created_at'>) => void;
   deleteSubscription: (id: string) => void;
+  addDebt: (debt: Omit<DebtTracker, 'id' | 'created_at'>) => void;
+  settleDebt: (id: string, creditWalletId?: string | null) => void;
+  deleteDebt: (id: string) => void;
   saveBudgetPlan: (input: SaveBudgetPlanInput) => void;
   updateBudgetRules: (rules: BudgetSplitRule[]) => void;
   toggleFixedItemPaid: (fixedId: string, deductWalletId?: string | null) => void;
@@ -140,6 +145,7 @@ export const useFinanceStore = create<FinanceState>()(
       activeWalletId: 'w-bca',
       transactions: INITIAL_TRANSACTIONS,
       subscriptions: INITIAL_SUBSCRIPTIONS,
+      debts: [],
       budgetPlan: null,
       budgetRules: DEFAULT_BUDGET_RULES,
       budgetHistory: [],
@@ -278,6 +284,65 @@ export const useFinanceStore = create<FinanceState>()(
           subscriptions: state.subscriptions.filter((s) => s.id !== id),
         }));
         deleteFromCloud('subscriptions', id);
+      },
+      addDebt: (data) => {
+        const newDebt: DebtTracker = {
+          id: `debt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          user_id: 'ferrel',
+          person_name: data.person_name.trim(),
+          amount: Math.max(0, Math.round(Number(data.amount) || 0)),
+          description: data.description.trim(),
+          due_date: data.due_date || null,
+          is_settled: false,
+          target_wallet_id: data.target_wallet_id || null,
+          created_at: new Date().toISOString(),
+        };
+        set((s) => ({ debts: [newDebt, ...s.debts] }));
+        syncFinanceChangesNow();
+      },
+      settleDebt: (id, creditWalletId) => {
+        const state = get();
+        const debt = state.debts.find((d) => d.id === id);
+        if (!debt || debt.is_settled) return;
+
+        const targetWid = creditWalletId || debt.target_wallet_id || state.activeWalletId || state.wallets[0]?.id;
+
+        set((curr) => {
+          let nextWallets = curr.wallets;
+          let nextTx = curr.transactions;
+
+          if (targetWid) {
+            nextWallets = applyBalanceDelta(nextWallets, targetWid, null, 'income', debt.amount);
+            const incomeTx: Transaction = {
+              id: `tx-settle-${Date.now()}`,
+              user_id: 'ferrel',
+              wallet_id: targetWid,
+              to_wallet_id: null,
+              project_id: null,
+              type: 'income',
+              category: 'Talangan Selesai',
+              amount: debt.amount,
+              note: `Pelunasan dari ${debt.person_name} (${debt.description})`,
+              transaction_date: new Date().toISOString(),
+              created_at: new Date().toISOString(),
+            };
+            nextTx = [incomeTx, ...nextTx];
+          }
+
+          return {
+            wallets: nextWallets,
+            transactions: nextTx,
+            debts: curr.debts.map((d) =>
+              d.id === id ? { ...d, is_settled: true, settled_at: new Date().toISOString() } : d
+            ),
+          };
+        });
+        syncFinanceChangesNow();
+      },
+      deleteDebt: (id) => {
+        void deleteFromCloud('debt_trackers', id);
+        set((s) => ({ debts: s.debts.filter((d) => d.id !== id) }));
+        syncFinanceChangesNow();
       },
       saveBudgetPlan: ({ salaryAmount, cycleStartDate, fixedItems, rules, logIncomeToWalletId }) =>
         set((state) => {
@@ -476,6 +541,7 @@ export const useFinanceStore = create<FinanceState>()(
           budgetHistory: Array.isArray(persistedState.budgetHistory)
             ? persistedState.budgetHistory
             : [],
+          debts: Array.isArray(persistedState.debts) ? persistedState.debts : [],
         };
       },
     }
