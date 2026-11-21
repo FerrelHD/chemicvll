@@ -56,7 +56,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
         e.dataTransfer.setData('text/plain', item.id);
         e.dataTransfer.effectAllowed = 'move';
       }}
-      className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 flex flex-col gap-3 group hover:shadow-md transition-all cursor-grab active:cursor-grabbing"
+      className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 hover:border-outline hover:shadow-[0_4px_20px_rgba(24,24,27,0.06)] flex flex-col gap-3 group transition-all duration-200 cursor-grab active:cursor-grabbing"
     >
       {/* Category Tag & Platform Source */}
       <div className="flex items-center justify-between">
@@ -89,7 +89,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
               href={item.portal_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-on-surface-variant hover:text-primary-container p-0.5 transition"
+              className="text-on-surface-variant hover:text-primary-container p-0.5 transition sm:opacity-40 sm:group-hover:opacity-100"
               title="Open Job Link"
             >
               <ExternalLink className="w-3.5 h-3.5" />
@@ -221,7 +221,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <ChevronDown className="w-3 h-3 text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:opacity-40 sm:group-hover:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={() => onOpenFollowUp?.(item)}

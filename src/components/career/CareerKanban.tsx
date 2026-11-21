@@ -71,12 +71,12 @@ export function CareerKanban() {
     return diff <= 2;
   }).length;
 
-  // Column definitions with stage dot colors
+  // Column definitions with refreshed semantic stage dot colors
   const columns: { stage: CareerStage; label: string; dotColor: string }[] = [
     { stage: 'wishlist', label: 'Wishlist', dotColor: 'bg-zinc-400' },
-    { stage: 'applied', label: 'Applied', dotColor: 'bg-purple-500' },
+    { stage: 'applied', label: 'Applied', dotColor: 'bg-indigo-500' },
     { stage: 'assessment', label: 'Assessment', dotColor: 'bg-primary-container' },
-    { stage: 'interview', label: 'Interview', dotColor: 'bg-violet-400' },
+    { stage: 'interview', label: 'Interview', dotColor: 'bg-purple-600' },
     { stage: 'offer', label: 'Offer', dotColor: 'bg-emerald-500' },
     { stage: 'rejected', label: 'Rejected', dotColor: 'bg-rose-400' },
   ];

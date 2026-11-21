@@ -415,7 +415,7 @@ export function TaskManager() {
                   p1Tasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
+                      className="group flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
@@ -432,10 +432,10 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
-                          className={`p-1 rounded-full ${
+                          className={`p-1 rounded-full transition ${
                             t.is_daily_focus
-                              ? 'text-primary-container'
-                              : 'text-on-surface-variant hover:text-on-surface'
+                              ? 'text-primary-container opacity-100'
+                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
                           }`}
                           title="Toggle Daily Focus"
                         >
@@ -444,7 +444,8 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 transition"
+                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -476,7 +477,7 @@ export function TaskManager() {
                   p2Tasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
+                      className="group flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
@@ -493,18 +494,20 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
-                          className={`p-1 rounded-full ${
+                          className={`p-1 rounded-full transition ${
                             t.is_daily_focus
-                              ? 'text-primary-container'
-                              : 'text-on-surface-variant hover:text-on-surface'
+                              ? 'text-primary-container opacity-100'
+                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
                           }`}
+                          title="Toggle Daily Focus"
                         >
                           <Star className="w-3.5 h-3.5 fill-current" />
                         </button>
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 transition"
+                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -536,7 +539,7 @@ export function TaskManager() {
                   p3Tasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
+                      className="group flex items-center justify-between p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
@@ -552,8 +555,21 @@ export function TaskManager() {
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
+                          onClick={() => toggleDailyFocus(t.id)}
+                          className={`p-1 rounded-full transition ${
+                            t.is_daily_focus
+                              ? 'text-primary-container opacity-100'
+                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
+                          }`}
+                          title="Toggle Daily Focus"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 transition"
+                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -577,7 +593,7 @@ export function TaskManager() {
                   {doneTasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low text-xs line-through text-on-surface-variant"
+                      className="group flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low text-xs line-through text-on-surface-variant"
                     >
                       <div className="flex items-center gap-3">
                         <button
@@ -592,7 +608,8 @@ export function TaskManager() {
                       <button
                         type="button"
                         onClick={() => deleteTask(t.id)}
-                        className="text-on-surface-variant hover:text-error p-1"
+                        className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        title="Delete Task"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
