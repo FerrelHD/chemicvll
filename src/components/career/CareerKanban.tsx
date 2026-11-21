@@ -20,6 +20,8 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 
 export function CareerKanban() {
@@ -38,6 +40,8 @@ export function CareerKanban() {
   const [targetStage, setTargetStage] = useState<CareerStage>('applied');
   const [templateNotice, setTemplateNotice] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<CareerStage | null>(null);
+  const [mobileView, setMobileView] = useState<'kanban' | 'list'>('list');
+  const [mobileSelectedStage, setMobileSelectedStage] = useState<CareerStage>('applied');
 
   // Filtered items based on active category filter
   const filteredItems = useMemo(() => {
@@ -246,8 +250,109 @@ export function CareerKanban() {
         </div>
       </div>
 
+      {/* Mobile View Toggle Bar */}
+      <div className="sm:hidden flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-surface-container-low border border-outline/30">
+        <div className="flex items-center gap-1 w-full">
+          <button
+            type="button"
+            onClick={() => setMobileView('list')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+              mobileView === 'list'
+                ? 'bg-surface-container-lowest text-on-surface shadow-xs border border-outline/20'
+                : 'text-on-surface-variant'
+            }`}
+          >
+            <List className="w-3.5 h-3.5" />
+            <span>List per Stage</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('kanban')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold transition ${
+              mobileView === 'kanban'
+                ? 'bg-surface-container-lowest text-on-surface shadow-xs border border-outline/20'
+                : 'text-on-surface-variant'
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>Kanban Board</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile List View per Selected Stage */}
+      {mobileView === 'list' && (
+        <div className="sm:hidden flex flex-col gap-3">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scroll-container">
+            {columns.map((col) => {
+              const count = filteredItems.filter((i) => i.stage === col.stage).length;
+              const isSelected = mobileSelectedStage === col.stage;
+              return (
+                <button
+                  key={col.stage}
+                  type="button"
+                  onClick={() => setMobileSelectedStage(col.stage)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition shrink-0 ${
+                    isSelected
+                      ? 'bg-inverse-surface text-white shadow-xs'
+                      : 'bg-surface-container-low text-on-surface border border-outline/30'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${col.dotColor}`} />
+                  <span>{col.label}</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] tabular-nums font-bold ${
+                      isSelected
+                        ? 'bg-white/20 text-white'
+                        : 'bg-surface-container-high text-on-surface-variant'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {(() => {
+              const activeCol = columns.find((c) => c.stage === mobileSelectedStage) || columns[0];
+              const colItems = filteredItems.filter((i) => i.stage === activeCol.stage);
+              return colItems.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-surface-container-low/70 border border-dashed border-outline/40 text-center flex flex-col items-center justify-center gap-2">
+                  <span className="text-xs font-semibold text-on-surface">
+                    Belum ada lamaran di stage {activeCol.label}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenAdd(activeCol.stage)}
+                    className="mt-1 px-4 py-1.5 rounded-full bg-primary-container text-white text-xs font-semibold shadow-xs"
+                  >
+                    + Tambah Lamaran
+                  </button>
+                </div>
+              ) : (
+                colItems.map((item) => (
+                  <CareerCard
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEdit}
+                    onMoveStage={moveStage}
+                    onDelete={deleteItem}
+                    onOpenFollowUp={(it) => {
+                      setFollowUpItem(it);
+                      setIsFollowUpOpen(true);
+                    }}
+                  />
+                ))
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
       {/* Kanban Board Grid (Horizontal Scrollable on Small Screens) */}
-      <div className="flex gap-4 overflow-x-auto pb-4 pt-1 items-start snap-x">
+      <div className={`gap-4 overflow-x-auto pb-4 pt-1 items-start snap-x ${mobileView === 'list' ? 'hidden sm:flex' : 'flex'}`}>
         {columns.map((col) => {
           const colItems = filteredItems.filter((i) => i.stage === col.stage);
           const isTargeted = dragOverStage === col.stage;
