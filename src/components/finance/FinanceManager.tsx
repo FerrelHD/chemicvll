@@ -297,7 +297,7 @@ export function FinanceManager() {
         </div>
 
         {/* Quick Toolbars Matching Reference */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scroll-container sm:pb-0 sm:flex-wrap">
           <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
             <Calendar className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
             <span>{now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>

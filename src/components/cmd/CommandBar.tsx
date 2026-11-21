@@ -124,8 +124,8 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full max-h-[82vh] flex flex-col overflow-hidden space-y-0">
+    <div className="fixed inset-0 z-[70] flex items-start justify-center pt-6 sm:pt-20 px-3 sm:px-4 pb-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2.5rem)] sm:max-h-[82vh] flex flex-col overflow-hidden space-y-0">
         
         {/* Input Bar */}
         <form onSubmit={handleExecute} className="flex items-center px-3.5 sm:px-5 py-3.5 sm:py-4 border-b border-outline/20 gap-2 sm:gap-3 shrink-0">

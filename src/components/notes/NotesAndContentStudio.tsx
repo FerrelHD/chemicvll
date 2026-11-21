@@ -99,30 +99,36 @@ export function NotesAndContentStudio() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="flex items-center gap-1.5 p-1 bg-surface-container-low rounded-2xl border border-outline/30 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-2xl border border-outline/30 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setActiveTab('notes')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'notes'
                 ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Code className="w-3.5 h-3.5" />
-            <span>Notes &amp; Snippets ({notes.length})</span>
+            <Code className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Notes ({notes.length})</span>
+              <span className="hidden sm:inline">Notes &amp; Snippets ({notes.length})</span>
+            </span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('content')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'content'
                 ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Video className="w-3.5 h-3.5" />
-            <span>Content Studio ({contentIdeas.length})</span>
+            <Video className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">
+              <span className="sm:hidden">Content ({contentIdeas.length})</span>
+              <span className="hidden sm:inline">Content Studio ({contentIdeas.length})</span>
+            </span>
           </button>
         </div>
       </div>
