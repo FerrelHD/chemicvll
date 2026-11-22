@@ -39,14 +39,18 @@ loadEnv();
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  process.env.SUPABASE_URL ||
-  'https://ixkfgtyjlscwkexenvru.supabase.co';
+  process.env.SUPABASE_URL;
 
 const SUPABASE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  'sb_publishable_wj5VjKyvOUhmDCFNhvn7BA_-bZQ1Ge9';
+  process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('[Daemon Error] Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY / PUBLISHABLE_KEY.');
+  console.error('Please configure .env.local with your Supabase project credentials.');
+  process.exit(1);
+}
 
 const PORT = process.env.DAEMON_PORT || 9999;
 const DAEMON_SECRET = process.env.LOCAL_DAEMON_SECRET || 'local-secret';
