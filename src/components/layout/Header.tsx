@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Search, Bell, Lock, Sun, Moon, Download } from 'lucide-react';
+import { Menu, Search, Bell, Lock, Sun, Moon, Download, Upload } from 'lucide-react';
 import { useSyncStore, pullFromCloud } from '@/lib/supabase-sync';
-import { exportAllDataAsJson } from '@/lib/backup-export';
+import { exportAllDataAsJson, restoreBackupFromJson } from '@/lib/backup-export';
 import { QuickCaptureMark } from '@/components/icons/ChemicIcons';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
@@ -26,6 +26,37 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const notifRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!window.confirm('Pulihkan data dari file backup JSON ini? Data lokal akan disinkronkan dengan isi backup.')) {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const res = restoreBackupFromJson(content);
+        if (res.success) {
+          alert(
+            `✅ Backup berhasil dipulihkan!\n• ${res.counts?.transactions || 0} transaksi\n• ${res.counts?.wallets || 0} dompet\n• ${res.counts?.tasks || 0} tasks\n• ${res.counts?.habits || 0} habits\n• ${res.counts?.career || 0} lamaran\n• ${res.counts?.notes || 0} catatan\n• ${res.counts?.drops || 0} dropzone`
+          );
+        } else {
+          alert(`❌ Gagal memulihkan backup: ${res.message}`);
+        }
+      } catch (err: any) {
+        alert(`❌ Format file tidak valid: ${err.message}`);
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.readAsText(file);
+  };
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
@@ -335,6 +366,22 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           >
             <Download className="w-3.5 h-3.5" />
           </button>
+          <button
+            type="button"
+            aria-label="Restore Data JSON"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            title="Import & Restore Data (JSON Backup)"
+          >
+            <Upload className="w-3.5 h-3.5" />
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".json,application/json"
+            onChange={handleFileImport}
+            className="hidden"
+          />
           <button
             type="button"
             aria-label="Lock Workspace"
