@@ -24,8 +24,10 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   const budgetPlan = useFinanceStore((s) => s.budgetPlan);
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const notifRef = useRef<HTMLDivElement | null>(null);
+  const profileRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,9 +98,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setIsNotifOpen(false);
       }
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false);
+      }
     };
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsNotifOpen(false);
+      if (e.key === 'Escape') {
+        setIsNotifOpen(false);
+        setIsProfileOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('keydown', handleEsc);
@@ -324,18 +332,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           )}
         </div>
 
-        {/* User Profile Avatar with Mobile Sync Indicator & Lock */}
-        <div className="flex items-center gap-1.5 sm:gap-2 pl-0.5">
-          <div
-            className="relative cursor-pointer"
-            onClick={handleSyncClick}
-            title={
-              syncStatus === 'synced'
-                ? 'Cloud Synced'
-                : syncStatus === 'offline'
-                ? 'Offline (Click to sync)'
-                : 'Syncing...'
-            }
+        {/* User Profile Avatar with Mobile Sync Indicator & Popover Utilities */}
+        <div className="relative flex items-center gap-1.5 sm:gap-2 pl-0.5" ref={profileRef}>
+          <button
+            type="button"
+            aria-label="User Profile & Utilities Menu"
+            aria-expanded={isProfileOpen}
+            onClick={() => setIsProfileOpen((prev) => !prev)}
+            className="relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded-full"
+            title="Menu Profil & Utilitas"
           >
             <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs shadow-sm">
               F
@@ -352,16 +357,18 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
                   : 'bg-primary-container animate-pulse'
               }`}
             />
-          </div>
+          </button>
 
           <span className="text-xs font-semibold text-on-surface hidden sm:inline">
             Ferrel
           </span>
+
+          {/* Desktop-only quick action buttons (kept hidden on mobile to prevent header overflow) */}
           <button
             type="button"
             aria-label="Backup Data JSON"
             onClick={exportAllDataAsJson}
-            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Export & Download All Data (JSON Backup)"
           >
             <Download className="w-3.5 h-3.5" />
@@ -370,7 +377,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Restore Data JSON"
             onClick={() => fileInputRef.current?.click()}
-            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Import & Restore Data (JSON Backup)"
           >
             <Upload className="w-3.5 h-3.5" />
@@ -386,11 +393,86 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Lock Workspace"
             onClick={() => window.dispatchEvent(new CustomEvent('personal_os_lock'))}
-            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Lock Personal OS (Master PIN)"
           >
             <Lock className="w-3.5 h-3.5" />
           </button>
+
+          {/* Profile & Utilities Popover (Mobile & Desktop) */}
+          {isProfileOpen && (
+            <>
+              {/* Mobile backdrop */}
+              <div
+                className="fixed inset-0 bg-black/25 z-40 sm:hidden"
+                onClick={() => setIsProfileOpen(false)}
+              />
+
+              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-64 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3 z-50 space-y-2 text-xs">
+                <div className="flex items-center gap-2.5 pb-2 border-b border-outline/30 px-1">
+                  <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs shrink-0">
+                    F
+                  </div>
+                  <div className="min-w-0">
+                    <span className="font-bold text-on-surface block truncate">Ferrel (Personal OS)</span>
+                    <span className="text-[10px] text-on-surface-variant block truncate">
+                      {syncStatus === 'synced' ? 'Cloud Synced' : syncStatus === 'offline' ? 'Offline Mode' : 'Syncing...'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      exportAllDataAsJson();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-surface-container-high text-on-surface transition font-medium"
+                  >
+                    <Download className="w-4 h-4 text-primary-container shrink-0" />
+                    <span>Download Backup JSON</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      fileInputRef.current?.click();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-surface-container-high text-on-surface transition font-medium"
+                  >
+                    <Upload className="w-4 h-4 text-primary-container shrink-0" />
+                    <span>Restore Backup JSON</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      handleSyncClick();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-surface-container-high text-on-surface transition font-medium"
+                  >
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span>Sync Cloud Sekarang</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      window.dispatchEvent(new CustomEvent('personal_os_lock'));
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-surface-container-high text-rose-600 font-medium transition"
+                  >
+                    <Lock className="w-4 h-4 shrink-0" />
+                    <span>Kunci Personal OS (PIN)</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>
