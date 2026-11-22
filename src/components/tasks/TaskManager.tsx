@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
+import { useHabitStore } from '@/stores/useHabitStore';
 import { FocusMark } from '@/components/icons/ChemicIcons';
 import { HabitTrackerCard } from './HabitTrackerCard';
 import {
@@ -26,6 +27,9 @@ import {
 
 export function TaskManager() {
   const { tasks, addTask, toggleDone, toggleDailyFocus, deleteTask } = useTaskStore();
+  const habits = useHabitStore((state) => state.habits);
+  const activeStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.streak), 0) : 0;
+  const bestStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.best_streak), 0) : 0;
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<1 | 2 | 3>(1);
   const [filterMode, setFilterMode] = useState<'all' | 'p1' | 'p2' | 'p3'>('all');
@@ -212,24 +216,24 @@ export function TaskManager() {
           <div className="flex items-start justify-between gap-1">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Habit Streak</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary-fixed shrink-0 flex items-center justify-center text-primary-container">
-              <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
             </div>
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
-                12
+                {activeStreak}
               </span>
               <span className="text-[10px] sm:text-xs text-primary-container font-semibold">Days</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
-              <span className="truncate">Record: 14d</span>
+              <span className="truncate">Record: {bestStreak}d</span>
               <span className="font-semibold text-primary-container shrink-0">Best</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-primary-container h-full rounded-full transition-all duration-700"
-                style={{ width: '86%' }}
+                style={{ width: `${bestStreak > 0 ? Math.min(100, Math.round((activeStreak / bestStreak) * 100)) : 0}%` }}
               />
             </div>
           </div>
@@ -271,7 +275,7 @@ export function TaskManager() {
               <button
                 type="button"
                 onClick={() => setTimerRunning(!timerRunning)}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-inverse-surface text-white text-xs font-bold shadow-md hover:bg-black transition active:scale-95"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-bold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
               >
                 {timerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 <span>{timerRunning ? 'Pause Session' : 'Start Focus'}</span>
@@ -308,7 +312,7 @@ export function TaskManager() {
                     onClick={() => setAmbientSound(s.id as any)}
                     className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
                       ambientSound === s.id
-                        ? 'bg-inverse-surface text-white shadow-sm'
+                        ? 'bg-inverse-surface dark:bg-primary-container text-white shadow-sm'
                         : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
                     }`}
                   >
@@ -383,7 +387,7 @@ export function TaskManager() {
                 </div>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm flex items-center justify-center min-w-[44px]"
+                  className="px-4 py-2.5 rounded-xl bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shadow-sm flex items-center justify-center min-w-[44px]"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
