@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCommandStore } from '@/stores/useCommandStore';
 import { parseCommand } from '@/lib/command-parser';
 import { useCareerStore } from '@/stores/useCareerStore';
+import { exportAllDataAsJson } from '@/lib/backup-export';
 import { Command, CornerDownLeft, X, ArrowRight } from 'lucide-react';
 
 interface CommandBarProps {
@@ -88,6 +89,13 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
       onShowNotice?.(`Expense Rp ${parsed.amount.toLocaleString('id-ID')} recorded.`);
       close();
     } else if (
+      input.trim().toLowerCase() === '/backup' ||
+      input.trim().toLowerCase() === '/export'
+    ) {
+      exportAllDataAsJson();
+      onShowNotice?.('File backup database JSON berhasil diunduh.');
+      close();
+    } else if (
       input.trim().toLowerCase() === '/theme' ||
       input.trim().toLowerCase() === '/dark' ||
       input.trim().toLowerCase() === '/light'
@@ -114,6 +122,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
   };
 
   const suggestions = [
+    { cmd: '/backup', desc: 'Download full database JSON snapshot' },
     { cmd: '/theme', desc: 'Toggle Dark Mode (Warm Obsidian)' },
     { cmd: '/apply GoTo - Frontend Intern #internship', desc: 'Quick record internship application' },
     { cmd: '/task Review feedback HR !high', desc: 'Add P1 daily focus task' },
