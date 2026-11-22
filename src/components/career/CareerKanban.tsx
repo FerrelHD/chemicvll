@@ -150,7 +150,7 @@ export function CareerKanban() {
             <button
               type="button"
               onClick={() => handleOpenAdd('applied')}
-              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface text-white hover:bg-black shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white hover:bg-black dark:hover:bg-primary shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Record Application</span>
@@ -294,7 +294,7 @@ export function CareerKanban() {
                   onClick={() => setMobileSelectedStage(col.stage)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition shrink-0 ${
                     isSelected
-                      ? 'bg-inverse-surface text-white shadow-xs'
+                      ? 'bg-inverse-surface dark:bg-primary-container text-white shadow-xs'
                       : 'bg-surface-container-low text-on-surface border border-outline/30'
                   }`}
                 >

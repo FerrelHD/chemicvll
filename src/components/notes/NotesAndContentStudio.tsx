@@ -183,7 +183,7 @@ export function NotesAndContentStudio() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2 rounded-full bg-inverse-surface hover:bg-black text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
+                className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
               >
                 Simpan Catatan
               </button>
@@ -311,7 +311,7 @@ export function NotesAndContentStudio() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2 rounded-full bg-inverse-surface hover:bg-black text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
+                className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
               >
                 Simpan Ide Konten
               </button>

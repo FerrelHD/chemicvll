@@ -318,7 +318,7 @@ export function DevMissionControl() {
           <button
             type="button"
             onClick={() => setIsAddProjOpen(true)}
-            className="flex items-center gap-1.5 bg-inverse-surface text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+            className="flex items-center gap-1.5 bg-inverse-surface dark:bg-primary-container text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Map New Port</span>
@@ -557,7 +557,7 @@ export function DevMissionControl() {
                         onClick={() => setActiveLogProjectId(proj.id)}
                         className={`min-h-[32px] px-3 py-1.5 rounded-full text-xs font-semibold transition ${
                           activeLogProjectId === proj.id
-                            ? 'bg-inverse-surface text-white'
+                            ? 'bg-inverse-surface dark:bg-primary-container text-white'
                             : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
                         }`}
                       >
@@ -712,7 +712,7 @@ export function DevMissionControl() {
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                      className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary"
                     >
                       Buka Brankas
                     </button>
@@ -768,7 +768,7 @@ export function DevMissionControl() {
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                      className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary"
                     >
                       Enkripsi &amp; Simpan
                     </button>
@@ -936,7 +936,7 @@ export function DevMissionControl() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black"
+                  className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary"
                 >
                   Register Port
                 </button>
