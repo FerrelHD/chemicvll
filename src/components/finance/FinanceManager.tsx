@@ -828,7 +828,8 @@ export function FinanceManager() {
                         {cap.label}
                       </span>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-4 pt-2.5 border-t border-outline/20 text-xs">
