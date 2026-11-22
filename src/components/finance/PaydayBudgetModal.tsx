@@ -421,7 +421,7 @@ export function PaydayBudgetModal({
                 <button
                   type="button"
                   onClick={handleAddFixedItem}
-                  className="min-h-[44px] px-4 py-2 rounded-xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition flex items-center gap-1 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                  className="min-h-[44px] px-4 py-2 rounded-xl bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition flex items-center gap-1 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Tambah</span>
@@ -674,7 +674,7 @@ export function PaydayBudgetModal({
               disabled={!canSubmit}
               className={`min-h-[44px] px-6 py-2 rounded-full text-xs font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
                 canSubmit
-                  ? 'bg-inverse-surface text-white hover:bg-black active:scale-95'
+                  ? 'bg-inverse-surface dark:bg-primary-container text-white hover:bg-black dark:hover:bg-primary active:scale-95'
                   : 'bg-surface-container text-on-surface-variant cursor-not-allowed'
               }`}
             >

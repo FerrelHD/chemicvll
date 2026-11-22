@@ -330,7 +330,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Catat Pengeluaran</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />
@@ -424,7 +424,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Tambahkan Task ke Inbox</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />
@@ -456,7 +456,7 @@ export function QuickCaptureModal({
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full mt-2 min-h-[44px] bg-inverse-surface hover:bg-black text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                className="w-full mt-2 min-h-[44px] bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-[0.99] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
               >
                 <span>Simpan ke Dropzone</span>
                 <CornerDownLeft className="w-4 h-4 opacity-80" />

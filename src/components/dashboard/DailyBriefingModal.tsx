@@ -166,7 +166,7 @@ export function DailyBriefingModal({
           <button
             type="button"
             onClick={onDismiss}
-            className="w-full py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-md transition active:scale-95"
+            className="w-full py-2.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-md transition active:scale-95"
           >
             Start Deep Work Session
           </button>

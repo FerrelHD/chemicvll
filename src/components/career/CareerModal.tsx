@@ -163,7 +163,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                       isCurrent
                         ? 'bg-primary-container text-white shadow-sm ring-2 ring-primary-container/30'
                         : isPassed
-                        ? 'bg-inverse-surface text-white'
+                        ? 'bg-inverse-surface dark:bg-primary-container text-white'
                         : 'bg-surface-container-high text-on-surface-variant'
                     }`}
                   >
@@ -397,7 +397,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <button
             type="submit"
             form="career-modal-form"
-            className="px-6 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+            className="px-6 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
           >
             Save Application
           </button>
