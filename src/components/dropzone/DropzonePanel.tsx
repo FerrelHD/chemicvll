@@ -300,7 +300,7 @@ export function DropzonePanel() {
                       {/* Content */}
                       <div className="pt-2">
                         {isCode ? (
-                          <pre className="p-2.5 rounded-xl bg-surface-container-low text-xs font-mono text-on-surface overflow-x-auto">
+                          <pre className="p-2.5 rounded-xl bg-surface-container-low text-xs font-mono text-on-surface overflow-x-auto max-w-full">
                             <code>{item.content}</code>
                           </pre>
                         ) : isLink ? (
@@ -308,13 +308,13 @@ export function DropzonePanel() {
                             href={item.content}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline break-all font-medium flex items-center gap-1"
+                            className="text-xs text-blue-600 hover:underline break-all font-medium flex items-center gap-1 min-w-0"
                           >
                             <span className="truncate">{item.content}</span>
                             <ExternalLink className="w-3 h-3 flex-shrink-0" />
                           </a>
                         ) : (
-                          <p className="text-xs text-on-surface whitespace-pre-wrap leading-relaxed">
+                          <p className="text-xs text-on-surface whitespace-pre-wrap leading-relaxed break-words">
                             {item.content}
                           </p>
                         )}
