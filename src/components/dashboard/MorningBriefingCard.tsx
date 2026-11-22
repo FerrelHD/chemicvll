@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useDevStore } from '@/stores/useDevStore';
@@ -71,7 +72,7 @@ export function MorningBriefingCard({
   }, [activeInterviewsCount, pendingTasksCount, runningServersCount]);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pt-1 pb-1">
+    <div className="relative flex flex-col sm:flex-row sm:items-end justify-between gap-3 pt-1 pb-1">
       <div>
         <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-1">
           <BriefingMark className="w-4 h-4 text-on-surface shrink-0" />
@@ -85,6 +86,22 @@ export function MorningBriefingCard({
         <p className="text-xs sm:text-sm text-on-surface-variant font-medium mt-1">
           {dateFormatted} • <span className="text-on-surface font-semibold">{summaryHighlight}</span>
         </p>
+      </div>
+
+      {/* 3D Breakout Engine Core Orb (Apple/Linear Bento style) */}
+      <div className="absolute right-1 top-0 sm:top-auto sm:right-36 lg:right-44 sm:-bottom-7 z-20 pointer-events-none select-none">
+        <motion.div
+          animate={{ y: [-3, 3, -3], rotate: [0, 2, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 drop-shadow-[0_12px_24px_rgba(255,107,0,0.22)]"
+        >
+          <img
+            src="/assets/3d/engine-core.webp"
+            alt="Personal OS Engine Core"
+            className="w-full h-full object-contain"
+            loading="eager"
+          />
+        </motion.div>
       </div>
 
       <div className="flex items-center gap-2 self-start sm:self-auto">
