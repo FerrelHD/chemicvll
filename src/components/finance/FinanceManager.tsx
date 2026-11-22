@@ -31,6 +31,7 @@ import {
   BarChart3,
   Eye,
   EyeOff,
+  Search,
 } from 'lucide-react';
 
 export function FinanceManager() {
@@ -88,13 +89,20 @@ export function FinanceManager() {
   // Subscription form state
   const [isAddSubOpen, setIsAddSubOpen] = useState(false);
 
+  // All transactions modal state
+  const [isAllTxOpen, setIsAllTxOpen] = useState(false);
+  const [allTxSearch, setAllTxSearch] = useState('');
+  const [allTxFilterType, setAllTxFilterType] = useState<'all' | 'expense' | 'income' | 'transfer'>('all');
+  const [allTxFilterWallet, setAllTxFilterWallet] = useState<string>('all');
+
   useEffect(() => {
-    if (!isLoggingOpen && !isWalletModalOpen && !isAddSubOpen) return;
+    if (!isLoggingOpen && !isWalletModalOpen && !isAddSubOpen && !isAllTxOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsLoggingOpen(false);
         setIsWalletModalOpen(false);
         setIsAddSubOpen(false);
+        setIsAllTxOpen(false);
       }
     };
     window.addEventListener('keydown', handleEsc);
@@ -258,6 +266,27 @@ export function FinanceManager() {
       )
       .slice(0, 6);
   }, [transactions]);
+
+  const filteredAllTransactions = useMemo(() => {
+    return [...transactions]
+      .sort(
+        (a, b) =>
+          new Date(b.transaction_date || b.created_at || 0).getTime() -
+          new Date(a.transaction_date || a.created_at || 0).getTime()
+      )
+      .filter((tx) => {
+        if (allTxFilterType !== 'all' && tx.type !== allTxFilterType) return false;
+        if (allTxFilterWallet !== 'all' && tx.wallet_id !== allTxFilterWallet) return false;
+        if (allTxSearch.trim()) {
+          const q = allTxSearch.toLowerCase();
+          const matchCategory = tx.category.toLowerCase().includes(q);
+          const matchNote = (tx.note || '').toLowerCase().includes(q);
+          const matchAmount = String(tx.amount).includes(q);
+          if (!matchCategory && !matchNote && !matchAmount) return false;
+        }
+        return true;
+      });
+  }, [transactions, allTxFilterType, allTxFilterWallet, allTxSearch]);
 
   const weeklyCapsules = [1, 2, 3, 4].map((weekNum) => {
     const startDay = (weekNum - 1) * 7 + 1;
@@ -766,9 +795,20 @@ export function FinanceManager() {
         <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-on-surface">Recent Transactions</h3>
-            <span className="text-xs text-on-surface-variant font-medium shrink-0 whitespace-nowrap">
-              {transactions.length} {transactions.length === 1 ? 'Transaction' : 'Transactions'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-on-surface-variant font-medium shrink-0 whitespace-nowrap">
+                {transactions.length} {transactions.length === 1 ? 'Transaction' : 'Transactions'}
+              </span>
+              {transactions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsAllTxOpen(true)}
+                  className="text-xs font-semibold text-primary-container hover:underline px-2.5 py-0.5 rounded-full bg-primary-fixed/30 hover:bg-primary-fixed/50 transition cursor-pointer"
+                >
+                  View All
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="divide-y divide-outline/20 max-h-[380px] overflow-y-auto scroll-container bento-fade-mask pr-1">
@@ -1428,6 +1468,159 @@ export function FinanceManager() {
         </div>,
         document.body
       )}
+      {/* Modal All Transactions History */}
+      {isAllTxOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+            {/* Mobile drag handle */}
+            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
+
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
+              <div>
+                <h3 className="font-bold text-base text-on-surface">Transaction History</h3>
+                <p className="text-xs text-on-surface-variant">
+                  Menampilkan {filteredAllTransactions.length} dari {transactions.length} transaksi
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAllTxOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div className="space-y-2.5">
+              <div className="relative">
+                <Search className="w-4 h-4 text-on-surface-variant absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Cari kategori, catatan, nominal..."
+                  value={allTxSearch}
+                  onChange={(e) => setAllTxSearch(e.target.value)}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                />
+              </div>
+
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex gap-1.5">
+                  {(['all', 'expense', 'income', 'transfer'] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setAllTxFilterType(t)}
+                      className={`text-xs font-semibold px-3 py-1 rounded-full capitalize transition ${
+                        allTxFilterType === t
+                          ? 'bg-inverse-surface dark:bg-primary-container text-white'
+                          : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface'
+                      }`}
+                    >
+                      {t === 'all' ? 'Semua' : t}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={allTxFilterWallet}
+                    onChange={(e) => setAllTxFilterWallet(e.target.value)}
+                    className="appearance-none bg-surface-container-low border border-outline/30 rounded-lg px-2.5 py-1 pr-6 text-xs font-medium text-on-surface outline-none focus:border-primary-container"
+                  >
+                    <option value="all">Semua Dompet</option>
+                    {wallets.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3 h-3 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+            </div>
+
+            {/* Transactions List */}
+            <div className="divide-y divide-outline/20 overflow-y-auto flex-1 max-h-[50vh] pr-1">
+              {filteredAllTransactions.length === 0 ? (
+                <div className="py-12 text-center text-xs text-on-surface-variant">
+                  Tidak ada transaksi yang cocok dengan filter.
+                </div>
+              ) : (
+                filteredAllTransactions.map((tx) => (
+                  <div key={tx.id} className="py-3 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                          tx.type === 'income'
+                            ? 'bg-emerald-50 text-emerald-600'
+                            : tx.type === 'expense'
+                            ? 'bg-rose-50 text-rose-500'
+                            : 'bg-zinc-100 text-zinc-600'
+                        }`}
+                      >
+                        {tx.type === 'income' ? (
+                          <ArrowDownLeft className="w-4 h-4" />
+                        ) : tx.type === 'expense' ? (
+                          <ArrowUpRight className="w-4 h-4" />
+                        ) : (
+                          <ArrowRightLeft className="w-4 h-4" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-semibold text-on-surface block truncate">{tx.category}</span>
+                        <span className="text-[11px] text-on-surface-variant block truncate">
+                          {tx.note || 'Tanpa catatan'} · {new Date(tx.transaction_date || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right tabular-nums">
+                        <span
+                          className={`font-bold block ${
+                            tx.type === 'income'
+                              ? 'text-emerald-600'
+                              : tx.type === 'expense'
+                              ? 'text-on-surface'
+                              : 'text-zinc-600'
+                          }`}
+                        >
+                          {tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}
+                          Rp {tx.amount.toLocaleString('id-ID')}
+                        </span>
+                        <span className="text-[10px] text-on-surface-variant font-medium uppercase truncate max-w-[120px] block ml-auto">
+                          {wallets.find((w) => w.id === tx.wallet_id)?.name || tx.wallet_id.replace('w-', '')}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const signedAmount = `${tx.type === 'income' ? '+' : tx.type === 'expense' ? '-' : ''}Rp ${tx.amount.toLocaleString('id-ID')}`;
+                          if (
+                            window.confirm(
+                              `Batalkan dan hapus transaksi "${tx.category}" (${signedAmount})? Saldo rekening terkait akan otomatis dikembalikan.`
+                            )
+                          ) {
+                            deleteTransaction(tx.id);
+                          }
+                        }}
+                        aria-label={`Hapus transaksi ${tx.category}`}
+                        title="Hapus transaksi"
+                        className="min-w-[32px] min-h-[32px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 flex items-center justify-center transition"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Modal Monthly Payday Budgeting Setup */}
       <PaydayBudgetModal
         isOpen={isBudgetModalOpen}
