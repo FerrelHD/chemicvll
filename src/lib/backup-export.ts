@@ -95,3 +95,121 @@ export function exportAllDataAsJson(): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export interface RestoreResult {
+  success: boolean;
+  message: string;
+  counts?: {
+    transactions: number;
+    wallets: number;
+    tasks: number;
+    habits: number;
+    career: number;
+    notes: number;
+    drops: number;
+  };
+}
+
+export function restoreBackupFromJson(rawInput: string | object): RestoreResult {
+  try {
+    let payload: any;
+    if (typeof rawInput === 'string') {
+      payload = JSON.parse(rawInput);
+    } else {
+      payload = rawInput;
+    }
+
+    if (!payload || typeof payload !== 'object') {
+      return { success: false, message: 'Invalid payload: data is not a valid JSON object' };
+    }
+
+    if (!payload.app || !payload.app.includes('Personal OS')) {
+      return { success: false, message: 'Invalid backup file: not a recognized Personal OS backup' };
+    }
+
+    if (!payload.stores || typeof payload.stores !== 'object') {
+      return { success: false, message: 'Invalid backup file: missing stores object' };
+    }
+
+    const { stores } = payload;
+
+    // 1. Finance Store
+    if (stores.finance) {
+      useFinanceStore.setState((prev) => ({
+        ...prev,
+        wallets: Array.isArray(stores.finance.wallets) ? stores.finance.wallets : prev.wallets,
+        transactions: Array.isArray(stores.finance.transactions) ? stores.finance.transactions : prev.transactions,
+        subscriptions: Array.isArray(stores.finance.subscriptions) ? stores.finance.subscriptions : prev.subscriptions,
+        budgetPlan: stores.finance.budgetPlan !== undefined ? stores.finance.budgetPlan : prev.budgetPlan,
+        budgetHistory: Array.isArray(stores.finance.budgetHistory) ? stores.finance.budgetHistory : prev.budgetHistory,
+        debts: Array.isArray(stores.finance.debts) ? stores.finance.debts : prev.debts,
+      }));
+    }
+
+    // 2. Tasks Store
+    if (stores.tasks && Array.isArray(stores.tasks.tasks)) {
+      useTaskStore.setState((prev) => ({
+        ...prev,
+        tasks: stores.tasks.tasks,
+      }));
+    }
+
+    // 3. Habits Store
+    if (stores.habits && Array.isArray(stores.habits.habits)) {
+      useHabitStore.setState((prev) => ({
+        ...prev,
+        habits: stores.habits.habits,
+      }));
+    }
+
+    // 4. Career Store
+    if (stores.career) {
+      const items = stores.career.items || stores.career.applications || [];
+      if (Array.isArray(items)) {
+        useCareerStore.setState((prev) => ({
+          ...prev,
+          items,
+        }));
+      }
+    }
+
+    // 5. Notes Store
+    if (stores.notes) {
+      useNotesStore.setState((prev) => ({
+        ...prev,
+        notes: Array.isArray(stores.notes.notes) ? stores.notes.notes : prev.notes,
+        contentIdeas: Array.isArray(stores.notes.contentIdeas) ? stores.notes.contentIdeas : prev.contentIdeas,
+      }));
+    }
+
+    // 6. Dropzone Store
+    if (stores.dropzone) {
+      const items = stores.dropzone.items || stores.dropzone.drops || [];
+      if (Array.isArray(items)) {
+        useDropzoneStore.setState((prev) => ({
+          ...prev,
+          items,
+        }));
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Backup data successfully restored into all stores',
+      counts: {
+        transactions: stores.finance?.transactions?.length || 0,
+        wallets: stores.finance?.wallets?.length || 0,
+        tasks: stores.tasks?.tasks?.length || 0,
+        habits: stores.habits?.habits?.length || 0,
+        career: (stores.career?.items || stores.career?.applications)?.length || 0,
+        notes: stores.notes?.notes?.length || 0,
+        drops: (stores.dropzone?.items || stores.dropzone?.drops)?.length || 0,
+      },
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Failed to restore backup: ${err.message || 'Unknown error'}`,
+    };
+  }
+}
