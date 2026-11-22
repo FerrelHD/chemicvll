@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNotesStore, NoteItem, ContentIdea } from '@/stores/useNotesStore';
 import { LedgerNoteMark } from '@/components/icons/ChemicIcons';
 import {
@@ -17,6 +18,8 @@ import {
   Layers,
   Send,
   ChevronDown,
+  Pencil,
+  X,
 } from 'lucide-react';
 
 export function NotesAndContentStudio() {
@@ -24,6 +27,7 @@ export function NotesAndContentStudio() {
     notes,
     contentIdeas,
     addNote,
+    updateNote,
     deleteNote,
     togglePinNote,
     addContentIdea,
@@ -43,6 +47,42 @@ export function NotesAndContentStudio() {
   const [contentHook, setContentHook] = useState('');
   const [contentScript, setContentScript] = useState('');
   const [contentPlatform, setContentPlatform] = useState('TikTok/Reels');
+
+  // Edit Note Modal state
+  const [mounted, setMounted] = useState(false);
+  const [editingNote, setEditingNote] = useState<NoteItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [editType, setEditType] = useState<NoteItem['type']>('note');
+  const [editTags, setEditTags] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleStartEdit = (note: NoteItem) => {
+    setEditingNote(note);
+    setEditTitle(note.title);
+    setEditContent(note.content);
+    setEditType(note.type);
+    setEditTags(note.tags.join(', '));
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNote || !editTitle.trim() || !editContent.trim()) return;
+    const tags = editTags
+      .split(',')
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+    updateNote(editingNote.id, {
+      title: editTitle.trim(),
+      content: editContent.trim(),
+      type: editType,
+      tags,
+    });
+    setEditingNote(null);
+  };
 
   const handleCreateNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,6 +265,14 @@ export function NotesAndContentStudio() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => handleStartEdit(n)}
+                      className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary-container transition-colors"
+                      title="Edit note"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => togglePinNote(n.id)}
                       className={`p-1.5 rounded-full hover:bg-surface-container transition-colors ${
                         n.is_pinned ? 'text-primary-container bg-primary-fixed/40' : 'text-on-surface-variant'
@@ -376,6 +424,104 @@ export function NotesAndContentStudio() {
             ))}
           </div>
         </div>
+      )}
+      {/* Edit Note Modal */}
+      {editingNote && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
+
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
+              <h3 className="font-bold text-sm text-on-surface">Edit Catatan</h3>
+              <button
+                type="button"
+                onClick={() => setEditingNote(null)}
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">
+                  Judul Catatan *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Tipe Catatan
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={editType}
+                      onChange={(e) => setEditType(e.target.value as NoteItem['type'])}
+                      className="w-full appearance-none bg-surface-container-low border border-outline/30 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface outline-none focus:border-primary-container"
+                    >
+                      <option value="note">📝 Note</option>
+                      <option value="snippet">⚡ Code Snippet</option>
+                      <option value="prompt">🤖 AI Prompt</option>
+                      <option value="bookmark">🔖 Bookmark</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">
+                    Tags (pisahkan koma)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="ai, interview, react"
+                    value={editTags}
+                    onChange={(e) => setEditTags(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">
+                  Konten Catatan *
+                </label>
+                <textarea
+                  required
+                  rows={8}
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-3 text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container resize-none leading-relaxed"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-outline/20">
+                <button
+                  type="button"
+                  onClick={() => setEditingNote(null)}
+                  className="px-4 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
+                >
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
       )}
     </section>
   );

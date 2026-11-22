@@ -9,6 +9,7 @@ interface NotesState {
   notes: NoteItem[];
   contentIdeas: ContentIdea[];
   addNote: (note: Omit<NoteItem, 'id' | 'updated_at'>) => void;
+  updateNote: (id: string, updates: Partial<Omit<NoteItem, 'id' | 'updated_at'>>) => void;
   deleteNote: (id: string) => void;
   togglePinNote: (id: string) => void;
   addContentIdea: (idea: Omit<ContentIdea, 'id' | 'created_at'>) => void;
@@ -63,6 +64,18 @@ export const useNotesStore = create<NotesState>()(
             },
             ...state.notes,
           ],
+        })),
+      updateNote: (id, updates) =>
+        set((state) => ({
+          notes: state.notes.map((n) =>
+            n.id === id
+              ? {
+                  ...n,
+                  ...updates,
+                  updated_at: new Date().toISOString(),
+                }
+              : n
+          ),
         })),
       deleteNote: (id) => {
         set((state) => ({ notes: state.notes.filter((n) => n.id !== id) }));
