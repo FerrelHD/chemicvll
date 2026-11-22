@@ -315,7 +315,7 @@ export function FinanceManager() {
           <button
             type="button"
             onClick={() => setIsLoggingOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95 whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95 whitespace-nowrap shrink-0"
           >
             <Plus className="w-3.5 h-3.5 shrink-0" />
             <span>Record Transaction</span>
@@ -595,7 +595,7 @@ export function FinanceManager() {
                       setTxType('transfer');
                       setIsLoggingOpen(true);
                     }}
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shadow-sm"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Transfer</span>
@@ -696,7 +696,7 @@ export function FinanceManager() {
                 <button
                   type="button"
                   onClick={() => setIsLoggingOpen(true)}
-                  className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition"
+                  className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-sm transition"
                 >
                   Record First Transaction
                 </button>
@@ -856,7 +856,7 @@ export function FinanceManager() {
               <button
                 type="button"
                 onClick={() => setIsAddSubOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
               >
                 <Plus className="w-3.5 h-3.5 shrink-0" />
                 <span>Add Service</span>
@@ -976,7 +976,7 @@ export function FinanceManager() {
                     onClick={() => setTxType(t)}
                     className={`flex-1 py-1.5 rounded-full text-xs font-semibold capitalize transition ${
                       txType === t
-                        ? 'bg-inverse-surface text-white shadow-sm'
+                        ? 'bg-inverse-surface dark:bg-primary-container text-white shadow-sm'
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
                   >
@@ -1016,7 +1016,7 @@ export function FinanceManager() {
                         onClick={() => setCategory(cat)}
                         className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition border ${
                           category.trim().toLowerCase() === cat.trim().toLowerCase()
-                            ? 'bg-inverse-surface text-white border-inverse-surface'
+                            ? 'bg-inverse-surface dark:bg-primary-container text-white border-inverse-surface dark:border-primary-container'
                             : 'bg-surface-container-low text-on-surface-variant border-outline/30 hover:text-on-surface'
                         }`}
                       >
@@ -1094,7 +1094,7 @@ export function FinanceManager() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+                  className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
                 >
                   Save Transaction
                 </button>
@@ -1284,7 +1284,7 @@ export function FinanceManager() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+                    className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
                   >
                     {editingWallet ? 'Save Changes' : 'Add Account'}
                   </button>
@@ -1418,7 +1418,7 @@ export function FinanceManager() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-inverse-surface text-white text-xs font-semibold shadow-md hover:bg-black transition active:scale-95"
+                  className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
                 >
                   Add Subscription
                 </button>

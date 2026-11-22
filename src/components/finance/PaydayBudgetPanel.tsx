@@ -117,7 +117,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           <button
             type="button"
             onClick={() => onOpenSetup(true)}
-            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-sm transition active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Atur Budget Gajian</span>
@@ -169,7 +169,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           <button
             type="button"
             onClick={() => onOpenSetup(true)}
-            className="inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-[36px] px-4 py-2 sm:py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+            className="inline-flex items-center gap-1.5 min-h-[44px] sm:min-h-[36px] px-4 py-2 sm:py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Gajian Baru</span>
@@ -407,7 +407,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                             toggleFixedItemPaid(item.id, selectedWalletId);
                             setPayingItemId(null);
                           }}
-                          className="min-h-[36px] px-3 py-1 rounded-lg bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                          className="min-h-[36px] px-3 py-1 rounded-lg bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                         >
                           Potong Saldo
                         </button>
