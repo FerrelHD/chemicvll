@@ -31,7 +31,7 @@ export default function NotFound() {
         <div className="pt-2 w-full">
           <Link
             href="/"
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition-all"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-sm transition-all"
           >
             <Home className="w-4 h-4" />
             <span>Back to Main Dashboard</span>

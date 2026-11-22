@@ -196,7 +196,7 @@ export default function HomePage() {
         onNavigate={setActiveTab}
       />
       {notice && (
-        <div className="fixed top-20 right-6 z-50 bg-inverse-surface text-white text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 border border-outline/30 animate-in fade-in slide-in-from-top-2">
+        <div className="fixed top-20 right-6 z-50 bg-inverse-surface dark:bg-surface-container-highest text-white dark:text-on-surface text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 border border-outline/30 animate-in fade-in slide-in-from-top-2">
           <span className="w-2 h-2 rounded-full bg-primary-container"></span>
           <span>{notice}</span>
         </div>

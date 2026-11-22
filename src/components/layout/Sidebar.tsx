@@ -106,7 +106,7 @@ export function Sidebar({
             link={{
               label: 'Ferrel HD',
               icon: (
-                <div className="w-7 h-7 rounded-full bg-inverse-surface text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div className="w-7 h-7 rounded-full bg-inverse-surface dark:bg-primary-container text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-sm">
                   F
                 </div>
               ),

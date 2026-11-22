@@ -476,7 +476,7 @@ export function CareerKanban() {
 
       {/* Toast Notice for template copy */}
       {templateNotice && (
-        <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 bg-inverse-surface text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
+        <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 bg-inverse-surface dark:bg-surface-container-highest text-white dark:text-on-surface text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
           {templateNotice}
         </div>
       )}

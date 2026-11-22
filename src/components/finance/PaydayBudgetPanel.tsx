@@ -376,7 +376,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                           <button
                             type="button"
                             onClick={() => setPayingItemId(isPickingWallet ? null : item.id)}
-                            className="min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-inverse-surface hover:text-white border border-outline text-[11px] font-semibold text-on-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                            className="min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-inverse-surface dark:hover:bg-primary-container hover:text-white border border-outline text-[11px] font-semibold text-on-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                             title="Bayar dan potong saldo dompet"
                           >
                             Bayar
