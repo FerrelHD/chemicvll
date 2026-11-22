@@ -193,8 +193,8 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div
               className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                 budgetProgress.remainingToday >= 0
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'bg-rose-50 text-rose-600'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400'
               }`}
             >
               <TrendingUp className="w-4 h-4" />

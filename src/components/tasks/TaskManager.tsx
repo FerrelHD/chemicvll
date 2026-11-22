@@ -161,7 +161,7 @@ export function TaskManager() {
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between gap-1">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Urgent (P1)</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 shrink-0 flex items-center justify-center text-rose-600">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 dark:bg-rose-950/40 shrink-0 flex items-center justify-center text-rose-600 dark:text-rose-400">
               <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -407,7 +407,7 @@ export function TaskManager() {
                     P1: Urgent &amp; High Impact (Do First)
                   </h3>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 whitespace-nowrap shrink-0">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 whitespace-nowrap shrink-0">
                   {p1Tasks.length} Tasks
                 </span>
               </div>

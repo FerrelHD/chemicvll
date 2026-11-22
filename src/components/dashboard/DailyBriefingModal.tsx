@@ -95,7 +95,7 @@ export function DailyBriefingModal({
             className="p-3.5 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer flex items-center justify-between gap-3 group"
           >
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div className="min-w-0 flex-1">

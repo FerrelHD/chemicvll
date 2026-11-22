@@ -384,7 +384,7 @@ export function FinanceManager() {
                 </>
               ) : (
                 <>
-                  <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
+                  <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                     <TrendingUp className="w-3 h-3 text-emerald-600 shrink-0" />
                     {totalIncome >= totalExpense ? '+' : '-'}
                     {totalExpense > 0
@@ -818,10 +818,10 @@ export function FinanceManager() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                       tx.type === 'income'
-                        ? 'bg-emerald-50 text-emerald-600'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
                         : tx.type === 'expense'
-                        ? 'bg-rose-50 text-rose-500'
-                        : 'bg-zinc-100 text-zinc-600'
+                        ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-500 dark:text-rose-400'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
                     }`}
                   >
                     {tx.type === 'income' ? (
@@ -872,7 +872,7 @@ export function FinanceManager() {
                     }}
                     aria-label={`Hapus transaksi ${tx.category}`}
                     title="Undo / Hapus transaksi dan kembalikan saldo"
-                    className="min-w-[36px] min-h-[36px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                    className="min-w-[36px] min-h-[36px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1553,10 +1553,10 @@ export function FinanceManager() {
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                           tx.type === 'income'
-                            ? 'bg-emerald-50 text-emerald-600'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
                             : tx.type === 'expense'
-                            ? 'bg-rose-50 text-rose-500'
-                            : 'bg-zinc-100 text-zinc-600'
+                            ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-500 dark:text-rose-400'
+                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
                         }`}
                       >
                         {tx.type === 'income' ? (
@@ -1607,7 +1607,7 @@ export function FinanceManager() {
                         }}
                         aria-label={`Hapus transaksi ${tx.category}`}
                         title="Hapus transaksi"
-                        className="min-w-[32px] min-h-[32px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 flex items-center justify-center transition"
+                        className="min-w-[32px] min-h-[32px] rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center transition"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

@@ -218,10 +218,10 @@ export function SplitBillPanel() {
                     {debt.person_name}
                   </span>
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                       debt.is_settled
-                        ? 'bg-emerald-50 text-emerald-700'
-                        : 'bg-amber-50 text-amber-800'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40'
+                        : 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/40'
                     }`}
                   >
                     {debt.is_settled ? 'Lunas' : 'Pending'}
@@ -267,7 +267,7 @@ export function SplitBillPanel() {
                         deleteDebt(debt.id);
                       }
                     }}
-                    className="p-1 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 transition"
+                    className="p-1 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
                     title="Hapus catatan"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
