@@ -26,14 +26,14 @@ export interface BackupPayload {
       habits: any[];
     };
     career: {
-      applications: any[];
+      items: any[];
     };
     notes: {
       notes: any[];
       contentIdeas: any[];
     };
     dropzone: {
-      drops: any[];
+      items: any[];
     };
   };
 }
@@ -66,14 +66,14 @@ export function generateBackupPayload(): BackupPayload {
         habits: habits.habits || [],
       },
       career: {
-        applications: career.applications || [],
+        items: career.items || [],
       },
       notes: {
         notes: notes.notes || [],
         contentIdeas: notes.contentIdeas || [],
       },
       dropzone: {
-        drops: dropzone.drops || [],
+        items: dropzone.items || [],
       },
     },
   };
