@@ -155,7 +155,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent('open-quick-capture'))}
-          className="hidden md:flex items-center gap-1.5 bg-inverse-surface hover:bg-black text-white px-3.5 py-2 rounded-full shadow-sm text-xs font-semibold active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="hidden md:flex items-center gap-1.5 bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white px-3.5 py-2 rounded-full shadow-sm text-xs font-semibold active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           title="Quick Capture (Q)"
         >
           <QuickCaptureMark className="w-3.5 h-3.5" />

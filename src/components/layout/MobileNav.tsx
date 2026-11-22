@@ -180,7 +180,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
             setIsMoreOpen(false);
             handleQuickAction();
           }}
-          className="relative flex-shrink-0 w-11 h-11 mx-0.5 rounded-full bg-inverse-surface hover:bg-black text-white shadow-md flex items-center justify-center active:scale-90 transition-all select-none ring-4 ring-surface-container-lowest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="relative flex-shrink-0 w-11 h-11 mx-0.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white shadow-md flex items-center justify-center active:scale-90 transition-all select-none ring-4 ring-surface-container-lowest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           title="Quick Capture"
         >
           <QuickCaptureMark className="w-5 h-5" />
