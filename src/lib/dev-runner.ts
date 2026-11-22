@@ -25,7 +25,14 @@ const processes: Map<string, ProcessRecord> =
   globalThis.__localDevProcesses || (globalThis.__localDevProcesses = new Map());
 
 export function isLocalEnvironment(): boolean {
-  return process.env.VERCEL !== '1';
+  // Guard against cloud hosting environments spawning arbitrary local shell processes
+  const isCloud =
+    process.env.VERCEL === '1' ||
+    process.env.RAILWAY_ENVIRONMENT !== undefined ||
+    process.env.RENDER === 'true' ||
+    process.env.FLY_APP_NAME !== undefined;
+
+  return !isCloud;
 }
 
 export function getSystemMetrics() {
