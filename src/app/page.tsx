@@ -130,7 +130,7 @@ export default function HomePage() {
 
   return (
     <PinGate>
-      <div className="flex flex-col md:flex-row h-full h-[100dvh] w-full bg-surface-container-low overflow-hidden font-sans">
+      <div className="flex flex-col md:flex-row h-full h-[100dvh] w-full max-w-[100vw] bg-surface-container-low overflow-x-hidden overflow-y-hidden font-sans">
       {/* 1. Collapsible Flex Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -140,7 +140,7 @@ export default function HomePage() {
       />
 
       {/* 2. Main Dashboard Canvas with Rounded Top-Left Corner */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-surface-container-lowest md:rounded-tl-3xl border-t border-l border-outline/50 shadow-[0_4px_24px_rgba(24,24,27,0.03)] relative">
+      <div className="flex-1 flex flex-col h-full min-w-0 max-w-full overflow-x-hidden overflow-y-hidden bg-surface-container-lowest md:rounded-tl-3xl border-t border-l border-outline/50 shadow-[0_4px_24px_rgba(24,24,27,0.03)] relative">
         {/* Sticky Header pinned at top of canvas */}
         <Header
           onOpenMobileMenu={() => setIsSidebarOpen(true)}
@@ -148,13 +148,14 @@ export default function HomePage() {
         />
 
         {/* Scrollable Dashboard Body */}
-        <div className="flex-1 overflow-y-auto w-full relative z-20 scroll-container">
-          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-12">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden w-full max-w-full relative z-20 scroll-container">
+          <main className="p-4 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full max-w-full overflow-x-hidden pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-12">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
+              className="w-full max-w-full overflow-x-hidden"
             >
               {activeTab === 'dashboard' && (
                 <DashboardCockpit
