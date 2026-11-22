@@ -29,7 +29,7 @@ export function HabitTrackerCard() {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
-            <Flame className="w-4 h-4 fill-primary-container text-primary-container" />
+            <Flame className="w-4 h-4 text-primary-container stroke-[2.2]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-on-surface">Daily Habits &amp; Streaks</h3>
@@ -80,7 +80,7 @@ export function HabitTrackerCard() {
                   onClick={() => setNewCategory(cat)}
                   className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg capitalize transition ${
                     newCategory === cat
-                      ? 'bg-inverse-surface text-white'
+                      ? 'bg-inverse-surface dark:bg-primary-container text-white'
                       : 'bg-surface-container-lowest text-on-surface-variant border border-outline/30'
                   }`}
                 >
@@ -140,9 +140,9 @@ export function HabitTrackerCard() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200/60 text-amber-800 text-[10px] font-bold tabular-nums">
-                  <Flame className="w-3 h-3 fill-amber-500 text-amber-500" />
-                  <span>{habit.streak}d streak</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-fixed/40 dark:bg-primary-fixed/20 border border-primary-container/20 text-primary-container text-[11px] font-bold tabular-nums">
+                  <Flame className="w-3.5 h-3.5 stroke-[2.2] text-primary-container" />
+                  <span>{habit.streak} Hari Streak</span>
                 </span>
                 <button
                   type="button"
