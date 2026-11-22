@@ -499,7 +499,7 @@ export function DevMissionControl() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-on-surface-variant mt-1 font-mono truncate max-w-sm">
+                      <p className="text-xs text-on-surface-variant mt-1 font-mono truncate max-w-full">
                         {proj.start_command}
                       </p>
                     </div>
@@ -600,17 +600,19 @@ export function DevMissionControl() {
 
         {/* Right: Live Streaming Console Terminal (6 Cols) */}
         <div className="lg:col-span-6 bg-[#18181b] rounded-3xl p-5 border border-zinc-800 shadow-xl flex flex-col h-[500px] max-h-[500px] overflow-hidden font-mono text-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800 flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
-              <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
-              <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-              <span className="text-zinc-400 text-xs pl-2 font-semibold">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-800 flex-shrink-0 gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
+              </div>
+              <span className="text-zinc-400 text-xs pl-1 font-semibold truncate min-w-0">
                 {activeLogProject ? `${activeLogProject.name} (Port ${activeLogProject.default_port})` : 'Terminal Console'}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[11px] text-zinc-400">Live Streaming</span>
             </div>
@@ -647,10 +649,10 @@ export function DevMissionControl() {
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
-            <div className="flex items-center justify-between pb-3 border-b border-outline/20">
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-primary-container" />
-                <h3 className="font-bold text-sm text-on-surface">
+            <div className="flex items-center justify-between pb-3 border-b border-outline/20 gap-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Lock className="w-4 h-4 text-primary-container shrink-0" />
+                <h3 className="font-bold text-sm text-on-surface truncate">
                   {vaultProject.encryptedEnv && !isUnlocked
                     ? `Unlock .env Vault: ${vaultProject.name}`
                     : `Configure .env Vault: ${vaultProject.name}`}
@@ -659,7 +661,7 @@ export function DevMissionControl() {
               <button
                 type="button"
                 onClick={() => setVaultProjectId(null)}
-                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface"
+                className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
