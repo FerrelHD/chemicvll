@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
@@ -668,7 +669,23 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         </div>
 
         {/* Module B: Active Debit Card & Quick Action (Col span 5) */}
-        <div className="lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4 flex flex-col justify-between">
+        <div className="relative lg:col-span-5 bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition space-y-4 flex flex-col justify-between">
+          {/* 3D Breakout Fintech Asset: Frosted Card & Coin bridging across the grid gap */}
+          <div className="absolute -left-5 sm:-left-7 lg:-left-9 -top-3 sm:-top-5 z-20 pointer-events-none select-none">
+            <motion.div
+              animate={{ y: [-2, 2, -2], rotate: [-0.5, 0.5, -0.5] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 drop-shadow-[0_12px_24px_rgba(0,102,204,0.18)]"
+            >
+              <img
+                src="/assets/3d/fintech-bridge.webp"
+                alt="3D Fintech Bridge Asset"
+                className="w-full h-full object-contain"
+                loading="eager"
+              />
+            </motion.div>
+          </div>
+
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface">Active Card (Wallet Stack)</h3>
             <span className="text-[10px] font-mono uppercase bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant font-semibold">
