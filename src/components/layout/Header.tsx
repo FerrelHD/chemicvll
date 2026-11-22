@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Search, Bell, Lock, Sun, Moon } from 'lucide-react';
+import { Menu, Search, Bell, Lock, Sun, Moon, Download } from 'lucide-react';
 import { useSyncStore, pullFromCloud } from '@/lib/supabase-sync';
+import { exportAllDataAsJson } from '@/lib/backup-export';
 import { QuickCaptureMark } from '@/components/icons/ChemicIcons';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
@@ -325,6 +326,15 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           <span className="text-xs font-semibold text-on-surface hidden sm:inline">
             Ferrel
           </span>
+          <button
+            type="button"
+            aria-label="Backup Data JSON"
+            onClick={exportAllDataAsJson}
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            title="Export & Download All Data (JSON Backup)"
+          >
+            <Download className="w-3.5 h-3.5" />
+          </button>
           <button
             type="button"
             aria-label="Lock Workspace"
