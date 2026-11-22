@@ -139,15 +139,17 @@ export function HabitTrackerCard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-fixed/40 dark:bg-primary-fixed/20 border border-primary-container/20 text-primary-container text-[11px] font-bold tabular-nums">
-                  <Flame className="w-3.5 h-3.5 stroke-[2.2] text-primary-container" />
-                  <span>{habit.streak} Hari Streak</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-primary-fixed/40 dark:bg-primary-fixed/20 border border-primary-container/20 text-primary-container text-[10px] sm:text-[11px] font-bold tabular-nums whitespace-nowrap">
+                  <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.2] text-primary-container shrink-0" />
+                  <span>
+                    {habit.streak} Hari<span className="hidden sm:inline"> Streak</span>
+                  </span>
                 </span>
                 <button
                   type="button"
                   onClick={() => deleteHabit(habit.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 transition"
+                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
                   title="Hapus habit"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
