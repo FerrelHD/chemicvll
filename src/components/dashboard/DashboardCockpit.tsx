@@ -244,7 +244,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('expense')}
-          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-inverse-surface text-white text-[11px] font-semibold shadow-sm active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-[11px] font-semibold shadow-sm active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Jajan</span>
@@ -609,7 +609,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <button
                 type="button"
                 onClick={() => onNavigate('finance')}
-                className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold shadow-sm transition"
+                className="mt-1 px-4 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-sm transition"
               >
                 Record First Transaction
               </button>
@@ -794,7 +794,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       href={item.actionUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-inverse-surface text-white text-xs font-medium hover:bg-black transition active:scale-95 shadow-sm"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-medium hover:bg-black dark:hover:bg-primary transition active:scale-95 shadow-sm"
                     >
                       <Video className="w-3.5 h-3.5" />
                       <span>Open Meet</span>

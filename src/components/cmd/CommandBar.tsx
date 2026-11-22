@@ -145,7 +145,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
           />
           <button
             type="submit"
-            className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-inverse-surface hover:bg-black text-white text-xs font-semibold transition shrink-0"
+            className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold transition shrink-0"
           >
             <span className="hidden sm:inline">Enter</span>
             <CornerDownLeft className="w-3 h-3" />

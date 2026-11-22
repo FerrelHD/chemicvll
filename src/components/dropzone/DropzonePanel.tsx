@@ -218,7 +218,7 @@ export function DropzonePanel() {
               />
               <button
                 type="submit"
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-inverse-surface text-white text-xs font-semibold hover:bg-black transition shadow-sm active:scale-95"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shadow-sm active:scale-95"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Save</span>

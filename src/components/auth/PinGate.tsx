@@ -216,7 +216,7 @@ export function PinGate({ children }: PinGateProps) {
               className={`w-full h-10 px-4 rounded-xl text-xs font-semibold transition-colors duration-150 flex items-center justify-center gap-1.5 ${
                 isSuccess
                   ? 'bg-emerald-600 text-white cursor-default'
-                  : 'bg-inverse-surface hover:bg-black text-white disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]'
+                  : 'bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]'
               }`}
             >
               {isSuccess ? (
