@@ -534,26 +534,16 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         {/* Stat 4: Dev Server */}
         <div
           onClick={() => onNavigate('dev')}
-          className="relative bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between overflow-hidden"
+          className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 hover:border-outline/60 shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
         >
-          {/* Grounded Static 3D Engine Core Asset (Stay/docked, no floating motion) */}
-          <div className="absolute -top-3.5 -right-3.5 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none select-none opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
-            <img
-              src="/assets/3d/engine-core.webp"
-              alt="Engine Core"
-              className="w-full h-full object-contain drop-shadow-[0_4px_16px_rgba(255,107,0,0.18)]"
-              loading="eager"
-            />
-          </div>
-
-          <div className="flex items-start justify-between relative z-10">
+          <div className="flex items-start justify-between">
             <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant uppercase tracking-wider truncate">
               Dev Ports
             </span>
             <ConsoleMark active className="w-[18px] h-[18px] text-on-surface shrink-0" />
           </div>
 
-          <div className="my-2 sm:my-3 relative z-10">
+          <div className="my-2 sm:my-3">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
               <span className="text-lg sm:text-2xl font-bold text-on-surface font-sans">
                 {runningServers > 0 ? `${runningServers} Running` : 'Standby'}
@@ -572,7 +562,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </div>
           </div>
 
-          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition relative z-10">
+          <div className="pt-2 sm:pt-2.5 border-t border-outline/20 flex items-center justify-between text-xs text-on-surface-variant group-hover:text-primary-container transition">
             <span className="text-[10px] sm:text-[11px] truncate">Open Console</span>
             <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
           </div>
@@ -686,26 +676,16 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             </span>
           </div>
 
-          {/* Realistic Virtual Card with Grounded Static 3D Card & Coin Asset */}
+          {/* Realistic Virtual Card */}
           <div
-            className="relative p-4 sm:p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-3.5 sm:space-y-4 group/card overflow-visible"
+            className="p-4 sm:p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-3.5 sm:space-y-4"
             style={{
               background: activeWallet?.color
                 ? `linear-gradient(135deg, ${activeWallet.color}, #18181B)`
                 : 'linear-gradient(135deg, #0066CC, #003E8A)',
             }}
           >
-            {/* Grounded Static 3D Fintech Asset: Frosted Card & Coin slipping out of the virtual card slot */}
-            <div className="absolute -top-5 -right-2 sm:-right-4 w-16 h-16 sm:w-20 sm:h-20 pointer-events-none select-none drop-shadow-[0_8px_20px_rgba(0,0,0,0.35)] opacity-90 group-hover/card:opacity-100 group-hover/card:scale-105 transition-all duration-300">
-              <img
-                src="/assets/3d/fintech-bridge.webp"
-                alt="3D Fintech Card & Coin"
-                className="w-full h-full object-contain"
-                loading="eager"
-              />
-            </div>
-
-            <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center justify-between">
               <span className="font-bold text-xs tracking-wider text-white/95 uppercase">
                 {activeWallet?.name || 'BANK BCA'}
               </span>
