@@ -22,6 +22,7 @@ export function getUnifiedAgenda(
   tasks: Task[],
   referenceDateInput?: string | Date
 ): AgendaItem[] {
+  const refDate = referenceDateInput ? new Date(referenceDateInput) : new Date();
   const todayKey = toLocalDateKey(referenceDateInput);
   const items: AgendaItem[] = [];
 
@@ -68,7 +69,7 @@ export function getUnifiedAgenda(
   for (const s of subscriptions) {
     if (!s.is_active) continue;
     const dateKey = toLocalDateKey(s.next_billing_date);
-    const daysUntil = getDaysUntilDate(s.next_billing_date);
+    const daysUntil = getDaysUntilDate(s.next_billing_date, refDate);
     if (daysUntil >= 0 && daysUntil <= 7) {
       items.push({
         id: `sub-${s.id}`,
