@@ -52,6 +52,16 @@ export function DropzonePanel() {
 
   const sortedItems = [...filteredItems].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
 
+  const totalBytes = items.reduce((sum, item) => sum + new TextEncoder().encode(item.content || '').length, 0);
+  const maxQuotaBytes = 5 * 1024 * 1024; // 5 MB browser localStorage budget
+  const usedDisplay =
+    totalBytes >= 1024 * 1024
+      ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+      : totalBytes >= 1024
+      ? `${(totalBytes / 1024).toFixed(1)} KB`
+      : `${totalBytes} B`;
+  const capacityPct = totalBytes === 0 ? 0 : Math.min(100, Math.max(1, Math.round((totalBytes / maxQuotaBytes) * 100)));
+
   // Quick scratchpad snippets
   const scratchpadSnippets = [
     { title: 'Docker Prune', cmd: 'docker system prune -af --volumes' },
@@ -115,15 +125,15 @@ export function DropzonePanel() {
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
             <div className="flex items-baseline justify-between gap-1">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans truncate">
-                1.2 <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ 10GB</span>
+              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans truncate tabular-nums">
+                {usedDisplay} <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ 5 MB</span>
               </span>
-              <span className="bg-surface-container-high px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-primary-container font-bold shrink-0">
-                12%
+              <span className="bg-surface-container-high px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-primary-container font-bold shrink-0 tabular-nums">
+                {capacityPct}%
               </span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden mt-1">
-              <div className="bg-primary-container h-full rounded-full" style={{ width: '12%' }} />
+              <div className="bg-primary-container h-full rounded-full transition-all duration-300" style={{ width: `${capacityPct}%` }} />
             </div>
             <span className="text-[10px] sm:text-xs text-on-surface-variant mt-1 truncate">
               {items.length} items &amp; snippets
