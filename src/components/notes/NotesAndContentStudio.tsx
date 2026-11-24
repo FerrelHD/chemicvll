@@ -20,6 +20,7 @@ import {
   X,
   Maximize2,
   Minimize2,
+  Columns,
   Calendar,
   Tag,
   FileText,
@@ -72,7 +73,7 @@ export function NotesAndContentStudio() {
   const [newTagInput, setNewTagInput] = useState('');
 
   // Mode states for Markdown editing vs rich preview
-  const [noteViewMode, setNoteViewMode] = useState<'edit' | 'preview'>('edit');
+  const [noteViewMode, setNoteViewMode] = useState<'split' | 'edit' | 'preview'>('split');
   const [contentViewMode, setContentViewMode] = useState<'edit' | 'preview'>('edit');
   const [isNoteMaximized, setIsNoteMaximized] = useState(false);
   const [isContentMaximized, setIsContentMaximized] = useState(false);
@@ -863,52 +864,130 @@ export function NotesAndContentStudio() {
                   </button>
                 </div>
 
-                {/* Mode Selector Pill: Tulis (Edit) vs Pratinjau (Preview) */}
-                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto">
+                {/* Mode Selector Pill: Tulis (Edit) vs Split View vs Pratinjau (Preview) */}
+                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
                   <button
                     type="button"
                     onClick={() => setNoteViewMode('edit')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
                       noteViewMode === 'edit'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
+                    title="Hanya Editor Markdown (Layar Penuh)"
                   >
                     <Edit3 className="w-3 h-3" />
                     <span>Tulis</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setNoteViewMode('preview')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      noteViewMode === 'preview'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                    onClick={() => setNoteViewMode('split')}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      noteViewMode === 'split'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
+                    title="Split View (Editor + Pratinjau Rapi)"
+                  >
+                    <Columns className="w-3 h-3" />
+                    <span>Split</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNoteViewMode('preview')}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      noteViewMode === 'preview'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                    title="Hanya Pratinjau Markdown (Layar Penuh)"
                   >
                     <Eye className="w-3 h-3" />
-                    <span>Pratinjau Rapi</span>
+                    <span>Pratinjau</span>
                   </button>
                 </div>
               </div>
 
-              {/* Content Body Area (Live Edit vs Rendered Markdown Preview) */}
-              <div className="flex flex-col flex-1 min-h-[380px]">
-                {noteViewMode === 'preview' ? (
-                  <div className="p-4 sm:p-6 rounded-2xl bg-surface-container-low/40 border border-outline/25 min-h-[380px] overflow-y-auto">
-                    <MarkdownRenderer
-                      content={viewingNote.content}
-                      onToggleCheckbox={handleToggleNoteCheckbox}
-                    />
+              {/* Content Body Area (Split View vs Live Edit vs Rendered Markdown Preview) */}
+              <div className="flex flex-col flex-1 min-h-[420px] lg:min-h-[500px]">
+                {noteViewMode === 'split' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                    {/* Left Pane: Markdown Editor */}
+                    <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/40 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
+                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                        <div className="flex items-center gap-1.5">
+                          <Edit3 className="w-3.5 h-3.5 text-primary-container" />
+                          <span>Editor Markdown</span>
+                        </div>
+                        <span className="text-[10px] text-on-surface-variant/70">
+                          {viewingNote.content.split(/\s+/).filter(Boolean).length} kata • {viewingNote.content.length} karakter
+                        </span>
+                      </div>
+                      <textarea
+                        ref={noteTextareaRef}
+                        value={viewingNote.content}
+                        onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
+                        placeholder="Mulai ketik catatan di sini... (Gunakan toolbar di atas untuk bold, heading, numbering, checklist)"
+                        className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[260px] md:min-h-[440px] placeholder:text-on-surface-variant/40"
+                      />
+                    </div>
+
+                    {/* Right Pane: Live Rendered Preview */}
+                    <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs">
+                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                        <div className="flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5 text-primary-container" />
+                          <span>Pratinjau Live</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Sinkron</span>
+                        </div>
+                      </div>
+                      <div className="p-4 sm:p-5 flex-1 min-h-[260px] md:min-h-[440px] overflow-y-auto">
+                        <MarkdownRenderer
+                          content={viewingNote.content}
+                          onToggleCheckbox={handleToggleNoteCheckbox}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : noteViewMode === 'preview' ? (
+                  <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs flex-1">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                      <div className="flex items-center gap-1.5">
+                        <Eye className="w-3.5 h-3.5 text-primary-container" />
+                        <span>Pratinjau Rapi (Layar Penuh)</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>Format Aktif</span>
+                      </div>
+                    </div>
+                    <div className="p-4 sm:p-6 flex-1 min-h-[380px] md:min-h-[480px] overflow-y-auto">
+                      <MarkdownRenderer
+                        content={viewingNote.content}
+                        onToggleCheckbox={handleToggleNoteCheckbox}
+                      />
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col flex-1 rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
+                  <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner flex-1">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                      <div className="flex items-center gap-1.5">
+                        <Edit3 className="w-3.5 h-3.5 text-primary-container" />
+                        <span>Editor Penuh</span>
+                      </div>
+                      <span className="text-[10px] text-on-surface-variant/70">
+                        {viewingNote.content.split(/\s+/).filter(Boolean).length} kata • {viewingNote.content.length} karakter
+                      </span>
+                    </div>
                     <textarea
                       ref={noteTextareaRef}
                       value={viewingNote.content}
                       onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
                       placeholder="Mulai ketik catatan di sini... (Gunakan toolbar di atas untuk bold, heading, numbering, checklist)"
-                      className="w-full flex-1 p-4 sm:p-6 font-sans text-sm sm:text-base leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px] placeholder:text-on-surface-variant/40"
+                      className="w-full flex-1 p-4 sm:p-6 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px] md:min-h-[480px] placeholder:text-on-surface-variant/40"
                     />
                   </div>
                 )}
