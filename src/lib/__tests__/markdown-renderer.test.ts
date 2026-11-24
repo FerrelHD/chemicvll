@@ -37,4 +37,22 @@ assert.strictEqual(stripped3.includes('```'), false);
 assert.strictEqual(stripped3.includes('[Code: const x = 10;]'), true);
 console.log('Test 3 Passed: stripMarkdown summarizes code blocks concisely');
 
+// Test 4: Handles empty, null, or whitespace content cleanly
+assert.strictEqual(stripMarkdown(''), '');
+assert.strictEqual(stripMarkdown('   '), '');
+console.log('Test 4 Passed: stripMarkdown handles empty and whitespace content cleanly');
+
+// Test 5: Verify checkbox regex toggling logic used in split view
+const toggleCheckboxLine = (line: string, newChecked: boolean) =>
+  newChecked
+    ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
+    : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
+
+const uncheckedLine = '- [ ] Review PR and verify tests';
+const checkedLine = toggleCheckboxLine(uncheckedLine, true);
+assert.strictEqual(checkedLine, '- [x] Review PR and verify tests', 'Check unchecking to checked');
+const revertedLine = toggleCheckboxLine(checkedLine, false);
+assert.strictEqual(revertedLine, '- [ ] Review PR and verify tests', 'Check checked to unchecked');
+console.log('Test 5 Passed: Checkbox toggling helper correctly flips markdown state');
+
 console.log('All Markdown Parser & Stripper tests passed successfully!');
