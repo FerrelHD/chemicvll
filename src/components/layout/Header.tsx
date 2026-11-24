@@ -46,7 +46,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         const res = restoreBackupFromJson(content);
         if (res.success) {
           alert(
-            `✅ Backup berhasil dipulihkan!\n• ${res.counts?.transactions || 0} transaksi\n• ${res.counts?.wallets || 0} dompet\n• ${res.counts?.tasks || 0} tasks\n• ${res.counts?.habits || 0} habits\n• ${res.counts?.career || 0} lamaran\n• ${res.counts?.notes || 0} catatan\n• ${res.counts?.drops || 0} dropzone`
+            `✅ Backup berhasil dipulihkan!\n• ${res.counts?.transactions || 0} transaksi\n• ${res.counts?.wallets || 0} dompet\n• ${res.counts?.tasks || 0} tasks\n• ${res.counts?.habits || 0} habits\n• ${res.counts?.career || 0} lamaran\n• ${res.counts?.notes || 0} catatan\n• ${res.counts?.drops || 0} dropzone\n• ${res.counts?.projects || 0} dev projects`
           );
         } else {
           alert(`❌ Gagal memulihkan backup: ${res.message}`);

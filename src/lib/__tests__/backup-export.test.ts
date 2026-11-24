@@ -15,6 +15,7 @@ assert.ok(Array.isArray(payload.stores.habits.habits), 'Habits should be an arra
 assert.ok(Array.isArray(payload.stores.career.items), 'Career items should be an array');
 assert.ok(Array.isArray(payload.stores.notes.notes), 'Notes should be an array');
 assert.ok(Array.isArray(payload.stores.dropzone.items), 'Dropzone items should be an array');
+assert.ok(Array.isArray(payload.stores.dev?.projects), 'Dev projects should be an array');
 
 console.log('Testing Backup Restore & Validation Engine...');
 
@@ -30,5 +31,6 @@ assert.strictEqual(alienRes.success, false, 'Alien app should fail');
 const restoreRes = restoreBackupFromJson(payload);
 assert.strictEqual(restoreRes.success, true, 'Valid payload should restore successfully');
 assert.ok(restoreRes.counts, 'Restore counts must be present');
+assert.strictEqual(typeof restoreRes.counts?.projects, 'number', 'Restored project count must be numeric');
 
 console.log('All Backup & Export Payload tests passed successfully!');

@@ -4,6 +4,8 @@ import { useHabitStore } from '@/stores/useHabitStore';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useNotesStore } from '@/stores/useNotesStore';
 import { useDropzoneStore } from '@/stores/useDropzoneStore';
+import { useDevStore } from '@/stores/useDevStore';
+import { clearAllPendingDeletions } from '@/lib/supabase-delete';
 import { toLocalDateKey } from '@/lib/budget-utils';
 
 export interface BackupPayload {
@@ -35,6 +37,9 @@ export interface BackupPayload {
     dropzone: {
       items: any[];
     };
+    dev?: {
+      projects: any[];
+    };
   };
 }
 
@@ -45,6 +50,7 @@ export function generateBackupPayload(): BackupPayload {
   const career = useCareerStore.getState();
   const notes = useNotesStore.getState();
   const dropzone = useDropzoneStore.getState();
+  const dev = useDevStore.getState();
 
   return {
     app: 'Personal OS (chemicvll)',
@@ -74,6 +80,14 @@ export function generateBackupPayload(): BackupPayload {
       },
       dropzone: {
         items: dropzone.items || [],
+      },
+      dev: {
+        projects: (dev.projects || []).map((p) => ({
+          ...p,
+          serverState: 'stopped',
+          pid: null,
+          logs: [],
+        })),
       },
     },
   };
@@ -107,6 +121,7 @@ export interface RestoreResult {
     career: number;
     notes: number;
     drops: number;
+    projects: number;
   };
 }
 
@@ -193,6 +208,21 @@ export function restoreBackupFromJson(rawInput: string | object): RestoreResult 
       }
     }
 
+    // 7. Dev Store (projects + encryptedEnv)
+    if (stores.dev && Array.isArray(stores.dev.projects)) {
+      useDevStore.setState((prev) => ({
+        ...prev,
+        projects: stores.dev.projects.map((p: any) => ({
+          ...p,
+          serverState: 'stopped',
+          pid: null,
+          logs: Array.isArray(p.logs) && p.logs.length > 0 ? p.logs : ['[Daemon] Restored from backup.'],
+        })),
+      }));
+    }
+
+    clearAllPendingDeletions();
+
     return {
       success: true,
       message: 'Backup data successfully restored into all stores',
@@ -204,6 +234,7 @@ export function restoreBackupFromJson(rawInput: string | object): RestoreResult 
         career: (stores.career?.items || stores.career?.applications)?.length || 0,
         notes: stores.notes?.notes?.length || 0,
         drops: (stores.dropzone?.items || stores.dropzone?.drops)?.length || 0,
+        projects: stores.dev?.projects?.length || 0,
       },
     };
   } catch (err: any) {
