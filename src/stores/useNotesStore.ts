@@ -14,6 +14,8 @@ interface NotesState {
   togglePinNote: (id: string) => void;
   addContentIdea: (idea: Omit<ContentIdea, 'id' | 'created_at'>) => void;
   updateContentStatus: (id: string, status: ContentIdea['status']) => void;
+  updateContentIdea: (id: string, updates: Partial<Omit<ContentIdea, 'id' | 'created_at'>>) => void;
+  deleteContentIdea: (id: string) => void;
 }
 
 const INITIAL_NOTES: NoteItem[] = [
@@ -104,6 +106,16 @@ export const useNotesStore = create<NotesState>()(
             c.id === id ? { ...c, status } : c
           ),
         })),
+      updateContentIdea: (id, updates) =>
+        set((state) => ({
+          contentIdeas: state.contentIdeas.map((c) =>
+            c.id === id ? { ...c, ...updates } : c
+          ),
+        })),
+      deleteContentIdea: (id) => {
+        set((state) => ({ contentIdeas: state.contentIdeas.filter((c) => c.id !== id) }));
+        deleteFromCloud('content_ideas', id);
+      },
     }),
     {
       name: 'chemicvll-notes-storage',
