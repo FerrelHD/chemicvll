@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Habit } from '@/types/database';
 import { toLocalDateKey } from '@/lib/budget-utils';
-import { recordPendingDeletion } from '@/lib/supabase-delete';
+import { deleteFromCloud } from '@/lib/supabase-delete';
 
 interface HabitState {
   habits: Habit[];
@@ -126,10 +126,10 @@ export const useHabitStore = create<HabitState>()(
       },
 
       deleteHabit: (id: string) => {
-        recordPendingDeletion('habits', id);
         set((state) => ({
           habits: state.habits.filter((h) => h.id !== id),
         }));
+        void deleteFromCloud('habits', id);
       },
 
       setHabitsFromCloud: (cloudHabits: Habit[]) => {

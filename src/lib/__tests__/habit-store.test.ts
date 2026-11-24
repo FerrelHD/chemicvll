@@ -1,5 +1,18 @@
 import assert from 'node:assert';
 import { useHabitStore } from '../../stores/useHabitStore';
+import { isPendingDeletion, clearPendingDeletion } from '../../lib/supabase-delete';
+
+const mockStorage = new Map<string, string>();
+(globalThis as any).localStorage = {
+  getItem: (k: string) => mockStorage.get(k) ?? null,
+  setItem: (k: string, v: string) => {
+    mockStorage.set(k, String(v));
+  },
+  removeItem: (k: string) => {
+    mockStorage.delete(k);
+  },
+  clear: () => mockStorage.clear(),
+};
 
 console.log('Testing Habit Store Actions & Streak Tracking...');
 
@@ -23,12 +36,18 @@ const untoggled = useHabitStore.getState().habits.find((h) => h.id === added.id)
 assert.strictEqual(untoggled?.streak, 0, 'Streak should decrement back to 0');
 assert.strictEqual(untoggled?.last_completed_date, null, 'Date should be cleared');
 
-// Test 4: Delete habit
+// Test 4: Delete habit & queue cloud deletion tombstone
 useHabitStore.getState().deleteHabit(added.id);
 assert.strictEqual(
   useHabitStore.getState().habits.some((h) => h.id === added.id),
   false,
   'Habit should be deleted'
 );
+assert.strictEqual(
+  isPendingDeletion('habits', added.id),
+  true,
+  'Deleted habit should be recorded in cloud deletion tombstone queue'
+);
+clearPendingDeletion('habits', added.id);
 
 console.log('All Habit Store tests passed successfully!');
