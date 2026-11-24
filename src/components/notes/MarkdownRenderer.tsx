@@ -209,7 +209,7 @@ export function MarkdownRenderer({
       elements.push(
         <h1
           key={`h1-${i}`}
-          className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight mt-5 mb-2 pb-1 border-b border-outline/15"
+          className="text-xl sm:text-2xl font-bold text-on-surface tracking-tight mt-4 mb-2 pb-1 border-b border-outline/15 break-words"
         >
           {renderInline(trimmed.slice(2))}
         </h1>
@@ -222,7 +222,7 @@ export function MarkdownRenderer({
       elements.push(
         <h2
           key={`h2-${i}`}
-          className="text-lg sm:text-xl font-bold text-on-surface tracking-tight mt-4 mb-2"
+          className="text-lg sm:text-xl font-bold text-on-surface tracking-tight mt-3 mb-1.5 break-words"
         >
           {renderInline(trimmed.slice(3))}
         </h2>
@@ -235,7 +235,7 @@ export function MarkdownRenderer({
       elements.push(
         <h3
           key={`h3-${i}`}
-          className="text-base sm:text-lg font-semibold text-on-surface tracking-tight mt-3 mb-1.5"
+          className="text-base sm:text-lg font-semibold text-on-surface tracking-tight mt-2.5 mb-1 break-words"
         >
           {renderInline(trimmed.slice(4))}
         </h3>
@@ -266,7 +266,7 @@ export function MarkdownRenderer({
             {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
           </button>
           <span
-            className={`text-sm sm:text-base leading-relaxed transition-all ${
+            className={`text-sm sm:text-base leading-relaxed break-words transition-all ${
               isChecked ? 'line-through text-on-surface-variant opacity-75' : 'text-on-surface'
             }`}
           >
@@ -284,7 +284,7 @@ export function MarkdownRenderer({
       elements.push(
         <blockquote
           key={`quote-${i}`}
-          className="border-l-4 border-primary-container bg-primary-fixed/20 pl-4 py-2.5 my-2.5 rounded-r-2xl text-on-surface italic text-sm sm:text-base leading-relaxed"
+          className="border-l-4 border-primary-container bg-primary-fixed/20 pl-4 py-2.5 my-2.5 rounded-r-2xl text-on-surface italic text-sm sm:text-base leading-relaxed break-words"
         >
           {renderInline(quoteText)}
         </blockquote>
@@ -300,7 +300,7 @@ export function MarkdownRenderer({
         listType = 'ol';
       }
       listItems.push(
-        <li key={`li-${i}`} className="pl-1">
+        <li key={`li-${i}`} className="pl-1 break-words">
           {renderInline(numMatch[2])}
         </li>
       );
@@ -315,7 +315,7 @@ export function MarkdownRenderer({
         listType = 'ul';
       }
       listItems.push(
-        <li key={`li-${i}`} className="pl-1">
+        <li key={`li-${i}`} className="pl-1 break-words">
           {renderInline(bulletMatch[1])}
         </li>
       );
@@ -334,7 +334,7 @@ export function MarkdownRenderer({
     elements.push(
       <p
         key={`p-${i}`}
-        className="text-sm sm:text-base text-on-surface leading-relaxed my-1.5"
+        className="text-sm sm:text-base text-on-surface leading-relaxed my-1.5 break-words"
       >
         {renderInline(rawLine)}
       </p>
@@ -355,5 +355,5 @@ export function MarkdownRenderer({
     );
   }
 
-  return <div className={`space-y-0.5 ${className}`}>{elements}</div>;
+  return <div className={`space-y-0.5 break-words ${className}`}>{elements}</div>;
 }
