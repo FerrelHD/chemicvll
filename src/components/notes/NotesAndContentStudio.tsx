@@ -157,11 +157,11 @@ export function NotesAndContentStudio() {
     const textarea = target === 'note' ? noteTextareaRef.current : contentTextareaRef.current;
     if (!textarea) return;
 
-    // Switch to edit mode if currently previewing
+    // Switch to split mode if currently previewing
     if (target === 'note' && noteViewMode === 'preview') {
-      setNoteViewMode('edit');
+      setNoteViewMode('split');
     } else if (target === 'content' && contentViewMode === 'preview') {
-      setContentViewMode('edit');
+      setContentViewMode('split');
     }
 
     const start = textarea.selectionStart;
