@@ -16,6 +16,12 @@ import { useDropzoneStore } from '@/stores/useDropzoneStore';
 import { useNotesStore } from '@/stores/useNotesStore';
 import { useHabitStore } from '@/stores/useHabitStore';
 import { DevProject, useDevStore } from '@/stores/useDevStore';
+import {
+  projectEnvToRow,
+  rowToEncryptedEnv,
+  type EncryptedVaultBlob,
+  type ProjectEnvRow,
+} from './crypto-vault';
 import { create } from 'zustand';
 
 export { budgetPlanToRow, isMissingTableError, rowToBudgetPlan };
@@ -67,10 +73,30 @@ export const useSyncStore = create<SyncState>((set) => ({
 let isInitialized = false;
 let isSyncingDown = false;
 let syncTimeout: NodeJS.Timeout | null = null;
+let realtimePullTimeout: NodeJS.Timeout | null = null;
 let lastVisibilityPullAt = 0;
 
 const SYNC_TIMEOUT_MS = 10000;
 const VISIBILITY_PULL_COOLDOWN_MS = 15000;
+const CLOUD_INITIALIZED_KEY = 'chemicvll-cloud-initialized';
+
+function isCloudInitialized(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(CLOUD_INITIALIZED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function markCloudInitialized(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(CLOUD_INITIALIZED_KEY, 'true');
+  } catch {
+    // Ignore
+  }
+}
 
 export async function pullFromCloud(): Promise<boolean> {
   const supabase = createBrowserClient();
@@ -99,6 +125,7 @@ export async function pullFromCloud(): Promise<boolean> {
       notesRes,
       contentRes,
       projectRes,
+      projectEnvRes,
       habitRes,
       debtRes,
     ] = await Promise.race([
@@ -113,6 +140,7 @@ export async function pullFromCloud(): Promise<boolean> {
         supabase.from('notes').select('*'),
         supabase.from('content_ideas').select('*'),
         supabase.from('projects').select('*'),
+        supabase.from('project_envs').select('*'),
         supabase.from('habits').select('*'),
         supabase.from('debt_trackers').select('*'),
       ]),
@@ -134,6 +162,7 @@ export async function pullFromCloud(): Promise<boolean> {
       notesRes.error ||
       contentRes.error ||
       projectRes.error ||
+      (projectEnvRes.error && !isMissingTableError(projectEnvRes.error) ? projectEnvRes.error : null) ||
       (habitRes.error && !isMissingTableError(habitRes.error) ? habitRes.error : null) ||
       (debtRes.error && !isMissingTableError(debtRes.error) ? debtRes.error : null);
 
@@ -186,6 +215,16 @@ export async function pullFromCloud(): Promise<boolean> {
     const filteredProjects = (projectRes.data || []).filter(
       (project: any) => !isPendingDeletion('projects', project.id)
     );
+    const cloudEnvByProjectId = new Map<string, EncryptedVaultBlob>();
+    if (!projectEnvRes.error && Array.isArray(projectEnvRes.data)) {
+      for (const row of projectEnvRes.data as ProjectEnvRow[]) {
+        if (!row.project_id || isPendingDeletion('project_envs', row.id)) continue;
+        const decoded = rowToEncryptedEnv(row);
+        if (decoded) {
+          cloudEnvByProjectId.set(row.project_id, decoded);
+        }
+      }
+    }
     const filteredHabits = !habitRes.error
       ? (habitRes.data || []).filter(
           (h: any) => !isPendingDeletion('habits', h.id)
@@ -292,40 +331,57 @@ export async function pullFromCloud(): Promise<boolean> {
       if (dropzoneRes.data) {
         useDropzoneStore.setState({ items: filteredDropzone });
       }
-      if (notesRes.data && filteredNotes.length > 0) {
+      const cloudReady = isCloudInitialized();
+      if (notesRes.data && (filteredNotes.length > 0 || cloudReady)) {
         useNotesStore.setState({ notes: filteredNotes });
+      } else if (notesRes.data && useNotesStore.getState().notes.length > 0) {
+        shouldPushLocalPlan = true;
       }
-      if (contentRes.data && filteredContentIdeas.length > 0) {
+      if (contentRes.data && (filteredContentIdeas.length > 0 || cloudReady)) {
         useNotesStore.setState({ contentIdeas: filteredContentIdeas });
+      } else if (contentRes.data && useNotesStore.getState().contentIdeas.length > 0) {
+        shouldPushLocalPlan = true;
       }
-      if (projectRes.data && filteredProjects.length > 0) {
+      if (projectRes.data && (filteredProjects.length > 0 || cloudReady)) {
         const existingById = new Map(
           useDevStore.getState().projects.map((p) => [p.id, p])
         );
         const mergedProjects: DevProject[] = filteredProjects.map((remote: any) => {
           const local = existingById.get(remote.id);
+          const cloudEnv = cloudEnvByProjectId.get(remote.id);
+          if (!cloudEnv && local?.encryptedEnv) {
+            shouldPushLocalPlan = true;
+          }
           return {
             ...remote,
             serverState: local?.serverState ?? 'stopped',
-            pid: local?.pid,
+            pid: local?.pid ?? null,
             logs: local?.logs ?? [],
-            encryptedEnv: local?.encryptedEnv,
+            encryptedEnv: cloudEnv ?? local?.encryptedEnv,
           };
         });
         useDevStore.setState({ projects: mergedProjects });
+      } else if (projectRes.data && useDevStore.getState().projects.length > 0) {
+        shouldPushLocalPlan = true;
       }
-      if (filteredHabits.length > 0) {
+      if (!habitRes.error && (filteredHabits.length > 0 || cloudReady)) {
         useHabitStore.getState().setHabitsFromCloud(filteredHabits);
+      } else if (!habitRes.error && useHabitStore.getState().habits.length > 0) {
+        shouldPushLocalPlan = true;
       }
-      if (filteredDebts.length > 0) {
+      if (!debtRes.error && (filteredDebts.length > 0 || cloudReady)) {
         useFinanceStore.setState({ debts: filteredDebts });
+      } else if (!debtRes.error && (useFinanceStore.getState().debts || []).length > 0) {
+        shouldPushLocalPlan = true;
       }
       if (shouldPushLocalPlan) {
         await pushAllToCloud(true);
       }
+      markCloudInitialized();
     } else {
       // First time cloud initialization: push existing local data to cloud
       await pushAllToCloud(true);
+      markCloudInitialized();
     }
 
     useSyncStore.getState().setStatus('synced');
@@ -445,6 +501,14 @@ export async function pushAllToCloud(force = false): Promise<void> {
       coreUpserts.push(
         supabase.from('projects').upsert(projects.map(toProjectPayload))
       );
+    }
+
+    const projectEnvRows: ProjectEnvRow[] = projects
+      .filter((p) => Boolean(p.encryptedEnv?.encryptedPayload && p.encryptedEnv?.iv && p.encryptedEnv?.salt))
+      .map((p) => projectEnvToRow(p.id, p.encryptedEnv!, 'ferrel', p.updated_at || new Date().toISOString()));
+
+    if (projectEnvRows.length > 0) {
+      coreUpserts.push(supabase.from('project_envs').upsert(projectEnvRows));
     }
 
     const budgetRows: BudgetPlanRow[] = [];
@@ -569,6 +633,38 @@ export function initSupabaseSync(): void {
 
     // Periodic pull every 30s when tab is active
     setInterval(handleFocusOrVisible, 30000);
+
+    // Real-time postgres_changes subscription for instant cross-device & Telegram updates
+    const supabase = createBrowserClient();
+    if (supabase) {
+      const triggerRealtimePull = () => {
+        if (isSyncingDown || syncTimeout) return;
+        if (realtimePullTimeout) clearTimeout(realtimePullTimeout);
+        realtimePullTimeout = setTimeout(() => {
+          realtimePullTimeout = null;
+          void pullFromCloud();
+        }, 350);
+      };
+
+      const realtimeTables = [
+        'dropzone_items',
+        'tasks',
+        'career_pipelines',
+        'transactions',
+        'habits',
+        'debt_trackers',
+        'budget_plans',
+      ];
+      let channel = supabase.channel('personal-os-db-sync');
+      for (const table of realtimeTables) {
+        channel = channel.on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table },
+          triggerRealtimePull
+        );
+      }
+      channel.subscribe();
+    }
   }
 
   // Subscribe to changes in local stores to auto-push
@@ -598,9 +694,14 @@ export function initSupabaseSync(): void {
 
   useDevStore.subscribe((state, prevState) => {
     if (isSyncingDown) return;
+    const serializeDevSync = (list: DevProject[]) =>
+      list.map((p) => ({
+        ...toProjectPayload(p),
+        encryptedEnv: p.encryptedEnv ?? null,
+      }));
     if (
-      JSON.stringify(state.projects.map(toProjectPayload)) !==
-      JSON.stringify(prevState.projects.map(toProjectPayload))
+      JSON.stringify(serializeDevSync(state.projects)) !==
+      JSON.stringify(serializeDevSync(prevState.projects))
     ) {
       debouncePushToCloud();
     }
