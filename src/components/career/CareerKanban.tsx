@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { CareerPipeline, CareerStage } from '@/types/database';
+import { toLocalDateKey } from '@/lib/budget-utils';
 import { useCareerStore } from '@/stores/useCareerStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { useSyncStore } from '@/lib/supabase-sync';
@@ -105,7 +106,7 @@ export function CareerKanban() {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(items, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `career-pipeline-${new Date().toISOString().split('T')[0]}.json`);
+    downloadAnchor.setAttribute('download', `career-pipeline-${toLocalDateKey()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { CareerPipeline, CareerCategory, CareerStage, WorkType } from '@/types/database';
+import { toLocalDateKey } from '@/lib/budget-utils';
 import { X, CheckCircle2, Building2, Briefcase, FileText, Calendar, DollarSign, Globe, Video, User, ChevronDown } from 'lucide-react';
 
 interface CareerModalProps {
@@ -24,7 +25,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
     role_or_program: '',
     category: 'internship' as CareerCategory,
     stage: 'applied' as CareerStage,
-    applied_date: new Date().toISOString().split('T')[0],
+    applied_date: toLocalDateKey(),
     deadline: '',
     platform_source: 'LinkedIn',
     work_type: 'hybrid' as WorkType,
@@ -44,8 +45,8 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         role_or_program: initialData.role_or_program || '',
         category: initialData.category || 'internship',
         stage: initialData.stage || 'applied',
-        applied_date: initialData.applied_date ? initialData.applied_date.split('T')[0] : '',
-        deadline: initialData.deadline ? initialData.deadline.split('T')[0] : '',
+        applied_date: initialData.applied_date ? toLocalDateKey(initialData.applied_date) : '',
+        deadline: initialData.deadline ? toLocalDateKey(initialData.deadline) : '',
         platform_source: initialData.platform_source || '',
         work_type: initialData.work_type || 'hybrid',
         location: initialData.location || '',
@@ -62,7 +63,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
         role_or_program: '',
         category: 'internship',
         stage: 'applied',
-        applied_date: new Date().toISOString().split('T')[0],
+        applied_date: toLocalDateKey(),
         deadline: '',
         platform_source: 'LinkedIn',
         work_type: 'hybrid',

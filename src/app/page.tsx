@@ -16,6 +16,7 @@ import { CommandBar } from '@/components/cmd/CommandBar';
 import { QuickCaptureModal, QuickCaptureTab } from '@/components/layout/QuickCaptureModal';
 import { PinGate } from '@/components/auth/PinGate';
 import { useTaskStore } from '@/stores/useTaskStore';
+import { toLocalDateKey } from '@/lib/budget-utils';
 import { initSupabaseSync } from '@/lib/supabase-sync';
 import { motion } from 'framer-motion';
 
@@ -95,7 +96,7 @@ export default function HomePage() {
     initSupabaseSync();
 
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = toLocalDateKey();
       const lastDate = localStorage.getItem('personal_os_last_briefing');
       if (todayStr !== lastDate) {
         const res = executeDailyRollover(todayStr, lastDate);
@@ -111,7 +112,7 @@ export default function HomePage() {
 
   const handleDismissBriefing = () => {
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = toLocalDateKey();
       localStorage.setItem('personal_os_last_briefing', todayStr);
     } catch {
       // Ignore

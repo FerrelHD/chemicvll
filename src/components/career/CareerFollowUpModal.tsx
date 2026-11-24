@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { toLocalDateKey } from '@/lib/budget-utils';
 import { CareerPipeline } from '@/types/database';
 import { useCareerStore } from '@/stores/useCareerStore';
 import {
@@ -116,7 +117,7 @@ export function CareerFollowUpModal({
     nextDate.setDate(nextDate.getDate() + 7);
 
     updateItem(item.id, {
-      next_follow_up_date: nextDate.toISOString().split('T')[0],
+      next_follow_up_date: toLocalDateKey(nextDate),
       applied_date: new Date().toISOString(), // reset radar timer
     });
 
