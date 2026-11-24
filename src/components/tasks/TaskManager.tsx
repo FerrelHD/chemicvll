@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useHabitStore } from '@/stores/useHabitStore';
 import { toLocalDateKey } from '@/lib/budget-utils';
+import { ambientAudio, AmbientMode } from '@/lib/ambient-audio';
 import { FocusMark } from '@/components/icons/ChemicIcons';
 import { HabitTrackerCard } from './HabitTrackerCard';
 import {
@@ -43,7 +44,17 @@ export function TaskManager() {
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<1 | 2 | 3>(1);
   const [filterMode, setFilterMode] = useState<'all' | 'p1' | 'p2' | 'p3'>('all');
-  const [ambientSound, setAmbientSound] = useState<'off' | 'lofi' | 'brown' | 'rain'>('off');
+  const [ambientSound, setAmbientSound] = useState<AmbientMode>('off');
+
+  useEffect(() => {
+    ambientAudio.setMode(ambientSound);
+  }, [ambientSound]);
+
+  useEffect(() => {
+    return () => {
+      ambientAudio.stop();
+    };
+  }, []);
 
   // Focus Timer state (25 minutes default)
   const [timeLeft, setTimeLeft] = useState(25 * 60);
