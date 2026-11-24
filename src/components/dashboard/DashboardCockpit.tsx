@@ -678,7 +678,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
 
           {/* Realistic Virtual Card */}
           <div
-            className="p-4 sm:p-5 rounded-2xl text-white shadow-[0_8px_24px_rgba(0,102,204,0.2)] space-y-3.5 sm:space-y-4"
+            className="p-4 sm:p-5 rounded-2xl text-white shadow-none border border-white/10 space-y-3.5 sm:space-y-4"
             style={{
               background: activeWallet?.color
                 ? `linear-gradient(135deg, ${activeWallet.color}, #18181B)`

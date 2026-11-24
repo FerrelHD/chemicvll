@@ -608,8 +608,8 @@ export function FinanceManager() {
             {/* Front Active Card */}
             {activeWallet && (
               <div
-                className={`relative z-30 w-full rounded-2xl text-white p-5 shadow-lg ${
-                  backgroundWallets.length > 0 ? '-mt-10 border-t-2 border-white' : ''
+                className={`relative z-30 w-full rounded-2xl text-white p-5 shadow-none border border-white/10 ${
+                  backgroundWallets.length > 0 ? '-mt-10 border-t-2 border-t-white' : ''
                 }`}
                 style={{
                   background: activeWallet.color
