@@ -19,6 +19,7 @@ import {
   ChevronDown,
   X,
   Maximize2,
+  Minimize2,
   Calendar,
   Tag,
   FileText,
@@ -73,6 +74,8 @@ export function NotesAndContentStudio() {
   // Mode states for Markdown editing vs rich preview
   const [noteViewMode, setNoteViewMode] = useState<'edit' | 'preview'>('edit');
   const [contentViewMode, setContentViewMode] = useState<'edit' | 'preview'>('edit');
+  const [isNoteMaximized, setIsNoteMaximized] = useState(false);
+  const [isContentMaximized, setIsContentMaximized] = useState(false);
 
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -591,7 +594,11 @@ export function NotesAndContentStudio() {
           onClick={() => setViewingNoteId(null)}
         >
           <div
-            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-4xl w-full h-[92vh] sm:h-[86vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
+            className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
+              isNoteMaximized
+                ? 'max-w-[98vw] h-[96vh] sm:h-[96vh]'
+                : 'max-w-4xl lg:max-w-6xl xl:max-w-7xl h-[94vh] sm:h-[88vh] md:h-[90vh]'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile drag handle */}
@@ -673,6 +680,15 @@ export function NotesAndContentStudio() {
 
                 <button
                   type="button"
+                  onClick={() => setIsNoteMaximized(!isNoteMaximized)}
+                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition hidden sm:inline-flex"
+                  title={isNoteMaximized ? 'Perkecil tampilan' : 'Perbesar layar penuh'}
+                >
+                  {isNoteMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setViewingNoteId(null)}
                   className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
                   title="Tutup (Esc)"
@@ -683,7 +699,7 @@ export function NotesAndContentStudio() {
             </div>
 
             {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-5">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-10 py-5 sm:py-6 space-y-4">
               {/* Title Section (Large Notion-Style) */}
               <div className="space-y-3">
                 <input
@@ -912,7 +928,11 @@ export function NotesAndContentStudio() {
           onClick={() => setViewingContentId(null)}
         >
           <div
-            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-4xl w-full h-[92vh] sm:h-[86vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
+            className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
+              isContentMaximized
+                ? 'max-w-[98vw] h-[96vh] sm:h-[96vh]'
+                : 'max-w-4xl lg:max-w-6xl xl:max-w-7xl h-[94vh] sm:h-[88vh] md:h-[90vh]'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile drag handle */}
@@ -1001,6 +1021,15 @@ export function NotesAndContentStudio() {
 
                 <button
                   type="button"
+                  onClick={() => setIsContentMaximized(!isContentMaximized)}
+                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition hidden sm:inline-flex"
+                  title={isContentMaximized ? 'Perkecil tampilan' : 'Perbesar layar penuh'}
+                >
+                  {isContentMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setViewingContentId(null)}
                   className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
                   title="Tutup (Esc)"
@@ -1011,7 +1040,7 @@ export function NotesAndContentStudio() {
             </div>
 
             {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-5">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-10 py-5 sm:py-6 space-y-4">
               {/* Title Section */}
               <div className="space-y-3">
                 <input
