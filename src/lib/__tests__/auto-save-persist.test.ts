@@ -114,6 +114,31 @@ async function runTests() {
   assert.strictEqual(parsedNotes.state.notes[0].title, 'Architecture Rules');
   console.log('Test 6 Passed: useNotesStore auto-saves to localStorage');
 
+  // Test 7: Notes Store content ideas update & delete
+  useNotesStore.getState().addContentIdea({
+    title: 'Testing Idea',
+    hook_text: 'Wait for this hook',
+    script_body: 'Script line 1',
+    platform: 'YouTube',
+    status: 'idea',
+  });
+  const addedIdea = useNotesStore.getState().contentIdeas.find((c) => c.title === 'Testing Idea');
+  assert.ok(addedIdea, 'Content idea must be added');
+  useNotesStore.getState().updateContentIdea(addedIdea.id, {
+    title: 'Updated Testing Idea',
+    hook_text: 'New hook',
+  });
+  const updatedIdea = useNotesStore.getState().contentIdeas.find((c) => c.id === addedIdea.id);
+  assert.strictEqual(updatedIdea?.title, 'Updated Testing Idea');
+  assert.strictEqual(updatedIdea?.hook_text, 'New hook');
+  useNotesStore.getState().deleteContentIdea(addedIdea.id);
+  assert.strictEqual(
+    useNotesStore.getState().contentIdeas.some((c) => c.id === addedIdea.id),
+    false,
+    'Content idea must be deleted'
+  );
+  console.log('Test 7 Passed: useNotesStore content idea update and delete works');
+
   console.log('All 6 stores verified: Auto-Save persist works 100% reliably!');
 }
 
