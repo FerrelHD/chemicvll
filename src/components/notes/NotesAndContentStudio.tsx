@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNotesStore, NoteItem, ContentIdea } from '@/stores/useNotesStore';
 import { LedgerNoteMark } from '@/components/icons/ChemicIcons';
+import { MarkdownRenderer, stripMarkdown } from './MarkdownRenderer';
 import {
   BookOpen,
   Video,
@@ -22,6 +23,17 @@ import {
   Tag,
   FileText,
   Sparkles,
+  Bold,
+  Italic,
+  Heading1,
+  Heading2,
+  List,
+  ListOrdered,
+  CheckSquare,
+  Quote,
+  Minus,
+  Eye,
+  Edit3,
 } from 'lucide-react';
 
 export function NotesAndContentStudio() {
@@ -57,6 +69,13 @@ export function NotesAndContentStudio() {
   const [viewingNoteId, setViewingNoteId] = useState<string | null>(null);
   const [viewingContentId, setViewingContentId] = useState<string | null>(null);
   const [newTagInput, setNewTagInput] = useState('');
+
+  // Mode states for Markdown editing vs rich preview
+  const [noteViewMode, setNoteViewMode] = useState<'edit' | 'preview'>('edit');
+  const [contentViewMode, setContentViewMode] = useState<'edit' | 'preview'>('edit');
+
+  const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const viewingNote = notes.find((n) => n.id === viewingNoteId) || null;
   const viewingContent = contentIdeas.find((c) => c.id === viewingContentId) || null;
@@ -124,6 +143,73 @@ export function NotesAndContentStudio() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // Helper to insert markdown formatting at cursor / selection
+  const handleInsertFormat = (
+    target: 'note' | 'content',
+    prefix: string,
+    suffix: string = '',
+    defaultPlaceholder: string = ''
+  ) => {
+    const textarea = target === 'note' ? noteTextareaRef.current : contentTextareaRef.current;
+    if (!textarea) return;
+
+    // Switch to edit mode if currently previewing
+    if (target === 'note' && noteViewMode === 'preview') {
+      setNoteViewMode('edit');
+    } else if (target === 'content' && contentViewMode === 'preview') {
+      setContentViewMode('edit');
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+
+    const selectedText = text.substring(start, end);
+    const contentToInsert = selectedText || defaultPlaceholder;
+    const newText = text.substring(0, start) + prefix + contentToInsert + suffix + text.substring(end);
+
+    if (target === 'note' && viewingNote) {
+      updateNote(viewingNote.id, { content: newText });
+    } else if (target === 'content' && viewingContent) {
+      updateContentIdea(viewingContent.id, { script_body: newText });
+    }
+
+    setTimeout(() => {
+      textarea.focus();
+      const newStart = start + prefix.length;
+      const newEnd = newStart + contentToInsert.length;
+      textarea.setSelectionRange(newStart, newEnd);
+    }, 15);
+  };
+
+  // Interactive checkbox toggling for Note Markdown Preview
+  const handleToggleNoteCheckbox = (lineIndex: number, newChecked: boolean) => {
+    if (!viewingNote) return;
+    const lines = viewingNote.content.split('\n');
+    if (lineIndex >= 0 && lineIndex < lines.length) {
+      const line = lines[lineIndex];
+      const updatedLine = newChecked
+        ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
+        : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
+      lines[lineIndex] = updatedLine;
+      updateNote(viewingNote.id, { content: lines.join('\n') });
+    }
+  };
+
+  // Interactive checkbox toggling for Content Studio Markdown Preview
+  const handleToggleContentCheckbox = (lineIndex: number, newChecked: boolean) => {
+    if (!viewingContent || !viewingContent.script_body) return;
+    const lines = viewingContent.script_body.split('\n');
+    if (lineIndex >= 0 && lineIndex < lines.length) {
+      const line = lines[lineIndex];
+      const updatedLine = newChecked
+        ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
+        : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
+      lines[lineIndex] = updatedLine;
+      updateContentIdea(viewingContent.id, { script_body: lines.join('\n') });
+    }
+  };
+
   // Sort notes: pinned first
   const sortedNotes = [...notes].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
 
@@ -138,7 +224,7 @@ export function NotesAndContentStudio() {
               Second Brain &amp; Content Studio
             </h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Repositori catatan teknis, AI prompts, code snippets, dan pipeline ide konten video.
+              Repositori catatan teknis, AI prompts, code snippets, dan pipeline ide konten video dengan rich formatting.
             </p>
           </div>
         </div>
@@ -221,8 +307,8 @@ export function NotesAndContentStudio() {
               rows={3}
               value={noteContent}
               onChange={(e) => setNoteContent(e.target.value)}
-              placeholder="Isi catatan, command terminal, atau prompt AI..."
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-mono text-xs leading-relaxed resize-none"
+              placeholder="Isi catatan, command terminal, list nomor, atau prompt AI (mendukung markdown **bold**, 1. numbering, dll)..."
+              className="w-full px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-sans text-xs leading-relaxed resize-none"
             />
 
             <div className="flex justify-end">
@@ -314,8 +400,11 @@ export function NotesAndContentStudio() {
                   {n.title}
                 </h4>
 
-                <div className="text-xs text-on-surface-variant font-mono bg-surface-container-low p-3 rounded-2xl whitespace-pre-wrap max-h-36 overflow-hidden border border-outline/20 leading-relaxed relative">
-                  {n.content}
+                {/* Clean, stripped markdown preview */}
+                <div className="text-xs text-on-surface-variant bg-surface-container-low p-3 rounded-2xl max-h-36 overflow-hidden border border-outline/20 leading-relaxed relative font-sans">
+                  <p className="line-clamp-4 whitespace-pre-wrap">
+                    {stripMarkdown(n.content) || '(Belum ada isi catatan)'}
+                  </p>
                   <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none" />
                 </div>
 
@@ -427,7 +516,7 @@ export function NotesAndContentStudio() {
                           <option value="editing">✂️ Editing</option>
                           <option value="posted">✅ Posted</option>
                         </select>
-                        <ChevronDown className="w-3 h-3 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
+                        <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
                       </div>
                       <button
                         type="button"
@@ -454,8 +543,8 @@ export function NotesAndContentStudio() {
                   )}
 
                   {idea.script_body && (
-                    <p className="text-xs text-on-surface-variant line-clamp-4 leading-relaxed bg-surface-container-low p-3 rounded-2xl border border-outline/20">
-                      {idea.script_body}
+                    <p className="text-xs text-on-surface-variant line-clamp-4 leading-relaxed bg-surface-container-low p-3 rounded-2xl border border-outline/20 font-sans">
+                      {stripMarkdown(idea.script_body)}
                     </p>
                   )}
                 </div>
@@ -594,7 +683,7 @@ export function NotesAndContentStudio() {
             </div>
 
             {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-6">
+            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-5">
               {/* Title Section (Large Notion-Style) */}
               <div className="space-y-3">
                 <input
@@ -669,33 +758,143 @@ export function NotesAndContentStudio() {
                 </div>
               </div>
 
-              {/* Content Body Editor (Live in-place editing) */}
-              <div className="flex flex-col flex-1 min-h-[360px]">
-                {viewingNote.type === 'snippet' || viewingNote.type === 'prompt' ? (
-                  <div className="flex flex-col flex-1 rounded-2xl border border-outline/30 bg-surface-container-low/70 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container text-[11px] font-mono text-on-surface-variant">
-                      <div className="flex items-center gap-2">
-                        <Code className="w-3.5 h-3.5 text-primary-container" />
-                        <span className="font-semibold uppercase tracking-wider">
-                          {viewingNote.type === 'snippet' ? 'Code Editor / Snippet' : 'AI Prompt Template'}
-                        </span>
-                      </div>
-                      <span className="text-on-surface-variant/70 text-[10px]">Monospace Editor</span>
-                    </div>
-                    <textarea
-                      value={viewingNote.content}
-                      onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
-                      placeholder="Ketik code snippet atau prompt di sini..."
-                      className="w-full flex-1 p-4 sm:p-5 font-mono text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px]"
+              {/* QUICK FORMATTING TOOLBAR & VIEW MODE SWITCHER (OPTI 2) */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
+                {/* Format buttons bar */}
+                <div className="flex items-center gap-1 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '**', '**', 'teks tebal')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
+                    title="Bold / Tebal (**teks**)"
+                  >
+                    <Bold className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '*', '*', 'teks miring')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition italic"
+                    title="Italic / Miring (*teks*)"
+                  >
+                    <Italic className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n# ', '', 'Judul Bab')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
+                    title="Heading 1 (# Judul)"
+                  >
+                    <Heading1 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n## ', '', 'Sub Judul')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
+                    title="Heading 2 (## Sub Judul)"
+                  >
+                    <Heading2 className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n1. ', '', 'Langkah pertama')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Daftar Nomor (1. Langkah)"
+                  >
+                    <ListOrdered className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n- ', '', 'Poin item')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Daftar Poin (- Poin)"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n- [ ] ', '', 'Tugas baru')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Checklist To-Do (- [ ] Tugas)"
+                  >
+                    <CheckSquare className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n> ', '', 'Kutipan / Catatan penting')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Kutipan / Quote (> Catatan)"
+                  >
+                    <Quote className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '`', '`', 'kode')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-mono text-xs"
+                    title="Inline Code (`kode`)"
+                  >
+                    <Code className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('note', '\n---\n')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Garis Pemisah (---)"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Mode Selector Pill: Tulis (Edit) vs Pratinjau (Preview) */}
+                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setNoteViewMode('edit')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      noteViewMode === 'edit'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    <span>Tulis</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNoteViewMode('preview')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      noteViewMode === 'preview'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Pratinjau Rapi</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Content Body Area (Live Edit vs Rendered Markdown Preview) */}
+              <div className="flex flex-col flex-1 min-h-[380px]">
+                {noteViewMode === 'preview' ? (
+                  <div className="p-4 sm:p-6 rounded-2xl bg-surface-container-low/40 border border-outline/25 min-h-[380px] overflow-y-auto">
+                    <MarkdownRenderer
+                      content={viewingNote.content}
+                      onToggleCheckbox={handleToggleNoteCheckbox}
                     />
                   </div>
                 ) : (
-                  <textarea
-                    value={viewingNote.content}
-                    onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
-                    placeholder="Mulai ketik catatan di sini... (Mendukung paragraf panjang, checklist, referensi teknis)"
-                    className="w-full flex-1 font-sans text-sm sm:text-base leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px] placeholder:text-on-surface-variant/40"
-                  />
+                  <div className="flex flex-col flex-1 rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
+                    <textarea
+                      ref={noteTextareaRef}
+                      value={viewingNote.content}
+                      onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
+                      placeholder="Mulai ketik catatan di sini... (Gunakan toolbar di atas untuk bold, heading, numbering, checklist)"
+                      className="w-full flex-1 p-4 sm:p-6 font-sans text-sm sm:text-base leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px] placeholder:text-on-surface-variant/40"
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -812,7 +1011,7 @@ export function NotesAndContentStudio() {
             </div>
 
             {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-6">
+            <div className="flex-1 overflow-y-auto px-6 sm:px-12 py-6 sm:py-8 space-y-5">
               {/* Title Section */}
               <div className="space-y-3">
                 <input
@@ -856,18 +1055,119 @@ export function NotesAndContentStudio() {
                 />
               </div>
 
+              {/* SCRIPT FORMATTING TOOLBAR & VIEW MODE SWITCHER */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
+                <div className="flex items-center gap-1 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '**', '**', 'teks tebal')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
+                    title="Bold (**teks**)"
+                  >
+                    <Bold className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '*', '*', 'teks miring')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition italic"
+                    title="Italic (*teks*)"
+                  >
+                    <Italic className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '\n1. ', '', 'Scene pertama')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Daftar Nomor"
+                  >
+                    <ListOrdered className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '\n- ', '', 'Talking point')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Bullet Point"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '\n- [ ] ', '', 'Adegan / asset')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Checklist Asset"
+                  >
+                    <CheckSquare className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '\n> ', '', 'Narasi audio')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Callout / Voiceover"
+                  >
+                    <Quote className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertFormat('content', '\n---\n')}
+                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
+                    title="Pemisah Adegan"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setContentViewMode('edit')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      contentViewMode === 'edit'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    <span>Tulis</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setContentViewMode('preview')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      contentViewMode === 'preview'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Pratinjau</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Script / Outline Editor */}
               <div className="space-y-2 flex flex-col flex-1 min-h-[320px]">
                 <div className="flex items-center gap-2 text-xs font-bold text-on-surface uppercase tracking-wider">
                   <FileText className="w-3.5 h-3.5 text-primary-container" />
                   <span>Outline &amp; Full Script Body</span>
                 </div>
-                <textarea
-                  value={viewingContent.script_body || ''}
-                  onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
-                  placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
-                  className="w-full flex-1 p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-outline/30 font-sans text-xs sm:text-sm leading-relaxed text-on-surface focus:outline-none focus:border-primary-container resize-none min-h-[320px] placeholder:text-on-surface-variant/40"
-                />
+
+                {contentViewMode === 'preview' ? (
+                  <div className="p-4 sm:p-6 rounded-2xl bg-surface-container-low/40 border border-outline/25 min-h-[320px] overflow-y-auto">
+                    <MarkdownRenderer
+                      content={viewingContent.script_body || ''}
+                      onToggleCheckbox={handleToggleContentCheckbox}
+                    />
+                  </div>
+                ) : (
+                  <textarea
+                    ref={contentTextareaRef}
+                    value={viewingContent.script_body || ''}
+                    onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
+                    placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
+                    className="w-full flex-1 p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-outline/30 font-sans text-xs sm:text-sm leading-relaxed text-on-surface focus:outline-none focus:border-primary-container resize-none min-h-[320px] placeholder:text-on-surface-variant/40"
+                  />
+                )}
               </div>
             </div>
           </div>
