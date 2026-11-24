@@ -8,6 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const os = require('node:os');
+const crypto = require('node:crypto');
 const { spawn, exec } = require('node:child_process');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -53,7 +54,47 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 
 const PORT = process.env.DAEMON_PORT || 9999;
-const DAEMON_SECRET = process.env.LOCAL_DAEMON_SECRET || 'local-secret';
+const DAEMON_SECRET = (process.env.LOCAL_DAEMON_SECRET || '').trim();
+const PLACEHOLDER_SECRETS = new Set(['', 'local-secret', 'change-this-to-a-secure-random-token']);
+const HAS_VALID_SECRET = DAEMON_SECRET.length >= 12 && !PLACEHOLDER_SECRETS.has(DAEMON_SECRET);
+const PROJECT_ID_RE = /^[a-zA-Z0-9_-]{1,80}$/;
+const SHELL_META_RE = /[;&|`$><\r\n]/;
+const ALLOWED_DEV_BINARIES = new Set([
+  'npm', 'pnpm', 'yarn', 'bun', 'npx', 'node', 'tsx', 'php',
+  'python', 'python3', 'uvicorn', 'gunicorn', 'cargo', 'go',
+  'ruby', 'rails', 'vite', 'next', 'docker', 'supabase',
+]);
+
+if (!HAS_VALID_SECRET) {
+  console.warn('[Daemon Security] LOCAL_DAEMON_SECRET missing or insecure placeholder. Remote commands will be rejected until a >=12-char secret is configured in .env.local.');
+}
+
+function validateCommand(command) {
+  if (typeof command !== 'string') return null;
+  const clean = command.trim();
+  if (!clean || clean.length > 200 || SHELL_META_RE.test(clean)) return null;
+  const binary = (clean.split(/\s+/)[0] || '').toLowerCase().split(/[\\/]/).pop() || '';
+  return ALLOWED_DEV_BINARIES.has(binary) ? clean : null;
+}
+
+function verifyRelayCommand(action, payload) {
+  if (!HAS_VALID_SECRET) return false;
+  if (!payload || !PROJECT_ID_RE.test(String(payload.projectId || ''))) return false;
+  const ts = Number(payload.ts);
+  if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > 60_000) return false;
+  const sig = typeof payload.sig === 'string' ? payload.sig : '';
+  if (!/^[a-f0-9]{64}$/i.test(sig)) return false;
+
+  const command = action === 'start_process' ? String(payload.command || '').trim() : '';
+  const cwd = typeof payload.cwd === 'string' ? payload.cwd.trim() : '';
+  const signingStr = `${action}:${payload.projectId.trim()}:${command}:${cwd}:${ts}`;
+  const expected = crypto.createHmac('sha256', DAEMON_SECRET).update(signingStr).digest('hex');
+
+  return crypto.timingSafeEqual(
+    Buffer.from(sig.toLowerCase()),
+    Buffer.from(expected.toLowerCase())
+  );
+}
 
 // In-memory process registry: projectId -> { child, pid, command, cwd, logs: [] }
 const runningProcesses = new Map();
@@ -92,12 +133,24 @@ function startProcess(projectId, command, cwd) {
   const isWin = process.platform === 'win32';
   const shell = isWin ? 'cmd.exe' : '/bin/sh';
   const shellFlag = isWin ? '/c' : '-c';
-  const resolvedCwd = cwd || path.resolve(__dirname, '..');
+  const safeCommand = validateCommand(command);
+  if (!safeCommand) {
+    log(`Rejected invalid command for ${projectId}`);
+    sendBroadcast('process_exited', { projectId, error: 'Invalid or disallowed dev command' });
+    return null;
+  }
 
-  log(`Launching: "${command}" in ${resolvedCwd}`);
+  const resolvedCwd = cwd || path.resolve(__dirname, '..');
+  if (!fs.existsSync(resolvedCwd) || !fs.statSync(resolvedCwd).isDirectory()) {
+    log(`Rejected missing cwd for ${projectId}: ${resolvedCwd}`);
+    sendBroadcast('process_exited', { projectId, error: 'Working directory does not exist' });
+    return null;
+  }
+
+  log(`Launching: "${safeCommand}" in ${resolvedCwd}`);
 
   try {
-    const child = spawn(shell, [shellFlag, command], {
+    const child = spawn(shell, [shellFlag, safeCommand], {
       cwd: resolvedCwd,
       env: { ...process.env },
       detached: !isWin,
@@ -185,14 +238,22 @@ function stopProcess(projectId) {
 // 4. Register Supabase Realtime Handlers
 channel
   .on('broadcast', { event: 'start_process' }, ({ payload }) => {
+    if (!verifyRelayCommand('start_process', payload)) {
+      log('[Security] Rejected unauthorized or expired start_process command.');
+      return;
+    }
     if (!payload?.projectId || !payload?.command) return;
-    log(`[Remote Command] Start request for "${payload.projectId}"`);
-    startProcess(payload.projectId, payload.command, payload.cwd);
+    log(`[Remote Command] Authenticated start request for "${payload.projectId}"`);
+    startProcess(payload.projectId.trim(), payload.command.trim(), payload.cwd);
   })
   .on('broadcast', { event: 'stop_process' }, ({ payload }) => {
+    if (!verifyRelayCommand('stop_process', payload)) {
+      log('[Security] Rejected unauthorized or expired stop_process command.');
+      return;
+    }
     if (!payload?.projectId) return;
-    log(`[Remote Command] Stop request for "${payload.projectId}"`);
-    stopProcess(payload.projectId);
+    log(`[Remote Command] Authenticated stop request for "${payload.projectId}"`);
+    stopProcess(payload.projectId.trim());
   })
   .on('broadcast', { event: 'request_status' }, () => {
     emitHeartbeat();
@@ -240,11 +301,21 @@ function emitHeartbeat() {
 setInterval(emitHeartbeat, 3000);
 
 // 6. Fallback Local HTTP Server (for local-only pings)
+const ALLOWED_ORIGINS = new Set([
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, '')] : []),
+]);
+
 const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
   res.setHeader('Access-Control-Allow-Private-Network', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
