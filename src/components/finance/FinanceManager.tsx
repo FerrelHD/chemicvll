@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useFinanceStore } from '@/stores/useFinanceStore';
 import { Transaction } from '@/types/database';
-import { computeBudgetProgress, getAvailableBudgetCategories } from '@/lib/budget-utils';
+import { computeBudgetProgress, getAvailableBudgetCategories, toLocalDateKey } from '@/lib/budget-utils';
 import { formatBillingDate, formatRupiahInput, getDaysUntilDate, parseRupiahInput } from '@/lib/utils';
 import { PaydayBudgetPanel } from './PaydayBudgetPanel';
 import { PaydayBudgetModal } from './PaydayBudgetModal';
@@ -107,14 +107,14 @@ export function FinanceManager() {
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [isLoggingOpen, isWalletModalOpen, isAddSubOpen]);
+  }, [isLoggingOpen, isWalletModalOpen, isAddSubOpen, isAllTxOpen]);
   const [subName, setSubName] = useState('');
   const [subCost, setSubCost] = useState('');
   const [subCycle, setSubCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [subDate, setSubDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 7);
-    return d.toISOString().split('T')[0];
+    return toLocalDateKey(d);
   });
   const [subWalletId, setSubWalletId] = useState(wallets[0]?.id || 'w-bca');
 
