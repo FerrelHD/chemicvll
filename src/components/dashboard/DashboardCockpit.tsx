@@ -585,11 +585,11 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
             <div className="flex items-center gap-3 text-xs font-medium self-start sm:self-auto">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-                <span>In</span>
+                <span className="text-primary-container font-semibold">In</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-inverse-surface"></span>
-                <span>Out</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-inverse-surface dark:bg-zinc-600"></span>
+                <span className="text-on-surface-variant">Out</span>
               </div>
             </div>
           </div>
@@ -624,9 +624,9 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group relative">
                     {/* Floating Interactive Tooltip */}
                     <div className="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-30 flex flex-col items-center group-hover:-translate-y-1">
-                      <div className="bg-inverse-surface text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 whitespace-nowrap flex flex-col gap-0.5">
+                      <div className="bg-zinc-900 dark:bg-zinc-950 text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 dark:border-primary-container/30 whitespace-nowrap flex flex-col gap-0.5">
                         <div className="flex items-center justify-between gap-3 font-semibold pb-1 border-b border-white/15">
-                          <span className="font-bold">{m.month}</span>
+                          <span className="font-bold text-primary-container">{m.month}</span>
                           <span className={`tabular-nums ${m.rawIn >= m.rawOut ? 'text-emerald-400' : 'text-rose-400'}`}>
                             {m.rawIn >= m.rawOut ? '+' : ''}Rp {(m.rawIn - m.rawOut).toLocaleString('id-ID')}
                           </span>
@@ -642,7 +642,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                           <span className="font-medium text-white">Rp {m.rawOut.toLocaleString('id-ID')}</span>
                         </div>
                       </div>
-                      <div className="w-2 h-2 bg-inverse-surface rotate-45 -mt-1" />
+                      <div className="w-2 h-2 bg-zinc-900 dark:bg-zinc-950 rotate-45 -mt-1" />
                     </div>
 
                     <div className="w-full flex items-end justify-center gap-1 sm:gap-1.5 h-full">
@@ -654,7 +654,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                       {/* Out Bar */}
                       <div
                         style={{ height: outHeight }}
-                        className="w-2.5 sm:w-3.5 bg-inverse-surface/80 rounded-full transition-all duration-300 group-hover:bg-inverse-surface group-hover:scale-y-[1.03]"
+                        className="w-2.5 sm:w-3.5 bg-inverse-surface/80 dark:bg-zinc-700/80 rounded-full transition-all duration-300 group-hover:bg-inverse-surface dark:group-hover:bg-zinc-600 group-hover:scale-y-[1.03]"
                       ></div>
                     </div>
                     <span className="text-[10px] sm:text-[11px] font-mono text-on-surface-variant font-medium group-hover:text-on-surface transition-colors">

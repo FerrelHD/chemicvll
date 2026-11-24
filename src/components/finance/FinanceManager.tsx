@@ -792,8 +792,8 @@ export function FinanceManager() {
                               : 'left-1/2 -translate-x-1/2 items-center'
                           }`}
                         >
-                          <div className="bg-inverse-surface text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 whitespace-nowrap flex flex-col gap-0.5">
-                            <span className="font-bold pb-0.5 border-b border-white/15">{cap.label}</span>
+                          <div className="bg-zinc-900 dark:bg-zinc-950 text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 dark:border-primary-container/30 whitespace-nowrap flex flex-col gap-0.5">
+                            <span className="font-bold text-primary-container pb-0.5 border-b border-white/15">{cap.label}</span>
                             <div className="flex items-center gap-2 tabular-nums">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#a387f6] shrink-0" />
                               <span className="text-white/80">In:</span>
@@ -806,7 +806,7 @@ export function FinanceManager() {
                             </div>
                           </div>
                           <div
-                            className={`w-2 h-2 bg-inverse-surface rotate-45 -mt-1 ${
+                            className={`w-2 h-2 bg-zinc-900 dark:bg-zinc-950 rotate-45 -mt-1 ${
                               isFirst ? 'ml-4 sm:ml-0' : isLast ? 'mr-4 sm:mr-0' : ''
                             }`}
                           />
