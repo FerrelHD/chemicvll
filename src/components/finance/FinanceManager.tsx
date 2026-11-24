@@ -608,7 +608,7 @@ export function FinanceManager() {
             {/* Front Active Card */}
             {activeWallet && (
               <div
-                className={`relative z-30 w-full rounded-2xl text-white p-5 shadow-none border border-white/10 ${
+                className={`relative z-30 w-full rounded-2xl text-white p-5 ring-1 ring-inset ring-white/[0.08] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.12),0_4px_10px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_32px_-8px_rgba(0,0,0,0.6),0_4px_12px_-2px_rgba(0,0,0,0.4)] ${
                   backgroundWallets.length > 0 ? '-mt-10 border-t-2 border-t-white' : ''
                 }`}
                 style={{
