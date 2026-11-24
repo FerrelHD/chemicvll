@@ -13,19 +13,48 @@ export function PinGate({ children }: PinGateProps) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const EXPECTED_PIN = process.env.NEXT_PUBLIC_APP_PIN || '2026';
-
   useEffect(() => {
-    try {
-      const unlocked = localStorage.getItem('personal_os_unlocked') === 'true';
-      setIsUnlocked(unlocked);
-    } catch {
-      setIsUnlocked(false);
+    let active = true;
+
+    async function checkSession() {
+      try {
+        const res = await fetch('/api/auth/pin', { cache: 'no-store' });
+        if (!active) return;
+        if (res.ok) {
+          const data = await res.json();
+          const authed = Boolean(data?.authenticated);
+          setIsUnlocked(authed);
+          try {
+            if (authed) {
+              localStorage.setItem('personal_os_unlocked', 'true');
+            } else {
+              localStorage.removeItem('personal_os_unlocked');
+            }
+          } catch {
+            // Ignore
+          }
+          return;
+        }
+      } catch {
+        // Offline PWA fallback when server is unreachable
+        try {
+          if (active) {
+            setIsUnlocked(localStorage.getItem('personal_os_unlocked') === 'true');
+          }
+          return;
+        } catch {
+          // Ignore
+        }
+      }
+      if (active) setIsUnlocked(false);
     }
+
+    void checkSession();
 
     const handleLock = () => {
       try {
@@ -33,14 +62,19 @@ export function PinGate({ children }: PinGateProps) {
       } catch {
         // Ignore
       }
+      void fetch('/api/auth/pin', { method: 'DELETE' }).catch(() => {});
       setIsUnlocked(false);
       setIsSuccess(false);
+      setIsVerifying(false);
       setError(false);
       setPin('');
     };
 
     window.addEventListener('personal_os_lock', handleLock);
-    return () => window.removeEventListener('personal_os_lock', handleLock);
+    return () => {
+      active = false;
+      window.removeEventListener('personal_os_lock', handleLock);
+    };
   }, []);
 
   useEffect(() => {
@@ -74,29 +108,41 @@ export function PinGate({ children }: PinGateProps) {
     }, 450);
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (isSuccess) return;
-
-    if (pin.trim() === EXPECTED_PIN) {
-      triggerSuccess();
-    } else {
+  const verifyPinServer = async (candidate: string) => {
+    if (isSuccess || isVerifying) return;
+    setIsVerifying(true);
+    try {
+      const res = await fetch('/api/auth/pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: candidate.trim() }),
+      });
+      if (res.ok) {
+        triggerSuccess();
+      } else {
+        triggerError();
+      }
+    } catch {
       triggerError();
+    } finally {
+      setIsVerifying(false);
     }
   };
 
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (isSuccess || isVerifying || !pin.trim()) return;
+    void verifyPinServer(pin);
+  };
+
   const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isSuccess) return;
+    if (isSuccess || isVerifying) return;
     const val = e.target.value.replace(/\D/g, '').slice(0, 4);
     setPin(val);
     setError(false);
 
     if (val.length === 4) {
-      if (val === EXPECTED_PIN) {
-        triggerSuccess();
-      } else {
-        triggerError();
-      }
+      void verifyPinServer(val);
     }
   };
 
