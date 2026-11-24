@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Project } from '@/types/database';
 import { daemonRelay } from '@/lib/daemon-relay';
 import { deleteFromCloud } from '@/lib/supabase-delete';
+import { getProjectEnvRowId } from '@/lib/crypto-vault';
 
 export interface DevProject extends Project {
   serverState: 'running' | 'stopped' | 'error';
@@ -398,7 +399,8 @@ export const useDevStore = create<DevState>()(
           projects: state.projects.filter((p) => p.id !== id),
           activeLogProjectId: state.activeLogProjectId === id ? null : state.activeLogProjectId,
         }));
-        deleteFromCloud('projects', id);
+        void deleteFromCloud('projects', id);
+        void deleteFromCloud('project_envs', getProjectEnvRowId(id));
       },
     }),
     {

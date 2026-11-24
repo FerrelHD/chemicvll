@@ -71,3 +71,61 @@ export async function decryptVault(
   const decoder = new TextDecoder();
   return decoder.decode(decryptedBuffer);
 }
+
+export interface EncryptedVaultBlob {
+  encryptedPayload: string;
+  iv: string;
+  salt: string;
+}
+
+export interface ProjectEnvRow {
+  id: string;
+  user_id: string;
+  project_id: string;
+  environment: 'development' | 'staging' | 'production';
+  encrypted_payload: string;
+  iv: string;
+  updated_at: string;
+}
+
+export function getProjectEnvRowId(projectId: string): string {
+  return `env-${projectId}-development`;
+}
+
+export function projectEnvToRow(
+  projectId: string,
+  encrypted: EncryptedVaultBlob,
+  userId = 'ferrel',
+  updatedAt = new Date().toISOString()
+): ProjectEnvRow {
+  return {
+    id: getProjectEnvRowId(projectId),
+    user_id: userId,
+    project_id: projectId,
+    environment: 'development',
+    encrypted_payload: JSON.stringify({
+      v: 1,
+      encryptedPayload: encrypted.encryptedPayload,
+      salt: encrypted.salt,
+    }),
+    iv: encrypted.iv,
+    updated_at: updatedAt,
+  };
+}
+
+export function rowToEncryptedEnv(row: Partial<ProjectEnvRow>): EncryptedVaultBlob | null {
+  if (!row.encrypted_payload || !row.iv) return null;
+  try {
+    const parsed = JSON.parse(row.encrypted_payload);
+    if (parsed?.encryptedPayload && parsed?.salt) {
+      return {
+        encryptedPayload: String(parsed.encryptedPayload),
+        iv: String(row.iv),
+        salt: String(parsed.salt),
+      };
+    }
+  } catch {
+    // Legacy unparsed payload without embedded salt cannot be decrypted
+  }
+  return null;
+}

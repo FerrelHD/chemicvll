@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { encryptVault, decryptVault } from '../crypto-vault';
+import { encryptVault, decryptVault, projectEnvToRow, rowToEncryptedEnv } from '../crypto-vault';
 
 async function testCryptoVault() {
   console.log('Testing Web Crypto .env Vault...');
@@ -37,6 +37,19 @@ async function testCryptoVault() {
       return true; // Decryption failure
     }
   );
+
+  // Cloud row serialization round-trip
+  const row = projectEnvToRow('proj-nexus-os', encrypted);
+  assert.equal(row.id, 'env-proj-nexus-os-development');
+  const hydrated = rowToEncryptedEnv(row);
+  assert.deepEqual(hydrated, encrypted);
+  const decryptedFromCloud = await decryptVault(
+    hydrated!.encryptedPayload,
+    hydrated!.iv,
+    hydrated!.salt,
+    passphrase
+  );
+  assert.equal(decryptedFromCloud, originalEnv);
 
   console.log('Web Crypto .env Vault tests passed!');
 }

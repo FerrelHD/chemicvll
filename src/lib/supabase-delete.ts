@@ -8,6 +8,7 @@ export type SyncTable =
   | 'tasks'
   | 'budget_plans'
   | 'projects'
+  | 'project_envs'
   | 'dropzone_items'
   | 'notes'
   | 'content_ideas'
@@ -60,6 +61,15 @@ export function clearPendingDeletion(table: SyncTable, id: string): void {
 export function isPendingDeletion(table: SyncTable, id: string): boolean {
   if (typeof window === 'undefined' && typeof localStorage === 'undefined') return false;
   return getPendingDeletions().some((p) => p.table === table && p.id === id);
+}
+
+export function clearAllPendingDeletions(): void {
+  if (typeof window === 'undefined' && typeof localStorage === 'undefined') return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (err) {
+    console.warn('[Sync] Failed to clear pending deletions:', err);
+  }
 }
 
 export async function deleteFromCloud(table: SyncTable, id: string): Promise<boolean> {

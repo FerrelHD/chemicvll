@@ -97,7 +97,7 @@ async function runTests() {
   assert.strictEqual(hydrated.syncedToCloud, true);
   console.log('Test 7 Passed: budget_plans row serialization round-trip works');
 
-  // Test 8: Schema compatibility - verify SyncTable includes all 12 client-synced tables
+  // Test 8: Schema compatibility - verify SyncTable includes all 13 client-synced tables
   const expectedTables = [
     'career_pipelines',
     'wallets',
@@ -106,6 +106,7 @@ async function runTests() {
     'tasks',
     'budget_plans',
     'projects',
+    'project_envs',
     'dropzone_items',
     'notes',
     'content_ideas',
