@@ -3,13 +3,17 @@ import { persist } from 'zustand/middleware';
 import { Task } from '@/types/database';
 import { checkAndExecuteRollover, RolloverResult } from '@/lib/daily-rollover';
 import { deleteFromCloud } from '@/lib/supabase-delete';
+import { toLocalDateKey } from '@/lib/budget-utils';
 
 interface TaskState {
   tasks: Task[];
+  focusSessionsDate: string | null;
+  focusSessionsCount: number;
   addTask: (title: string, priority?: 1 | 2 | 3, isDailyFocus?: boolean) => void;
   toggleDone: (id: string) => void;
   toggleDailyFocus: (id: string) => void;
   deleteTask: (id: string) => void;
+  incrementFocusSession: () => void;
   executeDailyRollover: (todayStr: string, lastDate: string | null) => RolloverResult;
 }
 
@@ -20,6 +24,8 @@ export const useTaskStore = create<TaskState>()(
   persist(
     (set) => ({
       tasks: INITIAL_TASKS,
+      focusSessionsDate: null,
+      focusSessionsCount: 0,
       addTask: (title, priority = 2, isDailyFocus = false) =>
         set((state) => ({
           tasks: [
@@ -58,6 +64,13 @@ export const useTaskStore = create<TaskState>()(
       deleteTask: (id) => {
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
         deleteFromCloud('tasks', id);
+      },
+      incrementFocusSession: () => {
+        const today = toLocalDateKey();
+        set((state) => ({
+          focusSessionsDate: today,
+          focusSessionsCount: state.focusSessionsDate === today ? state.focusSessionsCount + 1 : 1,
+        }));
       },
       executeDailyRollover: (todayStr, lastDate) => {
         const res = checkAndExecuteRollover(useTaskStore.getState().tasks, todayStr, lastDate);

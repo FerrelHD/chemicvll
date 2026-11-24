@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useHabitStore } from '@/stores/useHabitStore';
+import { toLocalDateKey } from '@/lib/budget-utils';
 import { FocusMark } from '@/components/icons/ChemicIcons';
 import { HabitTrackerCard } from './HabitTrackerCard';
 import {
@@ -26,7 +27,16 @@ import {
 } from 'lucide-react';
 
 export function TaskManager() {
-  const { tasks, addTask, toggleDone, toggleDailyFocus, deleteTask } = useTaskStore();
+  const {
+    tasks,
+    addTask,
+    toggleDone,
+    toggleDailyFocus,
+    deleteTask,
+    focusSessionsDate,
+    focusSessionsCount,
+    incrementFocusSession,
+  } = useTaskStore();
   const habits = useHabitStore((state) => state.habits);
   const activeStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.streak), 0) : 0;
   const bestStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.best_streak), 0) : 0;
@@ -38,20 +48,20 @@ export function TaskManager() {
   // Focus Timer state (25 minutes default)
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [sessionsCompleted, setSessionsCompleted] = useState(3);
+  const sessionsCompleted = focusSessionsDate === toLocalDateKey() ? focusSessionsCount : 0;
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (timerRunning && timeLeft > 0) {
       interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft === 0) {
+    } else if (timerRunning && timeLeft === 0) {
       setTimerRunning(false);
-      setSessionsCompleted((prev) => prev + 1);
+      incrementFocusSession();
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [timerRunning, timeLeft]);
+  }, [timerRunning, timeLeft, incrementFocusSession]);
 
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -274,7 +284,12 @@ export function TaskManager() {
             <div className="flex items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={() => setTimerRunning(!timerRunning)}
+                onClick={() => {
+                  if (!timerRunning && timeLeft === 0) {
+                    setTimeLeft(25 * 60);
+                  }
+                  setTimerRunning(!timerRunning);
+                }}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-bold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
               >
                 {timerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}

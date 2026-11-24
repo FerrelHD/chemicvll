@@ -1,5 +1,7 @@
 import assert from 'node:assert';
 import { checkAndExecuteRollover } from '../daily-rollover';
+import { useTaskStore } from '../../stores/useTaskStore';
+import { toLocalDateKey } from '../budget-utils';
 import { Task } from '@/types/database';
 
 console.log('Testing Daily Task Rollover...');
@@ -52,5 +54,13 @@ assert.strictEqual(rolledOver?.is_daily_focus, true);
 // 3. First time visit (lastRolloverDate is null) -> shouldBrief = true
 const res3 = checkAndExecuteRollover(testTasks, '2026-11-04', null);
 assert.strictEqual(res3.shouldBrief, true);
+
+// 4. Focus session counter persists for today and resets on new day
+useTaskStore.setState({ focusSessionsDate: '2020-01-01', focusSessionsCount: 4 });
+useTaskStore.getState().incrementFocusSession();
+assert.strictEqual(useTaskStore.getState().focusSessionsDate, toLocalDateKey());
+assert.strictEqual(useTaskStore.getState().focusSessionsCount, 1);
+useTaskStore.getState().incrementFocusSession();
+assert.strictEqual(useTaskStore.getState().focusSessionsCount, 2);
 
 console.log('Daily Task Rollover tests passed successfully!');
