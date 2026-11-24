@@ -37,7 +37,7 @@ export function Sidebar({
   }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: CockpitMark },
     { id: 'career', label: 'Career Pipeline', icon: PipelineMark },
-    { id: 'tasks', label: 'Tasks & Focus', icon: FocusMark },
+    { id: 'tasks', label: 'Tasks', icon: FocusMark },
     { id: 'finance', label: 'Financial Vault', icon: VaultMark },
     { id: 'dev', label: 'Dev Control', icon: ConsoleMark },
     { id: 'dropzone', label: 'Dropzone Vault', icon: RelayMark },

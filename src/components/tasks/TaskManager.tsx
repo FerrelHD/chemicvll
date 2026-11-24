@@ -1,29 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTaskStore } from '@/stores/useTaskStore';
 import { useHabitStore } from '@/stores/useHabitStore';
-import { toLocalDateKey } from '@/lib/budget-utils';
-import { ambientAudio, AmbientMode } from '@/lib/ambient-audio';
 import { FocusMark } from '@/components/icons/ChemicIcons';
 import { HabitTrackerCard } from './HabitTrackerCard';
 import {
-  Timer,
-  Play,
-  Pause,
-  RotateCcw,
+  ListTodo,
   CheckCircle2,
   Circle,
   AlertTriangle,
-  Clock,
-  Zap,
   Flame,
   Plus,
   Trash2,
   Star,
-  Headphones,
   Calendar,
-  X,
   ChevronDown,
 } from 'lucide-react';
 
@@ -34,9 +25,6 @@ export function TaskManager() {
     toggleDone,
     toggleDailyFocus,
     deleteTask,
-    focusSessionsDate,
-    focusSessionsCount,
-    incrementFocusSession,
   } = useTaskStore();
   const habits = useHabitStore((state) => state.habits);
   const activeStreak = habits.length > 0 ? Math.max(...habits.map((h) => h.streak), 0) : 0;
@@ -44,41 +32,6 @@ export function TaskManager() {
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<1 | 2 | 3>(1);
   const [filterMode, setFilterMode] = useState<'all' | 'p1' | 'p2' | 'p3'>('all');
-  const [ambientSound, setAmbientSound] = useState<AmbientMode>('off');
-
-  useEffect(() => {
-    ambientAudio.setMode(ambientSound);
-  }, [ambientSound]);
-
-  useEffect(() => {
-    return () => {
-      ambientAudio.stop();
-    };
-  }, []);
-
-  // Focus Timer state (25 minutes default)
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const sessionsCompleted = focusSessionsDate === toLocalDateKey() ? focusSessionsCount : 0;
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (timerRunning && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timerRunning && timeLeft === 0) {
-      setTimerRunning(false);
-      incrementFocusSession();
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerRunning, timeLeft, incrementFocusSession]);
-
-  const formatTimer = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,6 +56,7 @@ export function TaskManager() {
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.status === 'done').length;
+  const activeTasks = totalTasks - completedTasks;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   const p1Remaining = tasks.filter((t) => t.priority === 1 && t.status !== 'done').length;
 
@@ -115,10 +69,10 @@ export function TaskManager() {
           <div className="flex items-center gap-2 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider">
             <span>Personal OS</span>
             <span>•</span>
-            <span className="text-primary-container">Tasks &amp; Focus</span>
+            <span className="text-primary-container">Tasks &amp; Habits</span>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-            Deep Work &amp; Productivity Cockpit
+            Productivity &amp; Task Cockpit
           </h1>
         </div>
 
@@ -150,29 +104,29 @@ export function TaskManager() {
 
       {/* Bento KPI Top Row (4 Columns - Mobile/Tablet 2x2, Wide Desktop 4x1) */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
-        {/* Metric 1: Pomodoro Sessions */}
+        {/* Metric 1: Total Active Stats */}
         <div className="bg-surface-container-lowest rounded-2xl p-3.5 sm:p-5 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between hover:shadow-md transition">
           <div className="flex items-start justify-between gap-1">
-            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Today&apos;s Focus</span>
+            <span className="text-[10px] sm:text-xs font-semibold text-on-surface-variant truncate">Active Tasks</span>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container-low shrink-0 flex items-center justify-center text-primary-container">
-              <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ListTodo className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
-                {sessionsCompleted}
+                {activeTasks}
               </span>
-              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium">Sessions</span>
+              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium">Pending</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
-              <span className="truncate">{sessionsCompleted * 25}m deep</span>
-              <span className="font-semibold text-on-surface shrink-0">Target: 6</span>
+              <span className="truncate">P1: {p1Remaining} • P2: {p2Tasks.length}</span>
+              <span className="font-semibold text-on-surface shrink-0">Total: {totalTasks}</span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
                 className="bg-primary-container h-full rounded-full transition-all duration-700"
-                style={{ width: `${Math.min(100, Math.round((sessionsCompleted / 6) * 100))}%` }}
+                style={{ width: `${totalTasks > 0 ? Math.min(100, Math.round((activeTasks / totalTasks) * 100)) : 0}%` }}
               />
             </div>
           </div>
@@ -261,94 +215,12 @@ export function TaskManager() {
         </div>
       </div>
 
-      {/* Bento Core Workspace: 5 Cols (Pomodoro Engine) vs 7 Cols (Eisenhower Matrix) */}
+      {/* Bento Core Workspace: 5 Cols (Habits & Energy Stack) vs 7 Cols (Eisenhower Matrix) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
-        {/* LEFT: Pomodoro Hero Engine & Energy Stack (5 cols) */}
+        {/* LEFT: Habit Tracker & Energy Stack (5 cols) */}
         <div className="lg:col-span-5 flex flex-col gap-4">
           
-          {/* Interactive Pomodoro Card */}
-          <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] flex flex-col justify-between relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse" />
-                <span className="text-xs font-bold text-on-surface uppercase tracking-wide">
-                  Deep Work Focus
-                </span>
-              </div>
-              <div className="flex items-center gap-1 bg-surface-container-high px-2.5 py-1 rounded-full text-on-surface-variant text-[11px] font-semibold whitespace-nowrap shrink-0">
-                <span>Session {sessionsCompleted + 1}/6</span>
-              </div>
-            </div>
-
-            {/* Timer Display Block */}
-            <div className="my-6 sm:my-8 flex flex-col items-center justify-center text-center">
-              <div className="text-5xl sm:text-7xl font-bold tabular-nums text-on-surface tracking-tight">
-                {formatTimer(timeLeft)}
-              </div>
-              <span className="text-xs text-on-surface-variant font-medium mt-2">
-                {timerRunning ? 'Focus session in progress, minimize distractions' : 'Ready for deep work sprint'}
-              </span>
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  if (!timerRunning && timeLeft === 0) {
-                    setTimeLeft(25 * 60);
-                  }
-                  setTimerRunning(!timerRunning);
-                }}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-bold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
-              >
-                {timerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                <span>{timerRunning ? 'Pause Session' : 'Start Focus'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTimerRunning(false);
-                  setTimeLeft(25 * 60);
-                }}
-                className="w-9 h-9 rounded-full bg-surface-container-high hover:bg-surface-dim flex items-center justify-center text-on-surface transition"
-                title="Reset Timer"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Ambient Sound Pills */}
-            <div className="mt-6 sm:mt-8 pt-4 border-t border-outline/20">
-              <div className="flex items-center gap-1.5 text-xs text-on-surface-variant mb-2">
-                <Headphones className="w-3.5 h-3.5 text-primary-container" />
-                <span className="font-semibold">Ambient Soundscape</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { id: 'off', label: 'Mute' },
-                  { id: 'lofi', label: 'Lofi Chill' },
-                  { id: 'brown', label: 'Brown Noise' },
-                  { id: 'rain', label: 'Rain Ambient' },
-                ].map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setAmbientSound(s.id as any)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                      ambientSound === s.id
-                        ? 'bg-inverse-surface dark:bg-primary-container text-white shadow-sm'
-                        : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Daily Habit Tracker & Streaks */}
           <HabitTrackerCard />
 
