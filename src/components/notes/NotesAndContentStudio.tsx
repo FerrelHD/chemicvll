@@ -74,7 +74,7 @@ export function NotesAndContentStudio() {
 
   // Mode states for Markdown editing vs rich preview
   const [noteViewMode, setNoteViewMode] = useState<'split' | 'edit' | 'preview'>('split');
-  const [contentViewMode, setContentViewMode] = useState<'edit' | 'preview'>('edit');
+  const [contentViewMode, setContentViewMode] = useState<'split' | 'edit' | 'preview'>('split');
   const [isNoteMaximized, setIsNoteMaximized] = useState(false);
   const [isContentMaximized, setIsContentMaximized] = useState(false);
 
@@ -1225,27 +1225,42 @@ export function NotesAndContentStudio() {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto">
+                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
                   <button
                     type="button"
                     onClick={() => setContentViewMode('edit')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
                       contentViewMode === 'edit'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
+                    title="Hanya Editor Naskah (Layar Penuh)"
                   >
                     <Edit3 className="w-3 h-3" />
                     <span>Tulis</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setContentViewMode('preview')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      contentViewMode === 'preview'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs'
+                    onClick={() => setContentViewMode('split')}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      contentViewMode === 'split'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
                         : 'text-on-surface-variant hover:text-on-surface'
                     }`}
+                    title="Split View (Editor + Pratinjau Naskah)"
+                  >
+                    <Columns className="w-3 h-3" />
+                    <span>Split</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setContentViewMode('preview')}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                      contentViewMode === 'preview'
+                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                    title="Hanya Pratinjau Naskah (Layar Penuh)"
                   >
                     <Eye className="w-3 h-3" />
                     <span>Pratinjau</span>
@@ -1253,28 +1268,98 @@ export function NotesAndContentStudio() {
                 </div>
               </div>
 
-              {/* Script / Outline Editor */}
-              <div className="space-y-2 flex flex-col flex-1 min-h-[320px]">
-                <div className="flex items-center gap-2 text-xs font-bold text-on-surface uppercase tracking-wider">
-                  <FileText className="w-3.5 h-3.5 text-primary-container" />
-                  <span>Outline &amp; Full Script Body</span>
+              {/* Script / Outline Editor (Split View vs Single View) */}
+              <div className="space-y-2 flex flex-col flex-1 min-h-[380px] lg:min-h-[460px]">
+                <div className="flex items-center justify-between text-xs font-bold text-on-surface uppercase tracking-wider">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-3.5 h-3.5 text-primary-container" />
+                    <span>Outline &amp; Full Script Body</span>
+                  </div>
+                  <span className="text-[10px] text-on-surface-variant font-normal normal-case">
+                    {(viewingContent.script_body || '').split(/\s+/).filter(Boolean).length} kata
+                  </span>
                 </div>
 
-                {contentViewMode === 'preview' ? (
-                  <div className="p-4 sm:p-6 rounded-2xl bg-surface-container-low/40 border border-outline/25 min-h-[320px] overflow-y-auto">
-                    <MarkdownRenderer
-                      content={viewingContent.script_body || ''}
-                      onToggleCheckbox={handleToggleContentCheckbox}
-                    />
+                {contentViewMode === 'split' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                    {/* Left: Script Editor */}
+                    <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/40 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
+                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                        <div className="flex items-center gap-1.5">
+                          <Edit3 className="w-3.5 h-3.5 text-primary-container" />
+                          <span>Editor Naskah</span>
+                        </div>
+                        <span className="text-[10px] text-on-surface-variant/70">
+                          {(viewingContent.script_body || '').length} karakter
+                        </span>
+                      </div>
+                      <textarea
+                        ref={contentTextareaRef}
+                        value={viewingContent.script_body || ''}
+                        onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
+                        placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
+                        className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[240px] md:min-h-[380px] placeholder:text-on-surface-variant/40"
+                      />
+                    </div>
+
+                    {/* Right: Script Preview */}
+                    <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs">
+                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                        <div className="flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5 text-primary-container" />
+                          <span>Pratinjau Script</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Sinkron</span>
+                        </div>
+                      </div>
+                      <div className="p-4 sm:p-5 flex-1 min-h-[240px] md:min-h-[380px] overflow-y-auto">
+                        <MarkdownRenderer
+                          content={viewingContent.script_body || ''}
+                          onToggleCheckbox={handleToggleContentCheckbox}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : contentViewMode === 'preview' ? (
+                  <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs flex-1">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                      <div className="flex items-center gap-1.5">
+                        <Eye className="w-3.5 h-3.5 text-primary-container" />
+                        <span>Pratinjau Naskah Rapi</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>Format Aktif</span>
+                      </div>
+                    </div>
+                    <div className="p-4 sm:p-6 flex-1 min-h-[300px] md:min-h-[380px] overflow-y-auto">
+                      <MarkdownRenderer
+                        content={viewingContent.script_body || ''}
+                        onToggleCheckbox={handleToggleContentCheckbox}
+                      />
+                    </div>
                   </div>
                 ) : (
-                  <textarea
-                    ref={contentTextareaRef}
-                    value={viewingContent.script_body || ''}
-                    onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
-                    placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
-                    className="w-full flex-1 p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-outline/30 font-sans text-xs sm:text-sm leading-relaxed text-on-surface focus:outline-none focus:border-primary-container resize-none min-h-[320px] placeholder:text-on-surface-variant/40"
-                  />
+                  <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner flex-1">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
+                      <div className="flex items-center gap-1.5">
+                        <Edit3 className="w-3.5 h-3.5 text-primary-container" />
+                        <span>Editor Naskah Penuh</span>
+                      </div>
+                      <span className="text-[10px] text-on-surface-variant/70">
+                        {(viewingContent.script_body || '').length} karakter
+                      </span>
+                    </div>
+                    <textarea
+                      ref={contentTextareaRef}
+                      value={viewingContent.script_body || ''}
+                      onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
+                      placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
+                      className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[300px] md:min-h-[380px] placeholder:text-on-surface-variant/40"
+                    />
+                  </div>
                 )}
               </div>
             </div>
