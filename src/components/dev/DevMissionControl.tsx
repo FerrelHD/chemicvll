@@ -279,7 +279,13 @@ export function DevMissionControl() {
             {isDaemonOnline
               ? `Supabase Relay Online · Connected to ${daemonMachine || 'Windows PC'} · ${runningServers} active sockets`
               : isLocal
-              ? `Local Runner · Windows Engine · ${runningServers} active listening sockets`
+              ? `Local Runner · ${
+                  systemMetrics?.platform === 'darwin'
+                    ? 'macOS Engine'
+                    : systemMetrics?.platform === 'win32'
+                    ? 'Windows Engine'
+                    : 'Local Engine'
+                } · ${runningServers} active listening sockets`
               : 'Supabase Relay Standby · Buka run-daemon.command (Mac) atau run-daemon.bat (Windows)'}
           </p>
         </div>
