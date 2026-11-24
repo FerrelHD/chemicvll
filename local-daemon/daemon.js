@@ -217,8 +217,15 @@ function emitHeartbeat() {
     command: r.command,
   }));
 
+  const platformLabel =
+    process.platform === 'darwin'
+      ? 'macOS'
+      : process.platform === 'win32'
+      ? 'Windows PC'
+      : 'Linux';
+
   sendBroadcast('heartbeat', {
-    machine: `Windows PC (${os.hostname()})`,
+    machine: `${platformLabel} (${os.hostname()})`,
     platform: process.platform,
     totalGB: Number((totalBytes / 1024 ** 3).toFixed(1)),
     usedGB: Number((usedBytes / 1024 ** 3).toFixed(1)),
