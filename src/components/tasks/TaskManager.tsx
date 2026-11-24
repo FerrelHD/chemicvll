@@ -16,6 +16,7 @@ import {
   Star,
   Calendar,
   ChevronDown,
+  Trophy,
 } from 'lucide-react';
 
 export function TaskManager() {
@@ -202,8 +203,13 @@ export function TaskManager() {
               <span className="text-[10px] sm:text-xs text-primary-container font-semibold">Days</span>
             </div>
             <div className="flex items-center justify-between mt-1 text-[10px] sm:text-xs text-on-surface-variant gap-1">
-              <span className="truncate">Record: {bestStreak}d</span>
-              <span className="font-semibold text-primary-container shrink-0">Best</span>
+              <span className="flex items-center gap-1.5 truncate">
+                <Trophy className="w-3 h-3 text-amber-500 shrink-0" />
+                <span className="truncate">Rekor: <strong className="text-on-surface font-semibold">{bestStreak} Hari</strong></span>
+              </span>
+              <span className="font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full text-[10px] shrink-0">
+                All-Time Peak
+              </span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
               <div
