@@ -4,10 +4,15 @@ import {
   getSystemMetrics,
   getRunningProcesses,
 } from '@/lib/dev-runner';
+import { isRequestAuthenticated } from '@/lib/session-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isRequestAuthenticated(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const isLocal = isLocalEnvironment();
   const metrics = isLocal ? getSystemMetrics() : null;
   const running = isLocal ? getRunningProcesses() : [];
@@ -18,4 +23,3 @@ export async function GET() {
     running,
   });
 }
-
