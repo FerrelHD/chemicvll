@@ -238,13 +238,23 @@ export const useDevStore = create<DevState>()(
 
         const timestamp = new Date().toLocaleTimeString();
 
-        // 1. If Supabase Realtime Relay is online, use it!
+        // 1. If Supabase Realtime Relay is online, use signed server relay!
         if (daemonRelay.getIsOnline()) {
           get().appendLog(
             id,
-            `[${timestamp}] Mengirim perintah start ke laptop via Supabase Realtime Relay...`
+            `[${timestamp}] Mengirim perintah start terautentikasi ke laptop via Relay...`
           );
-          daemonRelay.startProcess(project.id, project.start_command, project.local_path);
+          const relayRes = await daemonRelay.startProcess(
+            project.id,
+            project.start_command,
+            project.local_path
+          );
+          if (!relayRes.ok) {
+            get().appendLog(
+              id,
+              `[${new Date().toLocaleTimeString()}] Relay error: ${relayRes.error || 'Unauthorized'}`
+            );
+          }
           return;
         }
 
@@ -306,9 +316,15 @@ export const useDevStore = create<DevState>()(
         if (daemonRelay.getIsOnline()) {
           get().appendLog(
             id,
-            `[${timestamp}] Mengirim perintah stop ke laptop via Supabase Realtime Relay...`
+            `[${timestamp}] Mengirim perintah stop terautentikasi ke laptop via Relay...`
           );
-          daemonRelay.stopProcess(project.id);
+          const relayRes = await daemonRelay.stopProcess(project.id);
+          if (!relayRes.ok) {
+            get().appendLog(
+              id,
+              `[${new Date().toLocaleTimeString()}] Relay stop error: ${relayRes.error || 'Unauthorized'}`
+            );
+          }
           return;
         }
 

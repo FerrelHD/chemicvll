@@ -99,20 +99,52 @@ class DaemonRelayManager {
     }).catch(() => {});
   }
 
-  public startProcess(projectId: string, command: string, cwd?: string | null) {
-    return this.channel?.send({
-      type: 'broadcast',
-      event: 'start_process',
-      payload: { projectId, command, cwd: cwd || undefined },
-    });
+  public async startProcess(
+    projectId: string,
+    command: string,
+    cwd?: string | null
+  ): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const res = await fetch('/api/dev/relay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'start',
+          projectId,
+          command,
+          cwd: cwd || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        return { ok: false, error: data?.error || 'Relay rejected command' };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Failed to reach relay endpoint' };
+    }
   }
 
-  public stopProcess(projectId: string) {
-    return this.channel?.send({
-      type: 'broadcast',
-      event: 'stop_process',
-      payload: { projectId },
-    });
+  public async stopProcess(
+    projectId: string
+  ): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const res = await fetch('/api/dev/relay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'stop',
+          projectId,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        return { ok: false, error: data?.error || 'Relay rejected command' };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Failed to reach relay endpoint' };
+    }
   }
 
   public getIsOnline() {
