@@ -101,7 +101,7 @@ async function runTests() {
   console.log('Test 5 Passed: useDevStore auto-saves to localStorage');
 
   // Test 6: Notes Store persistence
-  useNotesStore.getState().addNote({
+  const createdNoteId = useNotesStore.getState().addNote({
     title: 'Architecture Rules',
     content: 'Always prefer clean code over speculative abstractions.',
     type: 'note',
@@ -111,19 +111,20 @@ async function runTests() {
   const notesRaw = mockStorage.get('chemicvll-notes-storage');
   assert.ok(notesRaw, 'Notes storage must be written to localStorage');
   const parsedNotes = JSON.parse(notesRaw!);
+  assert.strictEqual(parsedNotes.state.notes[0].id, createdNoteId);
   assert.strictEqual(parsedNotes.state.notes[0].title, 'Architecture Rules');
   console.log('Test 6 Passed: useNotesStore auto-saves to localStorage');
 
   // Test 7: Notes Store content ideas update & delete
-  useNotesStore.getState().addContentIdea({
+  const createdIdeaId = useNotesStore.getState().addContentIdea({
     title: 'Testing Idea',
     hook_text: 'Wait for this hook',
     script_body: 'Script line 1',
     platform: 'YouTube',
     status: 'idea',
   });
-  const addedIdea = useNotesStore.getState().contentIdeas.find((c) => c.title === 'Testing Idea');
-  assert.ok(addedIdea, 'Content idea must be added');
+  const addedIdea = useNotesStore.getState().contentIdeas.find((c) => c.id === createdIdeaId);
+  assert.ok(addedIdea, 'Content idea must be added and lookupable by returned id');
   useNotesStore.getState().updateContentIdea(addedIdea.id, {
     title: 'Updated Testing Idea',
     hook_text: 'New hook',
