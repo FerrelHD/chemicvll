@@ -8,11 +8,11 @@ export type { NoteItem, ContentIdea };
 interface NotesState {
   notes: NoteItem[];
   contentIdeas: ContentIdea[];
-  addNote: (note: Omit<NoteItem, 'id' | 'updated_at'>) => void;
+  addNote: (note: Omit<NoteItem, 'id' | 'updated_at'>) => string;
   updateNote: (id: string, updates: Partial<Omit<NoteItem, 'id' | 'updated_at'>>) => void;
   deleteNote: (id: string) => void;
   togglePinNote: (id: string) => void;
-  addContentIdea: (idea: Omit<ContentIdea, 'id' | 'created_at'>) => void;
+  addContentIdea: (idea: Omit<ContentIdea, 'id' | 'created_at'>) => string;
   updateContentStatus: (id: string, status: ContentIdea['status']) => void;
   updateContentIdea: (id: string, updates: Partial<Omit<ContentIdea, 'id' | 'created_at'>>) => void;
   deleteContentIdea: (id: string) => void;
@@ -56,17 +56,20 @@ export const useNotesStore = create<NotesState>()(
     (set) => ({
       notes: INITIAL_NOTES,
       contentIdeas: INITIAL_CONTENT,
-      addNote: (note) =>
+      addNote: (note) => {
+        const id = `note-${Date.now()}`;
         set((state) => ({
           notes: [
             {
               ...note,
-              id: `note-${Date.now()}`,
+              id,
               updated_at: new Date().toISOString(),
             },
             ...state.notes,
           ],
-        })),
+        }));
+        return id;
+      },
       updateNote: (id, updates) =>
         set((state) => ({
           notes: state.notes.map((n) =>
@@ -89,17 +92,20 @@ export const useNotesStore = create<NotesState>()(
             n.id === id ? { ...n, is_pinned: !n.is_pinned } : n
           ),
         })),
-      addContentIdea: (idea) =>
+      addContentIdea: (idea) => {
+        const id = `content-${Date.now()}`;
         set((state) => ({
           contentIdeas: [
             {
               ...idea,
-              id: `content-${Date.now()}`,
+              id,
               created_at: new Date().toISOString(),
             },
             ...state.contentIdeas,
           ],
-        })),
+        }));
+        return id;
+      },
       updateContentStatus: (id, status) =>
         set((state) => ({
           contentIdeas: state.contentIdeas.map((c) =>
