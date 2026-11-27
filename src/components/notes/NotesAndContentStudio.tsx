@@ -61,29 +61,45 @@ function toggleCheckboxLine(markdown: string, lineIndex: number, newChecked: boo
   return lines.join('\n');
 }
 
+function shouldEnterEditFromReadClick(target: EventTarget | null): boolean {
+  if (typeof window !== 'undefined' && window.getSelection()?.toString()) return false;
+  if (target instanceof HTMLElement && target.closest('button, a, pre, code, input, textarea, select')) {
+    return false;
+  }
+  return true;
+}
+
 interface MarkdownFormatButtonsProps {
   includeExtended: boolean;
+  wordCount?: number;
   onFormat: (prefix: string, suffix: string, placeholder: string) => void;
 }
 
-function MarkdownFormatButtons({ includeExtended, onFormat }: MarkdownFormatButtonsProps) {
+function MarkdownFormatButtons({ includeExtended, wordCount, onFormat }: MarkdownFormatButtonsProps) {
   const actions = includeExtended ? FORMAT_ACTIONS : FORMAT_ACTIONS.filter((a) => a.showForContent);
   return (
-    <div className="flex items-center gap-0.5 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
-      {actions.map((action) => {
-        const Icon = action.icon;
-        return (
-          <button
-            key={action.title}
-            type="button"
-            onClick={() => onFormat(action.prefix, action.suffix, action.placeholder)}
-            className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition shrink-0"
-            title={action.title}
-          >
-            <Icon className="w-3.5 h-3.5" />
-          </button>
-        );
-      })}
+    <div className="flex items-center justify-between gap-2 px-2 py-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
+      <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none text-xs">
+        {actions.map((action) => {
+          const Icon = action.icon;
+          return (
+            <button
+              key={action.title}
+              type="button"
+              onClick={() => onFormat(action.prefix, action.suffix, action.placeholder)}
+              className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition shrink-0"
+              title={action.title}
+            >
+              <Icon className="w-3.5 h-3.5" />
+            </button>
+          );
+        })}
+      </div>
+      {typeof wordCount === 'number' && (
+        <span className="text-[11px] text-on-surface-variant/70 px-2 shrink-0 hidden sm:inline">
+          {wordCount} kata • ⌘/Ctrl+Enter selesai
+        </span>
+      )}
     </div>
   );
 }
@@ -190,7 +206,7 @@ export function NotesAndContentStudio() {
   const [newTagInput, setNewTagInput] = useState('');
 
   // Mode states for Markdown editing vs rich preview
-  const [noteViewMode, setNoteViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [isEditingNote, setIsEditingNote] = useState(false);
   const [contentViewMode, setContentViewMode] = useState<'split' | 'edit' | 'preview'>('split');
   const [isMaximized, setIsMaximized] = useState(false);
 
@@ -204,17 +220,21 @@ export function NotesAndContentStudio() {
     setMounted(true);
   }, []);
 
-  // Keyboard shortcut listener: ESC to close any open modal
+  // Keyboard shortcut listener: ESC exits edit mode or closes open modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setViewingNoteId(null);
-        setViewingContentId(null);
+      if (e.key !== 'Escape') return;
+      if (viewingNoteId && isEditingNote) {
+        setIsEditingNote(false);
+        return;
       }
+      setViewingNoteId(null);
+      setIsEditingNote(false);
+      setViewingContentId(null);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [viewingNoteId, isEditingNote]);
 
   // Lock body scroll when a modal window is open
   useEffect(() => {
@@ -273,10 +293,7 @@ export function NotesAndContentStudio() {
     const textarea = target === 'note' ? noteTextareaRef.current : contentTextareaRef.current;
     if (!textarea) return;
 
-    // Switch to split mode if currently previewing
-    if (target === 'note' && noteViewMode === 'preview') {
-      setNoteViewMode('split');
-    } else if (target === 'content' && contentViewMode === 'preview') {
+    if (target === 'content' && contentViewMode === 'preview') {
       setContentViewMode('split');
     }
 
@@ -690,67 +707,92 @@ export function NotesAndContentStudio() {
         </div>
       )}
 
-      {/* NOTION-STYLE LARGE MODAL FOR NOTES & SNIPPETS */}
+      {/* SINGLE-COLUMN READ-FIRST MODAL FOR NOTES */}
       {viewingNote && mounted && (
         <DocumentModalShell
           isMaximized={isMaximized}
           onToggleMaximize={() => setIsMaximized((prev) => !prev)}
-          onClose={() => setViewingNoteId(null)}
+          onClose={() => {
+            setViewingNoteId(null);
+            setIsEditingNote(false);
+          }}
           leftControls={
             <>
               <div className="relative">
                 <select
                   value={viewingNote.type}
-                  onChange={(e) => updateNote(viewingNote.id, { type: e.target.value as any })}
+                  onChange={(e) => updateNote(viewingNote.id, { type: e.target.value as NoteItem['type'] })}
                   className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
                 >
-                  <option value="note">📝 Catatan Umum</option>
-                  <option value="snippet">💻 Code Snippet</option>
+                  <option value="note">📝 Catatan</option>
+                  <option value="snippet">💻 Snippet</option>
                   <option value="prompt">🤖 AI Prompt</option>
                   <option value="bookmark">🔖 Bookmark</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
 
-              <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                <Check className="w-3 h-3 stroke-[2.5]" />
-                <span>Tersimpan otomatis</span>
-              </div>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
+                <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
+                <span>Tersimpan</span>
+              </span>
             </>
           }
           rightControls={
             <>
               <button
                 type="button"
-                onClick={() => handleCopy(viewingNote.id, viewingNote.content)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
-                title="Salin isi catatan"
+                onClick={() => {
+                  if (isEditingNote) {
+                    setIsEditingNote(false);
+                  } else {
+                    setIsEditingNote(true);
+                    setTimeout(() => noteTextareaRef.current?.focus(), 20);
+                  }
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  isEditingNote
+                    ? 'bg-primary-container text-white shadow-sm'
+                    : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
+                }`}
               >
-                {copiedId === viewingNote.id ? (
+                {isEditingNote ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-emerald-500">Tersalin</span>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Selesai</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
-                    <span className="hidden sm:inline">Salin</span>
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit</span>
                   </>
                 )}
               </button>
 
               <button
                 type="button"
+                onClick={() => handleCopy(viewingNote.id, viewingNote.content)}
+                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
+                title="Salin isi catatan"
+              >
+                {copiedId === viewingNote.id ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+
+              <button
+                type="button"
                 onClick={() => togglePinNote(viewingNote.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                className={`p-2 rounded-xl transition ${
                   viewingNote.is_pinned
-                    ? 'bg-primary-container text-white shadow-sm'
+                    ? 'bg-primary-fixed/60 text-primary-container'
                     : 'hover:bg-surface-container-high text-on-surface-variant'
                 }`}
                 title={viewingNote.is_pinned ? 'Unpin' : 'Pin ke atas'}
               >
                 <Pin className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{viewingNote.is_pinned ? 'Pinned' : 'Pin'}</span>
               </button>
 
               <button
@@ -758,6 +800,7 @@ export function NotesAndContentStudio() {
                 onClick={() => {
                   deleteNote(viewingNote.id);
                   setViewingNoteId(null);
+                  setIsEditingNote(false);
                 }}
                 className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
                 title="Hapus Catatan"
@@ -767,217 +810,112 @@ export function NotesAndContentStudio() {
             </>
           }
         >
-              {/* Title Section (Large Notion-Style) */}
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={viewingNote.title}
-                  onChange={(e) => updateNote(viewingNote.id, { title: e.target.value })}
-                  placeholder="Judul tanpa nama..."
-                  className="w-full text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
-                />
+          <input
+            type="text"
+            value={viewingNote.title}
+            onChange={(e) => updateNote(viewingNote.id, { title: e.target.value })}
+            placeholder="Judul catatan..."
+            className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+          />
 
-                {/* Metadata Row (Properties bar ala Notion) */}
-                <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-on-surface-variant py-2 border-y border-outline/15">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-primary-container" />
-                    <span>
-                      Diubah: {new Date(viewingNote.updated_at).toLocaleString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
+          <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Calendar className="w-3.5 h-3.5 text-primary-container" />
+              <span>
+                {new Date(viewingNote.updated_at).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </span>
+            </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-primary-container" />
-                    <span>
-                      {viewingNote.content.split(/\s+/).filter(Boolean).length} kata • {viewingNote.content.length} karakter
-                    </span>
-                  </div>
-
-                  {/* Tags Section */}
-                  <div className="flex items-center gap-1.5 flex-wrap flex-1">
-                    <Tag className="w-3.5 h-3.5 text-primary-container shrink-0" />
-                    {viewingNote.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-high text-[11px] font-semibold text-on-surface"
-                      >
-                        #{tag}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const next = viewingNote.tags.filter((t) => t !== tag);
-                            updateNote(viewingNote.id, { tags: next });
-                          }}
-                          className="hover:text-error ml-0.5 text-on-surface-variant hover:text-red-500"
-                        >
-                          <X className="w-2.5 h-2.5" />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      placeholder="+ Tambah tag (Enter)"
-                      value={newTagInput}
-                      onChange={(e) => setNewTagInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ',') {
-                          e.preventDefault();
-                          const val = newTagInput.trim().replace(/^#/, '').toLowerCase();
-                          if (val && !viewingNote.tags.includes(val)) {
-                            updateNote(viewingNote.id, { tags: [...viewingNote.tags, val] });
-                          }
-                          setNewTagInput('');
-                        }
-                      }}
-                      className="px-2 py-0.5 text-[11px] bg-transparent border-b border-outline/30 focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-32"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* QUICK FORMATTING TOOLBAR & VIEW MODE SWITCHER (OPTI 2) */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
-                <MarkdownFormatButtons
-                  includeExtended
-                  onFormat={(prefix, suffix, placeholder) =>
-                    handleInsertFormat('note', prefix, suffix, placeholder)
+            <div className="flex items-center gap-1.5 flex-wrap flex-1">
+              <Tag className="w-3.5 h-3.5 text-primary-container shrink-0" />
+              {viewingNote.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-[11px] font-medium text-on-surface"
+                >
+                  #{tag}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = viewingNote.tags.filter((t) => t !== tag);
+                      updateNote(viewingNote.id, { tags: next });
+                    }}
+                    className="text-on-surface-variant hover:text-error"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </span>
+              ))}
+              <input
+                type="text"
+                placeholder="+ tag"
+                value={newTagInput}
+                onChange={(e) => setNewTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = newTagInput.trim().replace(/^#/, '').toLowerCase();
+                    if (val && !viewingNote.tags.includes(val)) {
+                      updateNote(viewingNote.id, { tags: [...viewingNote.tags, val] });
+                    }
+                    setNewTagInput('');
                   }
+                }}
+                className="px-1.5 py-0.5 text-[11px] bg-transparent border-b border-transparent focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-24"
+              />
+            </div>
+          </div>
+
+          {isEditingNote ? (
+            <div className="flex flex-col flex-1 space-y-3">
+              <MarkdownFormatButtons
+                includeExtended
+                wordCount={viewingNote.content.split(/\s+/).filter(Boolean).length}
+                onFormat={(prefix, suffix, placeholder) =>
+                  handleInsertFormat('note', prefix, suffix, placeholder)
+                }
+              />
+              <textarea
+                ref={noteTextareaRef}
+                value={viewingNote.content}
+                onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
+                onKeyDown={(e) => {
+                  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    setIsEditingNote(false);
+                  }
+                }}
+                placeholder="Mulai tulis catatan... (Mendukung markdown: # Heading, **bold**, - [ ] checklist, ```code```)"
+                className="w-full flex-1 min-h-[340px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+              />
+            </div>
+          ) : (
+            <div
+              onClick={(e) => {
+                if (shouldEnterEditFromReadClick(e.target)) {
+                  setIsEditingNote(true);
+                  setTimeout(() => noteTextareaRef.current?.focus(), 20);
+                }
+              }}
+              className="flex-1 min-h-[320px] cursor-text rounded-2xl transition-colors"
+              title="Klik untuk mengedit catatan"
+            >
+              {viewingNote.content.trim() ? (
+                <MarkdownRenderer
+                  content={viewingNote.content}
+                  onToggleCheckbox={handleToggleNoteCheckbox}
                 />
-
-                {/* Mode Selector Pill: Tulis (Edit) vs Split View vs Pratinjau (Preview) */}
-                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
-                  <button
-                    type="button"
-                    onClick={() => setNoteViewMode('edit')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      noteViewMode === 'edit'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Hanya Editor Markdown (Layar Penuh)"
-                  >
-                    <Edit3 className="w-3 h-3" />
-                    <span>Tulis</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNoteViewMode('split')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      noteViewMode === 'split'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Split View (Editor + Pratinjau Rapi)"
-                  >
-                    <Columns className="w-3 h-3" />
-                    <span>Split</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNoteViewMode('preview')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      noteViewMode === 'preview'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Hanya Pratinjau Markdown (Layar Penuh)"
-                  >
-                    <Eye className="w-3 h-3" />
-                    <span>Pratinjau</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Content Body Area (Split View vs Live Edit vs Rendered Markdown Preview) */}
-              <div className="flex flex-col flex-1 min-h-[420px] lg:min-h-[500px]">
-                {noteViewMode === 'split' ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-                    {/* Left Pane: Markdown Editor */}
-                    <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/40 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                        <div className="flex items-center gap-1.5">
-                          <Edit3 className="w-3.5 h-3.5 text-primary-container" />
-                          <span>Editor Markdown</span>
-                        </div>
-                        <span className="text-[10px] text-on-surface-variant/70">
-                          {viewingNote.content.split(/\s+/).filter(Boolean).length} kata • {viewingNote.content.length} karakter
-                        </span>
-                      </div>
-                      <textarea
-                        ref={noteTextareaRef}
-                        value={viewingNote.content}
-                        onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
-                        placeholder="Mulai ketik catatan di sini... (Gunakan toolbar di atas untuk bold, heading, numbering, checklist)"
-                        className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[260px] md:min-h-[440px] placeholder:text-on-surface-variant/40"
-                      />
-                    </div>
-
-                    {/* Right Pane: Live Rendered Preview */}
-                    <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs">
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                        <div className="flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-primary-container" />
-                          <span>Pratinjau Live</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span>Sinkron</span>
-                        </div>
-                      </div>
-                      <div className="p-4 sm:p-5 flex-1 min-h-[260px] md:min-h-[440px] overflow-y-auto">
-                        <MarkdownRenderer
-                          content={viewingNote.content}
-                          onToggleCheckbox={handleToggleNoteCheckbox}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : noteViewMode === 'preview' ? (
-                  <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs flex-1">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                      <div className="flex items-center gap-1.5">
-                        <Eye className="w-3.5 h-3.5 text-primary-container" />
-                        <span>Pratinjau Rapi (Layar Penuh)</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>Format Aktif</span>
-                      </div>
-                    </div>
-                    <div className="p-4 sm:p-6 flex-1 min-h-[380px] md:min-h-[480px] overflow-y-auto">
-                      <MarkdownRenderer
-                        content={viewingNote.content}
-                        onToggleCheckbox={handleToggleNoteCheckbox}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner flex-1">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                      <div className="flex items-center gap-1.5">
-                        <Edit3 className="w-3.5 h-3.5 text-primary-container" />
-                        <span>Editor Penuh</span>
-                      </div>
-                      <span className="text-[10px] text-on-surface-variant/70">
-                        {viewingNote.content.split(/\s+/).filter(Boolean).length} kata • {viewingNote.content.length} karakter
-                      </span>
-                    </div>
-                    <textarea
-                      ref={noteTextareaRef}
-                      value={viewingNote.content}
-                      onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
-                      placeholder="Mulai ketik catatan di sini... (Gunakan toolbar di atas untuk bold, heading, numbering, checklist)"
-                      className="w-full flex-1 p-4 sm:p-6 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[380px] md:min-h-[480px] placeholder:text-on-surface-variant/40"
-                    />
-                  </div>
-                )}
-              </div>
+              ) : (
+                <p className="text-sm text-on-surface-variant/50 italic py-4">
+                  Klik di sini untuk mulai menulis catatan...
+                </p>
+              )}
+            </div>
+          )}
         </DocumentModalShell>
       )}
 
