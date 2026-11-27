@@ -35,6 +35,25 @@ import {
   Edit3,
 } from 'lucide-react';
 
+type NoteDraft = Omit<NoteItem, 'id' | 'updated_at'>;
+type ContentDraft = Omit<ContentIdea, 'id' | 'created_at'>;
+
+const EMPTY_NOTE_DRAFT: NoteDraft = {
+  title: '',
+  content: '',
+  type: 'note',
+  tags: [],
+  is_pinned: false,
+};
+
+const EMPTY_CONTENT_DRAFT: ContentDraft = {
+  title: '',
+  hook_text: null,
+  script_body: null,
+  platform: 'TikTok/Reels',
+  status: 'idea',
+};
+
 const FORMAT_ACTIONS = [
   { icon: Bold, prefix: '**', suffix: '**', placeholder: 'teks tebal', title: 'Bold (**teks**)', showForContent: true },
   { icon: Italic, prefix: '*', suffix: '*', placeholder: 'teks miring', title: 'Italic (*teks*)', showForContent: true },
@@ -66,17 +85,17 @@ function shouldEnterEditFromReadClick(target: EventTarget | null): boolean {
   return true;
 }
 
-interface MarkdownFormatButtonsProps {
+interface MarkdownFormatBarProps {
   includeExtended: boolean;
-  wordCount?: number;
+  wordCount: number;
   onFormat: (prefix: string, suffix: string, placeholder: string) => void;
 }
 
-function MarkdownFormatButtons({ includeExtended, wordCount, onFormat }: MarkdownFormatButtonsProps) {
+function MarkdownFormatBar({ includeExtended, wordCount, onFormat }: MarkdownFormatBarProps) {
   const actions = includeExtended ? FORMAT_ACTIONS : FORMAT_ACTIONS.filter((a) => a.showForContent);
   return (
     <div className="flex items-center justify-between gap-2 px-2 py-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
-      <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none text-xs">
+      <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
         {actions.map((action) => {
           const Icon = action.icon;
           return (
@@ -92,11 +111,9 @@ function MarkdownFormatButtons({ includeExtended, wordCount, onFormat }: Markdow
           );
         })}
       </div>
-      {typeof wordCount === 'number' && (
-        <span className="text-[11px] text-on-surface-variant/70 px-2 shrink-0 hidden sm:inline">
-          {wordCount} kata • ⌘/Ctrl+Enter selesai
-        </span>
-      )}
+      <span className="text-[11px] text-on-surface-variant/70 px-2 shrink-0 hidden sm:inline">
+        {wordCount} kata • ⌘/Ctrl+Enter selesai
+      </span>
     </div>
   );
 }
@@ -133,6 +150,7 @@ function DocumentModalShell({
       >
         <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden mt-2.5 mb-1 shrink-0" />
 
+        {/* Clean Top Toolbar */}
         <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-3 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
           <div className="flex items-center gap-2 flex-wrap min-w-0">{leftControls}</div>
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
@@ -157,6 +175,7 @@ function DocumentModalShell({
           </div>
         </div>
 
+        {/* Single-Column Editorial Body */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-8 md:px-12 py-6">
           <div className="max-w-3xl mx-auto w-full flex flex-col min-h-full space-y-5">
             {children}
@@ -184,99 +203,140 @@ export function NotesAndContentStudio() {
 
   const [activeTab, setActiveTab] = useState<'notes' | 'content'>('notes');
   const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  // Quick Note creation form state
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState('');
-  const [noteType, setNoteType] = useState<NoteItem['type']>('note');
-
-  // Quick Content idea creation form state
-  const [contentTitle, setContentTitle] = useState('');
-  const [contentHook, setContentHook] = useState('');
-  const [contentScript, setContentScript] = useState('');
-  const [contentPlatform, setContentPlatform] = useState('TikTok/Reels');
-
-  // Notion-style Modal Window states
   const [mounted, setMounted] = useState(false);
+
+  // Active Note / Draft modal state
   const [viewingNoteId, setViewingNoteId] = useState<string | null>(null);
-  const [viewingContentId, setViewingContentId] = useState<string | null>(null);
+  const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
+  const [isEditingNote, setIsEditingNote] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
 
-  // Mode states for Markdown editing vs rich preview
-  const [isEditingNote, setIsEditingNote] = useState(false);
+  // Active Content / Draft modal state
+  const [viewingContentId, setViewingContentId] = useState<string | null>(null);
+  const [contentDraft, setContentDraft] = useState<ContentDraft | null>(null);
   const [isEditingContent, setIsEditingContent] = useState(false);
+
   const [isMaximized, setIsMaximized] = useState(false);
 
+  const noteTitleRef = useRef<HTMLInputElement>(null);
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const contentTitleRef = useRef<HTMLInputElement>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const viewingNote = notes.find((n) => n.id === viewingNoteId) || null;
-  const viewingContent = contentIdeas.find((c) => c.id === viewingContentId) || null;
+  const savedNote = notes.find((n) => n.id === viewingNoteId) || null;
+  const activeNote: (NoteDraft & { id?: string; updated_at?: string }) | null = savedNote || noteDraft;
+
+  const savedContent = contentIdeas.find((c) => c.id === viewingContentId) || null;
+  const activeContent: (ContentDraft & { id?: string; created_at?: string }) | null =
+    savedContent || contentDraft;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Keyboard shortcut listener: ESC exits edit mode or closes open modal
+  const closeNoteModal = () => {
+    setViewingNoteId(null);
+    setNoteDraft(null);
+    setIsEditingNote(false);
+    setNewTagInput('');
+  };
+
+  const closeContentModal = () => {
+    setViewingContentId(null);
+    setContentDraft(null);
+    setIsEditingContent(false);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (viewingNoteId && isEditingNote) {
-        setIsEditingNote(false);
-        return;
+      if (activeNote) {
+        if (isEditingNote && savedNote) {
+          setIsEditingNote(false);
+        } else {
+          closeNoteModal();
+        }
+      } else if (activeContent) {
+        if (isEditingContent && savedContent) {
+          setIsEditingContent(false);
+        } else {
+          closeContentModal();
+        }
       }
-      if (viewingContentId && isEditingContent) {
-        setIsEditingContent(false);
-        return;
-      }
-      setViewingNoteId(null);
-      setIsEditingNote(false);
-      setViewingContentId(null);
-      setIsEditingContent(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [viewingNoteId, isEditingNote, viewingContentId, isEditingContent]);
+  }, [activeNote, activeContent, isEditingNote, isEditingContent, savedNote, savedContent]);
 
-  // Lock body scroll when a modal window is open
   useEffect(() => {
-    if (viewingNoteId || viewingContentId) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = activeNote || activeContent ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
-  }, [viewingNoteId, viewingContentId]);
+  }, [activeNote, activeContent]);
 
-  const handleCreateNote = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!noteTitle.trim()) return;
-    addNote({
-      title: noteTitle.trim(),
-      content: noteContent.trim(),
-      type: noteType,
-      tags: [],
-      is_pinned: false,
-    });
-    setNoteTitle('');
-    setNoteContent('');
+  const handleOpenNewNote = () => {
+    setViewingNoteId(null);
+    setNoteDraft({ ...EMPTY_NOTE_DRAFT });
+    setIsEditingNote(true);
+    setTimeout(() => noteTitleRef.current?.focus(), 30);
   };
 
-  const handleCreateContent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!contentTitle.trim()) return;
-    addContentIdea({
-      title: contentTitle.trim(),
-      hook_text: contentHook.trim() || null,
-      script_body: contentScript.trim() || null,
-      platform: contentPlatform,
-      status: 'idea',
-    });
-    setContentTitle('');
-    setContentHook('');
-    setContentScript('');
+  const handleOpenExistingNote = (id: string) => {
+    setNoteDraft(null);
+    setViewingNoteId(id);
+    setIsEditingNote(false);
+  };
+
+  const handleOpenNewContent = () => {
+    setViewingContentId(null);
+    setContentDraft({ ...EMPTY_CONTENT_DRAFT });
+    setIsEditingContent(true);
+    setTimeout(() => contentTitleRef.current?.focus(), 30);
+  };
+
+  const handleOpenExistingContent = (id: string) => {
+    setContentDraft(null);
+    setViewingContentId(id);
+    setIsEditingContent(false);
+  };
+
+  const commitOrUpdateNote = (updates: Partial<NoteDraft>) => {
+    if (savedNote) {
+      updateNote(savedNote.id, updates);
+      return;
+    }
+    const nextDraft = { ...(noteDraft || EMPTY_NOTE_DRAFT), ...updates };
+    const hasMeaningfulContent =
+      nextDraft.title.trim().length > 0 ||
+      nextDraft.content.trim().length > 0 ||
+      nextDraft.tags.length > 0;
+    if (hasMeaningfulContent) {
+      const createdId = addNote(nextDraft);
+      setViewingNoteId(createdId);
+      setNoteDraft(null);
+    } else {
+      setNoteDraft(nextDraft);
+    }
+  };
+
+  const commitOrUpdateContent = (updates: Partial<ContentDraft>) => {
+    if (savedContent) {
+      updateContentIdea(savedContent.id, updates);
+      return;
+    }
+    const nextDraft = { ...(contentDraft || EMPTY_CONTENT_DRAFT), ...updates };
+    const hasMeaningfulContent =
+      nextDraft.title.trim().length > 0 ||
+      (nextDraft.hook_text || '').trim().length > 0 ||
+      (nextDraft.script_body || '').trim().length > 0;
+    if (hasMeaningfulContent) {
+      const createdId = addContentIdea(nextDraft);
+      setViewingContentId(createdId);
+      setContentDraft(null);
+    } else {
+      setContentDraft(nextDraft);
+    }
   };
 
   const handleCopy = (id: string, text: string) => {
@@ -285,12 +345,11 @@ export function NotesAndContentStudio() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Helper to insert markdown formatting at cursor / selection
   const handleInsertFormat = (
     target: 'note' | 'content',
     prefix: string,
-    suffix: string = '',
-    defaultPlaceholder: string = ''
+    suffix: string,
+    defaultPlaceholder: string
   ) => {
     const textarea = target === 'note' ? noteTextareaRef.current : contentTextareaRef.current;
     if (!textarea) return;
@@ -298,48 +357,39 @@ export function NotesAndContentStudio() {
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;
-
     const selectedText = text.substring(start, end);
     const contentToInsert = selectedText || defaultPlaceholder;
     const newText = text.substring(0, start) + prefix + contentToInsert + suffix + text.substring(end);
 
-    if (target === 'note' && viewingNote) {
-      updateNote(viewingNote.id, { content: newText });
-    } else if (target === 'content' && viewingContent) {
-      updateContentIdea(viewingContent.id, { script_body: newText });
+    if (target === 'note') {
+      commitOrUpdateNote({ content: newText });
+    } else {
+      commitOrUpdateContent({ script_body: newText });
     }
 
     setTimeout(() => {
       textarea.focus();
       const newStart = start + prefix.length;
-      const newEnd = newStart + contentToInsert.length;
-      textarea.setSelectionRange(newStart, newEnd);
+      textarea.setSelectionRange(newStart, newStart + contentToInsert.length);
     }, 15);
   };
 
-  // Interactive checkbox toggling for Note Markdown Preview
-  const handleToggleNoteCheckbox = (lineIndex: number, newChecked: boolean) => {
-    if (!viewingNote) return;
-    updateNote(viewingNote.id, {
-      content: toggleCheckboxLine(viewingNote.content, lineIndex, newChecked),
-    });
+  const enterNoteEditMode = () => {
+    setIsEditingNote(true);
+    setTimeout(() => noteTextareaRef.current?.focus(), 20);
   };
 
-  // Interactive checkbox toggling for Content Studio Markdown Preview
-  const handleToggleContentCheckbox = (lineIndex: number, newChecked: boolean) => {
-    if (!viewingContent || !viewingContent.script_body) return;
-    updateContentIdea(viewingContent.id, {
-      script_body: toggleCheckboxLine(viewingContent.script_body, lineIndex, newChecked),
-    });
+  const enterContentEditMode = () => {
+    setIsEditingContent(true);
+    setTimeout(() => contentTextareaRef.current?.focus(), 20);
   };
 
-  // Sort notes: pinned first
   const sortedNotes = [...notes].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0));
 
   return (
     <section className="space-y-6">
-      {/* Top Banner & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-outline/20">
+      {/* Top Banner & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-outline/20">
         <div className="flex items-center gap-3">
           <LedgerNoteMark active className="w-6 h-6 text-on-surface shrink-0" />
           <div>
@@ -347,109 +397,74 @@ export function NotesAndContentStudio() {
               Second Brain &amp; Content Studio
             </h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Repositori catatan teknis, AI prompts, code snippets, dan pipeline ide konten video dengan rich formatting.
+              Catatan teknis, prompt AI, snippet, dan naskah konten dalam satu ruang yang rapi.
             </p>
           </div>
         </div>
 
-        {/* Tab Switcher Pills */}
-        <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-2xl border border-outline/30 w-full sm:w-auto">
+        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+          {/* Tab Switcher */}
+          <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-2xl border border-outline/30 flex-1 sm:flex-initial">
+            <button
+              type="button"
+              onClick={() => setActiveTab('notes')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                activeTab === 'notes'
+                  ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <Code className="w-3.5 h-3.5 shrink-0" />
+              <span>Notes ({notes.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('content')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                activeTab === 'content'
+                  ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <Video className="w-3.5 h-3.5 shrink-0" />
+              <span>Content ({contentIdeas.length})</span>
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => setActiveTab('notes')}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              activeTab === 'notes'
-                ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
+            onClick={activeTab === 'notes' ? handleOpenNewNote : handleOpenNewContent}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all shrink-0"
           >
-            <Code className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">
-              <span className="sm:hidden">Notes ({notes.length})</span>
-              <span className="hidden sm:inline">Notes &amp; Snippets ({notes.length})</span>
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('content')}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              activeTab === 'content'
-                ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/20'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            <Video className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">
-              <span className="sm:hidden">Content ({contentIdeas.length})</span>
-              <span className="hidden sm:inline">Content Studio ({contentIdeas.length})</span>
-            </span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>{activeTab === 'notes' ? 'Catatan Baru' : 'Ide Konten'}</span>
           </button>
         </div>
       </div>
 
       {/* VIEW 1: NOTES & SNIPPETS */}
       {activeTab === 'notes' ? (
-        <div className="space-y-6">
-          {/* Add Note Form */}
-          <form
-            onSubmit={handleCreateNote}
-            className="bg-surface-container-lowest p-5 rounded-3xl border border-outline/40 shadow-bento space-y-4 text-xs"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-outline/20">
-              <span className="font-bold text-sm text-on-surface flex items-center gap-1.5">
-                <Plus className="w-4 h-4 text-primary-container" />
-                <span>Tambah Catatan atau Snippet Baru</span>
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
-              <input
-                type="text"
-                required
-                value={noteTitle}
-                onChange={(e) => setNoteTitle(e.target.value)}
-                placeholder="Judul catatan / nama snippet..."
-                className="sm:col-span-3 px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-medium text-xs"
-              />
-              <div className="relative sm:col-span-1">
-                <select
-                  value={noteType}
-                  onChange={(e) => setNoteType(e.target.value as any)}
-                  className="w-full appearance-none px-3.5 py-2.5 pr-8 rounded-2xl border border-outline/30 bg-surface-container-low hover:bg-surface-container-lowest text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer transition-all outline-none"
-                >
-                  <option value="note">📝 Catatan Umum</option>
-                  <option value="snippet">💻 Code Snippet</option>
-                  <option value="prompt">🤖 AI Prompt</option>
-                  <option value="bookmark">🔖 Bookmark</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-              </div>
-            </div>
-
-            <textarea
-              rows={3}
-              value={noteContent}
-              onChange={(e) => setNoteContent(e.target.value)}
-              placeholder="Isi catatan, command terminal, list nomor, atau prompt AI (mendukung markdown **bold**, 1. numbering, dll)..."
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-sans text-xs leading-relaxed resize-none"
-            />
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
-              >
-                Simpan Catatan
-              </button>
-            </div>
-          </form>
-
-          {/* Notes Grid */}
+        sortedNotes.length === 0 ? (
+          <div className="bg-surface-container-lowest rounded-3xl border border-dashed border-outline/40 p-10 text-center space-y-3">
+            <p className="text-sm font-semibold text-on-surface">Belum ada catatan tersimpan</p>
+            <p className="text-xs text-on-surface-variant">
+              Mulai tulis catatan, code snippet, atau prompt AI pertamamu.
+            </p>
+            <button
+              type="button"
+              onClick={handleOpenNewNote}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary-container text-white text-xs font-semibold shadow-sm hover:opacity-90 transition"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Buat Catatan Baru</span>
+            </button>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {sortedNotes.map((n) => (
               <div
                 key={n.id}
-                onClick={() => setViewingNoteId(n.id)}
+                onClick={() => handleOpenExistingNote(n.id)}
                 className={`cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border shadow-bento space-y-3 transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5 ${
                   n.is_pinned ? 'border-primary-container/40 ring-1 ring-primary-container/20' : 'border-outline/30'
                 }`}
@@ -465,18 +480,7 @@ export function NotesAndContentStudio() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setViewingNoteId(n.id);
-                      }}
-                      className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary-container transition-colors"
-                      title="Buka tampilan Notion"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
+                  <div className="flex items-center gap-0.5">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -520,19 +524,18 @@ export function NotesAndContentStudio() {
                 </div>
 
                 <h4 className="text-sm font-bold text-on-surface leading-tight group-hover:text-primary-container transition-colors line-clamp-2">
-                  {n.title}
+                  {n.title || 'Catatan Tanpa Judul'}
                 </h4>
 
-                {/* Clean, stripped markdown preview */}
-                <div className="text-xs text-on-surface-variant bg-surface-container-low p-3 rounded-2xl max-h-36 overflow-hidden border border-outline/20 leading-relaxed relative font-sans">
+                <div className="text-xs text-on-surface-variant bg-surface-container-low p-3 rounded-2xl max-h-32 overflow-hidden border border-outline/20 leading-relaxed relative font-sans">
                   <p className="line-clamp-4 whitespace-pre-wrap">
                     {stripMarkdown(n.content) || '(Belum ada isi catatan)'}
                   </p>
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none" />
                 </div>
 
                 {n.tags && n.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 pt-1">
+                  <div className="flex flex-wrap gap-1 pt-0.5">
                     {n.tags.map((tag) => (
                       <span
                         key={tag}
@@ -546,590 +549,549 @@ export function NotesAndContentStudio() {
               </div>
             ))}
           </div>
+        )
+      ) : /* VIEW 2: CONTENT STUDIO */
+      contentIdeas.length === 0 ? (
+        <div className="bg-surface-container-lowest rounded-3xl border border-dashed border-outline/40 p-10 text-center space-y-3">
+          <p className="text-sm font-semibold text-on-surface">Belum ada ide konten</p>
+          <p className="text-xs text-on-surface-variant">
+            Catat hook pembuka, outline, dan script video atau artikelmu di sini.
+          </p>
+          <button
+            type="button"
+            onClick={handleOpenNewContent}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary-container text-white text-xs font-semibold shadow-sm hover:opacity-90 transition"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Buat Ide Konten</span>
+          </button>
         </div>
       ) : (
-        /* VIEW 2: CONTENT STUDIO */
-        <div className="space-y-6">
-          {/* New Content Idea Form */}
-          <form
-            onSubmit={handleCreateContent}
-            className="bg-surface-container-lowest p-5 rounded-3xl border border-outline/40 shadow-bento space-y-4 text-xs"
-          >
-            <div className="flex items-center justify-between pb-2 border-b border-outline/20">
-              <span className="font-bold text-sm text-on-surface flex items-center gap-1.5">
-                <Video className="w-4 h-4 text-primary-container" />
-                <span>Ide Konten Video &amp; Artikel Baru</span>
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <input
-                type="text"
-                required
-                value={contentTitle}
-                onChange={(e) => setContentTitle(e.target.value)}
-                placeholder="Judul / Topik video (cth. Setup Personal OS di Mac)..."
-                className="sm:col-span-2 px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container font-medium text-xs"
-              />
-              <div className="relative sm:col-span-1">
-                <select
-                  value={contentPlatform}
-                  onChange={(e) => setContentPlatform(e.target.value)}
-                  className="w-full appearance-none px-3.5 py-2.5 pr-8 rounded-2xl border border-outline/30 bg-surface-container-low hover:bg-surface-container-lowest text-on-surface focus:outline-none focus:border-primary-container font-semibold text-xs cursor-pointer transition-all outline-none"
-                >
-                  <option value="TikTok/Reels">TikTok / Instagram Reels</option>
-                  <option value="YouTube">YouTube Video</option>
-                  <option value="LinkedIn">LinkedIn Post</option>
-                  <option value="Blog">Technical Blog / Medium</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-              </div>
-            </div>
-
-            <input
-              type="text"
-              value={contentHook}
-              onChange={(e) => setContentHook(e.target.value)}
-              placeholder="Hook 3 detik pertama (kalimat pembuka yang memikat audience)..."
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container text-xs"
-            />
-
-            <textarea
-              rows={3}
-              value={contentScript}
-              onChange={(e) => setContentScript(e.target.value)}
-              placeholder="Outline script, poin-poin penting, atau draft caption..."
-              className="w-full px-3.5 py-2.5 rounded-2xl border border-outline/30 bg-surface-container-low text-on-surface focus:outline-none focus:border-primary-container text-xs leading-relaxed resize-none"
-            />
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all"
-              >
-                Simpan Ide Konten
-              </button>
-            </div>
-          </form>
-
-          {/* Content Ideas Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {contentIdeas.map((idea) => (
-              <div
-                key={idea.id}
-                onClick={() => setViewingContentId(idea.id)}
-                className="cursor-pointer group bg-surface-container-lowest p-5 rounded-3xl border border-outline/30 shadow-bento space-y-3.5 flex flex-col justify-between transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5"
-              >
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between text-xs pb-2 border-b border-outline/10">
-                    <span className="font-bold text-[11px] uppercase tracking-wider text-purple-600 bg-purple-500/10 px-2.5 py-0.5 rounded-full">
-                      {idea.platform}
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <div className="relative">
-                        <select
-                          value={idea.status}
-                          onClick={(e) => e.stopPropagation()}
-                          onChange={(e) => updateContentStatus(idea.id, e.target.value as any)}
-                          className="appearance-none font-mono text-[11px] bg-surface-container-high hover:bg-surface-dim px-2.5 py-1 pr-6 rounded-xl border border-outline/30 text-on-surface cursor-pointer font-semibold outline-none transition-colors"
-                        >
-                          <option value="idea">💡 Idea</option>
-                          <option value="scripting">📝 Scripting</option>
-                          <option value="filming">🎬 Filming</option>
-                          <option value="editing">✂️ Editing</option>
-                          <option value="posted">✅ Posted</option>
-                        </select>
-                        <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteContentIdea(idea.id);
-                        }}
-                        className="p-1 rounded-full text-on-surface-variant hover:text-error transition"
-                        title="Hapus ide"
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {contentIdeas.map((idea) => (
+            <div
+              key={idea.id}
+              onClick={() => handleOpenExistingContent(idea.id)}
+              className="cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border border-outline/30 shadow-bento space-y-3 flex flex-col justify-between transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5"
+            >
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs pb-2 border-b border-outline/10">
+                  <span className="font-bold text-[11px] uppercase tracking-wider text-purple-600 bg-purple-500/10 px-2.5 py-0.5 rounded-full">
+                    {idea.platform}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <div className="relative">
+                      <select
+                        value={idea.status}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => updateContentStatus(idea.id, e.target.value as ContentIdea['status'])}
+                        className="appearance-none font-mono text-[11px] bg-surface-container-high hover:bg-surface-dim px-2.5 py-1 pr-6 rounded-xl border border-outline/30 text-on-surface cursor-pointer font-semibold outline-none transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                        <option value="idea">💡 Idea</option>
+                        <option value="scripting">📝 Scripting</option>
+                        <option value="filming">🎬 Filming</option>
+                        <option value="editing">✂️ Editing</option>
+                        <option value="posted">✅ Posted</option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2" />
                     </div>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-on-surface leading-tight group-hover:text-primary-container transition-colors">
-                    {idea.title}
-                  </h4>
-
-                  {idea.hook_text && (
-                    <div className="text-xs p-3 rounded-2xl bg-primary-fixed/30 border border-primary-container/20 text-on-surface font-medium">
-                      <span className="font-bold text-primary-container">Hook:</span> &ldquo;{idea.hook_text}&rdquo;
-                    </div>
-                  )}
-
-                  {idea.script_body && (
-                    <p className="text-xs text-on-surface-variant line-clamp-4 leading-relaxed bg-surface-container-low p-3 rounded-2xl border border-outline/20 font-sans">
-                      {stripMarkdown(idea.script_body)}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-2 border-t border-outline/10 flex items-center justify-between text-[11px] text-on-surface-variant">
-                  <span>Dibuat: {new Date(idea.created_at).toLocaleDateString('id-ID')}</span>
-                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setViewingContentId(idea.id);
+                        deleteContentIdea(idea.id);
                       }}
-                      className="hover:text-primary-container flex items-center gap-1 font-semibold"
+                      className="p-1.5 rounded-full text-on-surface-variant hover:text-error transition"
+                      title="Hapus ide"
                     >
-                      <Maximize2 className="w-3 h-3" />
-                      <span>Buka</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCopy(idea.id, `${idea.title}\n\nHook: ${idea.hook_text || '-'}\n\n${idea.script_body || ''}`);
-                      }}
-                      className="hover:text-primary-container flex items-center gap-1 font-semibold"
-                    >
-                      {copiedId === idea.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedId === idea.id ? 'Tersalin' : 'Salin Script'}</span>
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
+
+                <h4 className="text-sm font-bold text-on-surface leading-tight group-hover:text-primary-container transition-colors line-clamp-2">
+                  {idea.title || 'Ide Tanpa Judul'}
+                </h4>
+
+                {idea.hook_text && (
+                  <div className="text-xs p-2.5 rounded-2xl bg-primary-fixed/30 border border-primary-container/20 text-on-surface font-medium line-clamp-2">
+                    <span className="font-bold text-primary-container">Hook:</span> &ldquo;{idea.hook_text}&rdquo;
+                  </div>
+                )}
+
+                {idea.script_body && (
+                  <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed bg-surface-container-low p-3 rounded-2xl border border-outline/20 font-sans">
+                    {stripMarkdown(idea.script_body)}
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
+
+              <div className="pt-2 border-t border-outline/10 flex items-center justify-between text-[11px] text-on-surface-variant">
+                <span>{new Date(idea.created_at).toLocaleDateString('id-ID')}</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopy(
+                      idea.id,
+                      `${idea.title}\n\nHook: ${idea.hook_text || '-'}\n\n${idea.script_body || ''}`
+                    );
+                  }}
+                  className="hover:text-primary-container flex items-center gap-1 font-semibold"
+                >
+                  {copiedId === idea.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedId === idea.id ? 'Tersalin' : 'Salin Script'}</span>
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {/* SINGLE-COLUMN READ-FIRST MODAL FOR NOTES */}
-      {viewingNote && mounted && (
-        <DocumentModalShell
-          isMaximized={isMaximized}
-          onToggleMaximize={() => setIsMaximized((prev) => !prev)}
-          onClose={() => {
-            setViewingNoteId(null);
-            setIsEditingNote(false);
-          }}
-          leftControls={
-            <>
-              <div className="relative">
-                <select
-                  value={viewingNote.type}
-                  onChange={(e) => updateNote(viewingNote.id, { type: e.target.value as NoteItem['type'] })}
-                  className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+      {activeNote &&
+        mounted && (
+          <DocumentModalShell
+            isMaximized={isMaximized}
+            onToggleMaximize={() => setIsMaximized((prev) => !prev)}
+            onClose={closeNoteModal}
+            leftControls={
+              <>
+                <div className="relative">
+                  <select
+                    value={activeNote.type}
+                    onChange={(e) => commitOrUpdateNote({ type: e.target.value as NoteItem['type'] })}
+                    className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                  >
+                    <option value="note">📝 Catatan</option>
+                    <option value="snippet">💻 Snippet</option>
+                    <option value="prompt">🤖 AI Prompt</option>
+                    <option value="bookmark">🔖 Bookmark</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
+                  {savedNote ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
+                      <span>Tersimpan</span>
+                    </>
+                  ) : (
+                    <span>Draft baru</span>
+                  )}
+                </span>
+              </>
+            }
+            rightControls={
+              <>
+                <button
+                  type="button"
+                  onClick={() => (isEditingNote ? setIsEditingNote(false) : enterNoteEditMode())}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                    isEditingNote
+                      ? 'bg-primary-container text-white shadow-sm'
+                      : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
+                  }`}
                 >
-                  <option value="note">📝 Catatan</option>
-                  <option value="snippet">💻 Snippet</option>
-                  <option value="prompt">🤖 AI Prompt</option>
-                  <option value="bookmark">🔖 Bookmark</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                  {isEditingNote ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Selesai</span>
+                    </>
+                  ) : (
+                    <>
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleCopy(savedNote?.id || 'draft-note', activeNote.content)}
+                  className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
+                  title="Salin isi catatan"
+                >
+                  {copiedId === (savedNote?.id || 'draft-note') ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
+
+                {savedNote && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => togglePinNote(savedNote.id)}
+                      className={`p-2 rounded-xl transition ${
+                        savedNote.is_pinned
+                          ? 'bg-primary-fixed/60 text-primary-container'
+                          : 'hover:bg-surface-container-high text-on-surface-variant'
+                      }`}
+                      title={savedNote.is_pinned ? 'Unpin' : 'Pin ke atas'}
+                    >
+                      <Pin className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteNote(savedNote.id);
+                        closeNoteModal();
+                      }}
+                      className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
+                      title="Hapus Catatan"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+              </>
+            }
+          >
+            {/* Title */}
+            <input
+              ref={noteTitleRef}
+              type="text"
+              value={activeNote.title}
+              onChange={(e) => commitOrUpdateNote({ title: e.target.value })}
+              placeholder="Judul catatan..."
+              className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+            />
+
+            {/* Compact Metadata Line (Date + Tags) */}
+            <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
+              {activeNote.updated_at && (
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Calendar className="w-3.5 h-3.5 text-primary-container" />
+                  <span>
+                    {new Date(activeNote.updated_at).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                <Tag className="w-3.5 h-3.5 text-primary-container shrink-0" />
+                {activeNote.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-[11px] font-medium text-on-surface"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        commitOrUpdateNote({ tags: activeNote.tags.filter((t) => t !== tag) })
+                      }
+                      className="text-on-surface-variant hover:text-error"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  type="text"
+                  placeholder="+ tag"
+                  value={newTagInput}
+                  onChange={(e) => setNewTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ',') {
+                      e.preventDefault();
+                      const val = newTagInput.trim().replace(/^#/, '').toLowerCase();
+                      if (val && !activeNote.tags.includes(val)) {
+                        commitOrUpdateNote({ tags: [...activeNote.tags, val] });
+                      }
+                      setNewTagInput('');
+                    }
+                  }}
+                  className="px-1.5 py-0.5 text-[11px] bg-transparent border-b border-transparent focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-24"
+                />
               </div>
-
-              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
-                <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
-                <span>Tersimpan</span>
-              </span>
-            </>
-          }
-          rightControls={
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  if (isEditingNote) {
-                    setIsEditingNote(false);
-                  } else {
-                    setIsEditingNote(true);
-                    setTimeout(() => noteTextareaRef.current?.focus(), 20);
-                  }
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                  isEditingNote
-                    ? 'bg-primary-container text-white shadow-sm'
-                    : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
-                }`}
-              >
-                {isEditingNote ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Selesai</span>
-                  </>
-                ) : (
-                  <>
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleCopy(viewingNote.id, viewingNote.content)}
-                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
-                title="Salin isi catatan"
-              >
-                {copiedId === viewingNote.id ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => togglePinNote(viewingNote.id)}
-                className={`p-2 rounded-xl transition ${
-                  viewingNote.is_pinned
-                    ? 'bg-primary-fixed/60 text-primary-container'
-                    : 'hover:bg-surface-container-high text-on-surface-variant'
-                }`}
-                title={viewingNote.is_pinned ? 'Unpin' : 'Pin ke atas'}
-              >
-                <Pin className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  deleteNote(viewingNote.id);
-                  setViewingNoteId(null);
-                  setIsEditingNote(false);
-                }}
-                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
-                title="Hapus Catatan"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          }
-        >
-          <input
-            type="text"
-            value={viewingNote.title}
-            onChange={(e) => updateNote(viewingNote.id, { title: e.target.value })}
-            placeholder="Judul catatan..."
-            className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
-          />
-
-          <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Calendar className="w-3.5 h-3.5 text-primary-container" />
-              <span>
-                {new Date(viewingNote.updated_at).toLocaleDateString('id-ID', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </span>
             </div>
 
-            <div className="flex items-center gap-1.5 flex-wrap flex-1">
-              <Tag className="w-3.5 h-3.5 text-primary-container shrink-0" />
-              {viewingNote.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-[11px] font-medium text-on-surface"
+            {/* Single-Column Body: Edit vs Read */}
+            {isEditingNote ? (
+              <div className="flex flex-col flex-1 space-y-3">
+                <MarkdownFormatBar
+                  includeExtended
+                  wordCount={activeNote.content.split(/\s+/).filter(Boolean).length}
+                  onFormat={(prefix, suffix, placeholder) =>
+                    handleInsertFormat('note', prefix, suffix, placeholder)
+                  }
+                />
+                <textarea
+                  ref={noteTextareaRef}
+                  value={activeNote.content}
+                  onChange={(e) => commitOrUpdateNote({ content: e.target.value })}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                      e.preventDefault();
+                      setIsEditingNote(false);
+                    }
+                  }}
+                  placeholder="Mulai tulis catatan... (Mendukung markdown: # Heading, **bold**, - [ ] checklist, ```code```)"
+                  className="w-full flex-1 min-h-[340px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+                />
+              </div>
+            ) : (
+              <div
+                onClick={(e) => {
+                  if (shouldEnterEditFromReadClick(e.target)) {
+                    enterNoteEditMode();
+                  }
+                }}
+                className="flex-1 min-h-[320px] cursor-text rounded-2xl transition-colors"
+                title="Klik untuk mengedit catatan"
+              >
+                {activeNote.content.trim() ? (
+                  <MarkdownRenderer
+                    content={activeNote.content}
+                    onToggleCheckbox={(lineIndex, newChecked) =>
+                      commitOrUpdateNote({
+                        content: toggleCheckboxLine(activeNote.content, lineIndex, newChecked),
+                      })
+                    }
+                  />
+                ) : (
+                  <p className="text-sm text-on-surface-variant/50 italic py-4">
+                    Klik di sini untuk mulai menulis catatan...
+                  </p>
+                )}
+              </div>
+            )}
+          </DocumentModalShell>
+        )}
+
+      {/* SINGLE-COLUMN READ-FIRST MODAL FOR CONTENT STUDIO */}
+      {activeContent &&
+        mounted && (
+          <DocumentModalShell
+            isMaximized={isMaximized}
+            onToggleMaximize={() => setIsMaximized((prev) => !prev)}
+            onClose={closeContentModal}
+            leftControls={
+              <>
+                <div className="relative">
+                  <select
+                    value={activeContent.platform}
+                    onChange={(e) => commitOrUpdateContent({ platform: e.target.value })}
+                    className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                  >
+                    <option value="TikTok/Reels">TikTok / Reels</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Blog">Blog / Medium</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={activeContent.status}
+                    onChange={(e) =>
+                      commitOrUpdateContent({ status: e.target.value as ContentIdea['status'] })
+                    }
+                    className="appearance-none font-mono px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                  >
+                    <option value="idea">💡 Idea</option>
+                    <option value="scripting">📝 Scripting</option>
+                    <option value="filming">🎬 Filming</option>
+                    <option value="editing">✂️ Editing</option>
+                    <option value="posted">✅ Posted</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+                </div>
+
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
+                  {savedContent ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
+                      <span>Tersimpan</span>
+                    </>
+                  ) : (
+                    <span>Draft baru</span>
+                  )}
+                </span>
+              </>
+            }
+            rightControls={
+              <>
+                <button
+                  type="button"
+                  onClick={() => (isEditingContent ? setIsEditingContent(false) : enterContentEditMode())}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                    isEditingContent
+                      ? 'bg-primary-container text-white shadow-sm'
+                      : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
+                  }`}
                 >
-                  #{tag}
+                  {isEditingContent ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Selesai</span>
+                    </>
+                  ) : (
+                    <>
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleCopy(
+                      savedContent?.id || 'draft-content',
+                      `${activeContent.title}\n\nHook: ${activeContent.hook_text || '-'}\n\n${
+                        activeContent.script_body || ''
+                      }`
+                    )
+                  }
+                  className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
+                  title="Salin script & hook"
+                >
+                  {copiedId === (savedContent?.id || 'draft-content') ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
+
+                {savedContent && (
                   <button
                     type="button"
                     onClick={() => {
-                      const next = viewingNote.tags.filter((t) => t !== tag);
-                      updateNote(viewingNote.id, { tags: next });
+                      deleteContentIdea(savedContent.id);
+                      closeContentModal();
                     }}
-                    className="text-on-surface-variant hover:text-error"
+                    className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
+                    title="Hapus Ide Konten"
                   >
-                    <X className="w-2.5 h-2.5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                </span>
-              ))}
-              <input
-                type="text"
-                placeholder="+ tag"
-                value={newTagInput}
-                onChange={(e) => setNewTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ',') {
-                    e.preventDefault();
-                    const val = newTagInput.trim().replace(/^#/, '').toLowerCase();
-                    if (val && !viewingNote.tags.includes(val)) {
-                      updateNote(viewingNote.id, { tags: [...viewingNote.tags, val] });
-                    }
-                    setNewTagInput('');
-                  }
-                }}
-                className="px-1.5 py-0.5 text-[11px] bg-transparent border-b border-transparent focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-24"
-              />
-            </div>
-          </div>
-
-          {isEditingNote ? (
-            <div className="flex flex-col flex-1 space-y-3">
-              <MarkdownFormatButtons
-                includeExtended
-                wordCount={viewingNote.content.split(/\s+/).filter(Boolean).length}
-                onFormat={(prefix, suffix, placeholder) =>
-                  handleInsertFormat('note', prefix, suffix, placeholder)
-                }
-              />
-              <textarea
-                ref={noteTextareaRef}
-                value={viewingNote.content}
-                onChange={(e) => updateNote(viewingNote.id, { content: e.target.value })}
-                onKeyDown={(e) => {
-                  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                    e.preventDefault();
-                    setIsEditingNote(false);
-                  }
-                }}
-                placeholder="Mulai tulis catatan... (Mendukung markdown: # Heading, **bold**, - [ ] checklist, ```code```)"
-                className="w-full flex-1 min-h-[340px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
-              />
-            </div>
-          ) : (
-            <div
-              onClick={(e) => {
-                if (shouldEnterEditFromReadClick(e.target)) {
-                  setIsEditingNote(true);
-                  setTimeout(() => noteTextareaRef.current?.focus(), 20);
-                }
-              }}
-              className="flex-1 min-h-[320px] cursor-text rounded-2xl transition-colors"
-              title="Klik untuk mengedit catatan"
-            >
-              {viewingNote.content.trim() ? (
-                <MarkdownRenderer
-                  content={viewingNote.content}
-                  onToggleCheckbox={handleToggleNoteCheckbox}
-                />
-              ) : (
-                <p className="text-sm text-on-surface-variant/50 italic py-4">
-                  Klik di sini untuk mulai menulis catatan...
-                </p>
-              )}
-            </div>
-          )}
-        </DocumentModalShell>
-      )}
-
-      {/* SINGLE-COLUMN READ-FIRST MODAL FOR CONTENT STUDIO */}
-      {viewingContent && mounted && (
-        <DocumentModalShell
-          isMaximized={isMaximized}
-          onToggleMaximize={() => setIsMaximized((prev) => !prev)}
-          onClose={() => {
-            setViewingContentId(null);
-            setIsEditingContent(false);
-          }}
-          leftControls={
-            <>
-              <div className="relative">
-                <select
-                  value={viewingContent.platform}
-                  onChange={(e) => updateContentIdea(viewingContent.id, { platform: e.target.value })}
-                  className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
-                >
-                  <option value="TikTok/Reels">TikTok / Reels</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="LinkedIn">LinkedIn</option>
-                  <option value="Blog">Blog / Medium</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
-              </div>
-
-              <div className="relative">
-                <select
-                  value={viewingContent.status}
-                  onChange={(e) => updateContentStatus(viewingContent.id, e.target.value as ContentIdea['status'])}
-                  className="appearance-none font-mono px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
-                >
-                  <option value="idea">💡 Idea</option>
-                  <option value="scripting">📝 Scripting</option>
-                  <option value="filming">🎬 Filming</option>
-                  <option value="editing">✂️ Editing</option>
-                  <option value="posted">✅ Posted</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
-              </div>
-
-              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
-                <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
-                <span>Tersimpan</span>
-              </span>
-            </>
-          }
-          rightControls={
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  if (isEditingContent) {
-                    setIsEditingContent(false);
-                  } else {
-                    setIsEditingContent(true);
-                    setTimeout(() => contentTextareaRef.current?.focus(), 20);
-                  }
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                  isEditingContent
-                    ? 'bg-primary-container text-white shadow-sm'
-                    : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
-                }`}
-              >
-                {isEditingContent ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Selesai</span>
-                  </>
-                ) : (
-                  <>
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit</span>
-                  </>
                 )}
-              </button>
+              </>
+            }
+          >
+            {/* Title */}
+            <input
+              ref={contentTitleRef}
+              type="text"
+              value={activeContent.title}
+              onChange={(e) => commitOrUpdateContent({ title: e.target.value })}
+              placeholder="Judul topik video / konten..."
+              className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+            />
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleCopy(
-                    viewingContent.id,
-                    `${viewingContent.title}\n\nHook: ${viewingContent.hook_text || '-'}\n\n${viewingContent.script_body || ''}`
-                  )
-                }
-                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
-                title="Salin script & hook"
-              >
-                {copiedId === viewingContent.id ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  deleteContentIdea(viewingContent.id);
-                  setViewingContentId(null);
-                  setIsEditingContent(false);
-                }}
-                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
-                title="Hapus Ide Konten"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          }
-        >
-          <input
-            type="text"
-            value={viewingContent.title}
-            onChange={(e) => updateContentIdea(viewingContent.id, { title: e.target.value })}
-            placeholder="Judul topik video / konten..."
-            className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
-          />
-
-          <div className="flex items-center gap-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-primary-container" />
-              <span>
-                {new Date(viewingContent.created_at).toLocaleDateString('id-ID', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </span>
-            </div>
-            <span>•</span>
-            <span>{viewingContent.platform}</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-primary-fixed/25 border border-primary-container/25 space-y-1.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary-container uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Hook Pembuka</span>
-            </div>
-            {isEditingContent ? (
-              <textarea
-                rows={2}
-                value={viewingContent.hook_text || ''}
-                onChange={(e) => updateContentIdea(viewingContent.id, { hook_text: e.target.value })}
-                placeholder="Kalimat pembuka 3 detik pertama..."
-                className="w-full bg-transparent text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
-              />
-            ) : (
-              <p
-                onClick={() => {
-                  setIsEditingContent(true);
-                  setTimeout(() => contentTextareaRef.current?.focus(), 20);
-                }}
-                className="text-sm text-on-surface font-medium leading-relaxed cursor-text"
-              >
-                {viewingContent.hook_text?.trim() ? (
-                  viewingContent.hook_text
-                ) : (
-                  <span className="italic text-on-surface-variant/50 font-normal">
-                    Klik untuk tambah hook pembuka...
+            {/* Compact Metadata */}
+            {activeContent.created_at && (
+              <div className="flex items-center gap-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-primary-container" />
+                  <span>
+                    {new Date(activeContent.created_at).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
                   </span>
-                )}
-              </p>
+                </div>
+                <span>•</span>
+                <span>{activeContent.platform}</span>
+              </div>
             )}
-          </div>
 
-          {isEditingContent ? (
-            <div className="flex flex-col flex-1 space-y-3">
-              <MarkdownFormatButtons
-                includeExtended={false}
-                wordCount={(viewingContent.script_body || '').split(/\s+/).filter(Boolean).length}
-                onFormat={(prefix, suffix, placeholder) =>
-                  handleInsertFormat('content', prefix, suffix, placeholder)
-                }
-              />
-              <textarea
-                ref={contentTextareaRef}
-                value={viewingContent.script_body || ''}
-                onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
-                onKeyDown={(e) => {
-                  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                    e.preventDefault();
-                    setIsEditingContent(false);
-                  }
-                }}
-                placeholder="Tulis outline atau naskah lengkap di sini..."
-                className="w-full flex-1 min-h-[280px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
-              />
-            </div>
-          ) : (
-            <div
-              onClick={(e) => {
-                if (shouldEnterEditFromReadClick(e.target)) {
-                  setIsEditingContent(true);
-                  setTimeout(() => contentTextareaRef.current?.focus(), 20);
-                }
-              }}
-              className="flex-1 min-h-[260px] cursor-text rounded-2xl transition-colors"
-              title="Klik untuk mengedit script"
-            >
-              {viewingContent.script_body?.trim() ? (
-                <MarkdownRenderer
-                  content={viewingContent.script_body}
-                  onToggleCheckbox={handleToggleContentCheckbox}
+            {/* Hook Section */}
+            <div className="p-4 rounded-2xl bg-primary-fixed/25 border border-primary-container/25 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary-container uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Hook Pembuka</span>
+              </div>
+              {isEditingContent ? (
+                <textarea
+                  rows={2}
+                  value={activeContent.hook_text || ''}
+                  onChange={(e) => commitOrUpdateContent({ hook_text: e.target.value })}
+                  placeholder="Kalimat pembuka 3 detik pertama..."
+                  className="w-full bg-transparent text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
                 />
               ) : (
-                <p className="text-sm text-on-surface-variant/50 italic py-4">
-                  Klik di sini untuk mulai menulis outline atau script...
+                <p
+                  onClick={enterContentEditMode}
+                  className="text-sm text-on-surface font-medium leading-relaxed cursor-text"
+                >
+                  {activeContent.hook_text?.trim() ? (
+                    activeContent.hook_text
+                  ) : (
+                    <span className="italic text-on-surface-variant/50 font-normal">
+                      Klik untuk tambah hook pembuka...
+                    </span>
+                  )}
                 </p>
               )}
             </div>
-          )}
-        </DocumentModalShell>
-      )}
+
+            {/* Single-Column Script Body: Edit vs Read */}
+            {isEditingContent ? (
+              <div className="flex flex-col flex-1 space-y-3">
+                <MarkdownFormatBar
+                  includeExtended={false}
+                  wordCount={(activeContent.script_body || '').split(/\s+/).filter(Boolean).length}
+                  onFormat={(prefix, suffix, placeholder) =>
+                    handleInsertFormat('content', prefix, suffix, placeholder)
+                  }
+                />
+                <textarea
+                  ref={contentTextareaRef}
+                  value={activeContent.script_body || ''}
+                  onChange={(e) => commitOrUpdateContent({ script_body: e.target.value })}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                      e.preventDefault();
+                      setIsEditingContent(false);
+                    }
+                  }}
+                  placeholder="Tulis outline atau naskah lengkap di sini..."
+                  className="w-full flex-1 min-h-[280px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+                />
+              </div>
+            ) : (
+              <div
+                onClick={(e) => {
+                  if (shouldEnterEditFromReadClick(e.target)) {
+                    enterContentEditMode();
+                  }
+                }}
+                className="flex-1 min-h-[260px] cursor-text rounded-2xl transition-colors"
+                title="Klik untuk mengedit script"
+              >
+                {activeContent.script_body?.trim() ? (
+                  <MarkdownRenderer
+                    content={activeContent.script_body}
+                    onToggleCheckbox={(lineIndex, newChecked) =>
+                      commitOrUpdateContent({
+                        script_body: toggleCheckboxLine(
+                          activeContent.script_body || '',
+                          lineIndex,
+                          newChecked
+                        ),
+                      })
+                    }
+                  />
+                ) : (
+                  <p className="text-sm text-on-surface-variant/50 italic py-4">
+                    Klik di sini untuk mulai menulis outline atau script...
+                  </p>
+                )}
+              </div>
+            )}
+          </DocumentModalShell>
+        )}
     </section>
   );
 }
