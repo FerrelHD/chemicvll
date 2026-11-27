@@ -88,6 +88,73 @@ function MarkdownFormatButtons({ includeExtended, onFormat }: MarkdownFormatButt
   );
 }
 
+interface DocumentModalShellProps {
+  isMaximized: boolean;
+  onToggleMaximize: () => void;
+  onClose: () => void;
+  leftControls: React.ReactNode;
+  rightControls: React.ReactNode;
+  children: React.ReactNode;
+}
+
+function DocumentModalShell({
+  isMaximized,
+  onToggleMaximize,
+  onClose,
+  leftControls,
+  rightControls,
+  children,
+}: DocumentModalShellProps) {
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
+          isMaximized ? 'max-w-[98vw] h-[96vh]' : 'max-w-4xl h-[94vh] sm:h-[88vh]'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden mt-2.5 mb-1 shrink-0" />
+
+        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-3 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
+          <div className="flex items-center gap-2 flex-wrap min-w-0">{leftControls}</div>
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            {rightControls}
+            <div className="w-px h-4 bg-outline/20 mx-0.5 hidden sm:block" />
+            <button
+              type="button"
+              onClick={onToggleMaximize}
+              className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition hidden sm:inline-flex"
+              title={isMaximized ? 'Perkecil tampilan' : 'Perbesar layar penuh'}
+            >
+              {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
+              title="Tutup (Esc)"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 sm:px-8 md:px-12 py-6">
+          <div className="max-w-3xl mx-auto w-full flex flex-col min-h-full space-y-5">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 export function NotesAndContentStudio() {
   const {
     notes,
@@ -125,8 +192,7 @@ export function NotesAndContentStudio() {
   // Mode states for Markdown editing vs rich preview
   const [noteViewMode, setNoteViewMode] = useState<'split' | 'edit' | 'preview'>('split');
   const [contentViewMode, setContentViewMode] = useState<'split' | 'edit' | 'preview'>('split');
-  const [isNoteMaximized, setIsNoteMaximized] = useState(false);
-  const [isContentMaximized, setIsContentMaximized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
   const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -625,120 +691,82 @@ export function NotesAndContentStudio() {
       )}
 
       {/* NOTION-STYLE LARGE MODAL FOR NOTES & SNIPPETS */}
-      {viewingNote && mounted && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setViewingNoteId(null)}
+      {viewingNote && mounted && (
+        <DocumentModalShell
+          isMaximized={isMaximized}
+          onToggleMaximize={() => setIsMaximized((prev) => !prev)}
+          onClose={() => setViewingNoteId(null)}
+          leftControls={
+            <>
+              <div className="relative">
+                <select
+                  value={viewingNote.type}
+                  onChange={(e) => updateNote(viewingNote.id, { type: e.target.value as any })}
+                  className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                >
+                  <option value="note">📝 Catatan Umum</option>
+                  <option value="snippet">💻 Code Snippet</option>
+                  <option value="prompt">🤖 AI Prompt</option>
+                  <option value="bookmark">🔖 Bookmark</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+              </div>
+
+              <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                <Check className="w-3 h-3 stroke-[2.5]" />
+                <span>Tersimpan otomatis</span>
+              </div>
+            </>
+          }
+          rightControls={
+            <>
+              <button
+                type="button"
+                onClick={() => handleCopy(viewingNote.id, viewingNote.content)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
+                title="Salin isi catatan"
+              >
+                {copiedId === viewingNote.id ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    <span className="text-emerald-500">Tersalin</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
+                    <span className="hidden sm:inline">Salin</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => togglePinNote(viewingNote.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  viewingNote.is_pinned
+                    ? 'bg-primary-container text-white shadow-sm'
+                    : 'hover:bg-surface-container-high text-on-surface-variant'
+                }`}
+                title={viewingNote.is_pinned ? 'Unpin' : 'Pin ke atas'}
+              >
+                <Pin className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{viewingNote.is_pinned ? 'Pinned' : 'Pin'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  deleteNote(viewingNote.id);
+                  setViewingNoteId(null);
+                }}
+                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
+                title="Hapus Catatan"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          }
         >
-          <div
-            className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
-              isNoteMaximized
-                ? 'max-w-[98vw] h-[96vh] sm:h-[96vh]'
-                : 'max-w-4xl lg:max-w-6xl xl:max-w-7xl h-[94vh] sm:h-[88vh] md:h-[90vh]'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Mobile drag handle */}
-            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden mt-2.5 mb-1 shrink-0" />
-
-            {/* Top Toolbar */}
-            <div className="flex items-center justify-between px-5 sm:px-8 py-3.5 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
-              <div className="flex items-center gap-2.5 min-w-0">
-                {/* Type Selector Pill */}
-                <div className="relative">
-                  <select
-                    value={viewingNote.type}
-                    onChange={(e) => updateNote(viewingNote.id, { type: e.target.value as any })}
-                    className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
-                  >
-                    <option value="note">📝 Catatan Umum</option>
-                    <option value="snippet">💻 Code Snippet</option>
-                    <option value="prompt">🤖 AI Prompt</option>
-                    <option value="bookmark">🔖 Bookmark</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
-                </div>
-
-                {/* Auto-save indicator */}
-                <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                  <Check className="w-3 h-3 stroke-[2.5]" />
-                  <span>Tersimpan otomatis</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleCopy(viewingNote.id, viewingNote.content)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
-                  title="Salin isi catatan"
-                >
-                  {copiedId === viewingNote.id ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-500">Tersalin</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
-                      <span className="hidden sm:inline">Salin</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => togglePinNote(viewingNote.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                    viewingNote.is_pinned
-                      ? 'bg-primary-container text-white shadow-sm'
-                      : 'hover:bg-surface-container-high text-on-surface-variant'
-                  }`}
-                  title={viewingNote.is_pinned ? 'Unpin' : 'Pin ke atas'}
-                >
-                  <Pin className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{viewingNote.is_pinned ? 'Pinned' : 'Pin'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    deleteNote(viewingNote.id);
-                    setViewingNoteId(null);
-                  }}
-                  className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
-                  title="Hapus Catatan"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
-                <div className="w-px h-5 bg-outline/20 mx-1 hidden sm:block" />
-
-                <button
-                  type="button"
-                  onClick={() => setIsNoteMaximized(!isNoteMaximized)}
-                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition hidden sm:inline-flex"
-                  title={isNoteMaximized ? 'Perkecil tampilan' : 'Perbesar layar penuh'}
-                >
-                  {isNoteMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setViewingNoteId(null)}
-                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
-                  title="Tutup (Esc)"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-10 py-5 sm:py-6 space-y-4">
               {/* Title Section (Large Notion-Style) */}
               <div className="space-y-3">
                 <input
@@ -950,134 +978,92 @@ export function NotesAndContentStudio() {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-        </div>,
-        document.body
+        </DocumentModalShell>
       )}
 
       {/* NOTION-STYLE LARGE MODAL FOR CONTENT STUDIO */}
-      {viewingContent && mounted && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setViewingContentId(null)}
+      {viewingContent && mounted && (
+        <DocumentModalShell
+          isMaximized={isMaximized}
+          onToggleMaximize={() => setIsMaximized((prev) => !prev)}
+          onClose={() => setViewingContentId(null)}
+          leftControls={
+            <>
+              <div className="relative">
+                <select
+                  value={viewingContent.platform}
+                  onChange={(e) => updateContentIdea(viewingContent.id, { platform: e.target.value })}
+                  className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                >
+                  <option value="TikTok/Reels">TikTok / Instagram Reels</option>
+                  <option value="YouTube">YouTube Video</option>
+                  <option value="LinkedIn">LinkedIn Post</option>
+                  <option value="Blog">Technical Blog / Medium</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={viewingContent.status}
+                  onChange={(e) => updateContentStatus(viewingContent.id, e.target.value as any)}
+                  className="appearance-none font-mono px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
+                >
+                  <option value="idea">💡 Idea</option>
+                  <option value="scripting">📝 Scripting</option>
+                  <option value="filming">🎬 Filming</option>
+                  <option value="editing">✂️ Editing</option>
+                  <option value="posted">✅ Posted</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+              </div>
+
+              <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                <Check className="w-3 h-3 stroke-[2.5]" />
+                <span>Tersimpan otomatis</span>
+              </div>
+            </>
+          }
+          rightControls={
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  handleCopy(
+                    viewingContent.id,
+                    `${viewingContent.title}\n\nHook: ${viewingContent.hook_text || '-'}\n\n${viewingContent.script_body || ''}`
+                  )
+                }
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
+                title="Salin script & hook"
+              >
+                {copiedId === viewingContent.id ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    <span className="text-emerald-500">Tersalin</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
+                    <span className="hidden sm:inline">Salin Script</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  deleteContentIdea(viewingContent.id);
+                  setViewingContentId(null);
+                }}
+                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
+                title="Hapus Ide Konten"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          }
         >
-          <div
-            className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
-              isContentMaximized
-                ? 'max-w-[98vw] h-[96vh] sm:h-[96vh]'
-                : 'max-w-4xl lg:max-w-6xl xl:max-w-7xl h-[94vh] sm:h-[88vh] md:h-[90vh]'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Mobile drag handle */}
-            <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden mt-2.5 mb-1 shrink-0" />
-
-            {/* Top Toolbar */}
-            <div className="flex items-center justify-between px-5 sm:px-8 py-3.5 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
-              <div className="flex items-center gap-2.5 flex-wrap min-w-0">
-                {/* Platform Selector */}
-                <div className="relative">
-                  <select
-                    value={viewingContent.platform}
-                    onChange={(e) => updateContentIdea(viewingContent.id, { platform: e.target.value })}
-                    className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
-                  >
-                    <option value="TikTok/Reels">TikTok / Instagram Reels</option>
-                    <option value="YouTube">YouTube Video</option>
-                    <option value="LinkedIn">LinkedIn Post</option>
-                    <option value="Blog">Technical Blog / Medium</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
-                </div>
-
-                {/* Status Selector */}
-                <div className="relative">
-                  <select
-                    value={viewingContent.status}
-                    onChange={(e) => updateContentStatus(viewingContent.id, e.target.value as any)}
-                    className="appearance-none font-mono text-xs px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
-                  >
-                    <option value="idea">💡 Idea</option>
-                    <option value="scripting">📝 Scripting</option>
-                    <option value="filming">🎬 Filming</option>
-                    <option value="editing">✂️ Editing</option>
-                    <option value="posted">✅ Posted</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
-                </div>
-
-                {/* Auto-save indicator */}
-                <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                  <Check className="w-3 h-3 stroke-[2.5]" />
-                  <span>Tersimpan otomatis</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCopy(
-                      viewingContent.id,
-                      `${viewingContent.title}\n\nHook: ${viewingContent.hook_text || '-'}\n\n${viewingContent.script_body || ''}`
-                    )
-                  }
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
-                  title="Salin script & hook"
-                >
-                  {copiedId === viewingContent.id ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-emerald-500">Tersalin</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
-                      <span className="hidden sm:inline">Salin Script</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    deleteContentIdea(viewingContent.id);
-                    setViewingContentId(null);
-                  }}
-                  className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
-                  title="Hapus Ide Konten"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
-                <div className="w-px h-5 bg-outline/20 mx-1 hidden sm:block" />
-
-                <button
-                  type="button"
-                  onClick={() => setIsContentMaximized(!isContentMaximized)}
-                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition hidden sm:inline-flex"
-                  title={isContentMaximized ? 'Perkecil tampilan' : 'Perbesar layar penuh'}
-                >
-                  {isContentMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setViewingContentId(null)}
-                  className="p-2 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition"
-                  title="Tutup (Esc)"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Notion Scrollable Body Area */}
-            <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-10 py-5 sm:py-6 space-y-4">
               {/* Title Section */}
               <div className="space-y-3">
                 <input
@@ -1267,10 +1253,7 @@ export function NotesAndContentStudio() {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-        </div>,
-        document.body
+        </DocumentModalShell>
       )}
     </section>
   );
