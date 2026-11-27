@@ -20,10 +20,8 @@ import {
   X,
   Maximize2,
   Minimize2,
-  Columns,
   Calendar,
   Tag,
-  FileText,
   Sparkles,
   Bold,
   Italic,
@@ -34,7 +32,6 @@ import {
   CheckSquare,
   Quote,
   Minus,
-  Eye,
   Edit3,
 } from 'lucide-react';
 
@@ -207,7 +204,7 @@ export function NotesAndContentStudio() {
 
   // Mode states for Markdown editing vs rich preview
   const [isEditingNote, setIsEditingNote] = useState(false);
-  const [contentViewMode, setContentViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [isEditingContent, setIsEditingContent] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
   const noteTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -228,13 +225,18 @@ export function NotesAndContentStudio() {
         setIsEditingNote(false);
         return;
       }
+      if (viewingContentId && isEditingContent) {
+        setIsEditingContent(false);
+        return;
+      }
       setViewingNoteId(null);
       setIsEditingNote(false);
       setViewingContentId(null);
+      setIsEditingContent(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [viewingNoteId, isEditingNote]);
+  }, [viewingNoteId, isEditingNote, viewingContentId, isEditingContent]);
 
   // Lock body scroll when a modal window is open
   useEffect(() => {
@@ -292,10 +294,6 @@ export function NotesAndContentStudio() {
   ) => {
     const textarea = target === 'note' ? noteTextareaRef.current : contentTextareaRef.current;
     if (!textarea) return;
-
-    if (target === 'content' && contentViewMode === 'preview') {
-      setContentViewMode('split');
-    }
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -919,12 +917,15 @@ export function NotesAndContentStudio() {
         </DocumentModalShell>
       )}
 
-      {/* NOTION-STYLE LARGE MODAL FOR CONTENT STUDIO */}
+      {/* SINGLE-COLUMN READ-FIRST MODAL FOR CONTENT STUDIO */}
       {viewingContent && mounted && (
         <DocumentModalShell
           isMaximized={isMaximized}
           onToggleMaximize={() => setIsMaximized((prev) => !prev)}
-          onClose={() => setViewingContentId(null)}
+          onClose={() => {
+            setViewingContentId(null);
+            setIsEditingContent(false);
+          }}
           leftControls={
             <>
               <div className="relative">
@@ -933,10 +934,10 @@ export function NotesAndContentStudio() {
                   onChange={(e) => updateContentIdea(viewingContent.id, { platform: e.target.value })}
                   className="appearance-none px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
                 >
-                  <option value="TikTok/Reels">TikTok / Instagram Reels</option>
-                  <option value="YouTube">YouTube Video</option>
-                  <option value="LinkedIn">LinkedIn Post</option>
-                  <option value="Blog">Technical Blog / Medium</option>
+                  <option value="TikTok/Reels">TikTok / Reels</option>
+                  <option value="YouTube">YouTube</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="Blog">Blog / Medium</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
@@ -944,7 +945,7 @@ export function NotesAndContentStudio() {
               <div className="relative">
                 <select
                   value={viewingContent.status}
-                  onChange={(e) => updateContentStatus(viewingContent.id, e.target.value as any)}
+                  onChange={(e) => updateContentStatus(viewingContent.id, e.target.value as ContentIdea['status'])}
                   className="appearance-none font-mono px-3 py-1.5 pr-7 rounded-xl text-xs font-semibold bg-surface-container-high text-on-surface hover:bg-surface-dim border border-outline/30 outline-none cursor-pointer transition"
                 >
                   <option value="idea">💡 Idea</option>
@@ -956,14 +957,43 @@ export function NotesAndContentStudio() {
                 <ChevronDown className="w-3.5 h-3.5 text-on-surface-variant pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
 
-              <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                <Check className="w-3 h-3 stroke-[2.5]" />
-                <span>Tersimpan otomatis</span>
-              </div>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-on-surface-variant px-2 py-0.5 rounded-full bg-surface-container-high/60">
+                <Check className="w-3 h-3 text-emerald-500 stroke-[2.5]" />
+                <span>Tersimpan</span>
+              </span>
             </>
           }
           rightControls={
             <>
+              <button
+                type="button"
+                onClick={() => {
+                  if (isEditingContent) {
+                    setIsEditingContent(false);
+                  } else {
+                    setIsEditingContent(true);
+                    setTimeout(() => contentTextareaRef.current?.focus(), 20);
+                  }
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  isEditingContent
+                    ? 'bg-primary-container text-white shadow-sm'
+                    : 'bg-surface-container-high text-on-surface hover:bg-surface-dim'
+                }`}
+              >
+                {isEditingContent ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Selesai</span>
+                  </>
+                ) : (
+                  <>
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit</span>
+                  </>
+                )}
+              </button>
+
               <button
                 type="button"
                 onClick={() =>
@@ -972,19 +1002,13 @@ export function NotesAndContentStudio() {
                     `${viewingContent.title}\n\nHook: ${viewingContent.hook_text || '-'}\n\n${viewingContent.script_body || ''}`
                   )
                 }
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface text-xs font-semibold transition"
+                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-semibold transition flex items-center gap-1"
                 title="Salin script & hook"
               >
                 {copiedId === viewingContent.id ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-emerald-500">Tersalin</span>
-                  </>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
                 ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-on-surface-variant" />
-                    <span className="hidden sm:inline">Salin Script</span>
-                  </>
+                  <Copy className="w-3.5 h-3.5" />
                 )}
               </button>
 
@@ -993,6 +1017,7 @@ export function NotesAndContentStudio() {
                 onClick={() => {
                   deleteContentIdea(viewingContent.id);
                   setViewingContentId(null);
+                  setIsEditingContent(false);
                 }}
                 className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-error transition"
                 title="Hapus Ide Konten"
@@ -1002,195 +1027,107 @@ export function NotesAndContentStudio() {
             </>
           }
         >
-              {/* Title Section */}
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={viewingContent.title}
-                  onChange={(e) => updateContentIdea(viewingContent.id, { title: e.target.value })}
-                  placeholder="Judul topik video / konten..."
-                  className="w-full text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
-                />
+          <input
+            type="text"
+            value={viewingContent.title}
+            onChange={(e) => updateContentIdea(viewingContent.id, { title: e.target.value })}
+            placeholder="Judul topik video / konten..."
+            className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+          />
 
-                <div className="flex items-center gap-4 text-xs text-on-surface-variant py-2 border-y border-outline/15">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-primary-container" />
-                    <span>
-                      Dibuat: {new Date(viewingContent.created_at).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Video className="w-3.5 h-3.5 text-primary-container" />
-                    <span>Target: {viewingContent.platform}</span>
-                  </div>
-                </div>
-              </div>
+          <div className="flex items-center gap-3 text-xs text-on-surface-variant pb-3 border-b border-outline/15">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-primary-container" />
+              <span>
+                {new Date(viewingContent.created_at).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </span>
+            </div>
+            <span>•</span>
+            <span>{viewingContent.platform}</span>
+          </div>
 
-              {/* Hook Box Section */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-primary-fixed/25 border border-primary-container/30 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-primary-container uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Hook 3 Detik Pembuka (First Impression)</span>
-                </div>
-                <textarea
-                  rows={2}
-                  value={viewingContent.hook_text || ''}
-                  onChange={(e) => updateContentIdea(viewingContent.id, { hook_text: e.target.value })}
-                  placeholder="Kalimat pembuka video yang langsung menarik perhatian audience..."
-                  className="w-full bg-transparent text-xs sm:text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
-                />
-              </div>
-
-              {/* SCRIPT FORMATTING TOOLBAR & VIEW MODE SWITCHER */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
-                <MarkdownFormatButtons
-                  includeExtended={false}
-                  onFormat={(prefix, suffix, placeholder) =>
-                    handleInsertFormat('content', prefix, suffix, placeholder)
-                  }
-                />
-
-                <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
-                  <button
-                    type="button"
-                    onClick={() => setContentViewMode('edit')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      contentViewMode === 'edit'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Hanya Editor Naskah (Layar Penuh)"
-                  >
-                    <Edit3 className="w-3 h-3" />
-                    <span>Tulis</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setContentViewMode('split')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      contentViewMode === 'split'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Split View (Editor + Pratinjau Naskah)"
-                  >
-                    <Columns className="w-3 h-3" />
-                    <span>Split</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setContentViewMode('preview')}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      contentViewMode === 'preview'
-                        ? 'bg-surface-container-lowest text-primary-container shadow-xs font-bold border border-outline/20'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                    title="Hanya Pratinjau Naskah (Layar Penuh)"
-                  >
-                    <Eye className="w-3 h-3" />
-                    <span>Pratinjau</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Script / Outline Editor (Split View vs Single View) */}
-              <div className="space-y-2 flex flex-col flex-1 min-h-[380px] lg:min-h-[460px]">
-                <div className="flex items-center justify-between text-xs font-bold text-on-surface uppercase tracking-wider">
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-3.5 h-3.5 text-primary-container" />
-                    <span>Outline &amp; Full Script Body</span>
-                  </div>
-                  <span className="text-[10px] text-on-surface-variant font-normal normal-case">
-                    {(viewingContent.script_body || '').split(/\s+/).filter(Boolean).length} kata
-                  </span>
-                </div>
-
-                {contentViewMode === 'split' ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-                    {/* Left: Script Editor */}
-                    <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/40 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner">
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                        <div className="flex items-center gap-1.5">
-                          <Edit3 className="w-3.5 h-3.5 text-primary-container" />
-                          <span>Editor Naskah</span>
-                        </div>
-                        <span className="text-[10px] text-on-surface-variant/70">
-                          {(viewingContent.script_body || '').length} karakter
-                        </span>
-                      </div>
-                      <textarea
-                        ref={contentTextareaRef}
-                        value={viewingContent.script_body || ''}
-                        onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
-                        placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
-                        className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[240px] md:min-h-[380px] placeholder:text-on-surface-variant/40"
-                      />
-                    </div>
-
-                    {/* Right: Script Preview */}
-                    <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs">
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                        <div className="flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-primary-container" />
-                          <span>Pratinjau Script</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span>Sinkron</span>
-                        </div>
-                      </div>
-                      <div className="p-4 sm:p-5 flex-1 min-h-[240px] md:min-h-[380px] overflow-y-auto">
-                        <MarkdownRenderer
-                          content={viewingContent.script_body || ''}
-                          onToggleCheckbox={handleToggleContentCheckbox}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : contentViewMode === 'preview' ? (
-                  <div className="flex flex-col rounded-2xl border border-outline/25 bg-surface-container-low/30 overflow-hidden shadow-xs flex-1">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                      <div className="flex items-center gap-1.5">
-                        <Eye className="w-3.5 h-3.5 text-primary-container" />
-                        <span>Pratinjau Naskah Rapi</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>Format Aktif</span>
-                      </div>
-                    </div>
-                    <div className="p-4 sm:p-6 flex-1 min-h-[300px] md:min-h-[380px] overflow-y-auto">
-                      <MarkdownRenderer
-                        content={viewingContent.script_body || ''}
-                        onToggleCheckbox={handleToggleContentCheckbox}
-                      />
-                    </div>
-                  </div>
+          <div className="p-4 rounded-2xl bg-primary-fixed/25 border border-primary-container/25 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary-container uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Hook Pembuka</span>
+            </div>
+            {isEditingContent ? (
+              <textarea
+                rows={2}
+                value={viewingContent.hook_text || ''}
+                onChange={(e) => updateContentIdea(viewingContent.id, { hook_text: e.target.value })}
+                placeholder="Kalimat pembuka 3 detik pertama..."
+                className="w-full bg-transparent text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
+              />
+            ) : (
+              <p
+                onClick={() => {
+                  setIsEditingContent(true);
+                  setTimeout(() => contentTextareaRef.current?.focus(), 20);
+                }}
+                className="text-sm text-on-surface font-medium leading-relaxed cursor-text"
+              >
+                {viewingContent.hook_text?.trim() ? (
+                  viewingContent.hook_text
                 ) : (
-                  <div className="flex flex-col rounded-2xl border border-outline/30 bg-surface-container-low/50 overflow-hidden focus-within:border-primary-container/80 transition shadow-inner flex-1">
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-outline/20 bg-surface-container-low/80 text-[11px] font-semibold text-on-surface-variant">
-                      <div className="flex items-center gap-1.5">
-                        <Edit3 className="w-3.5 h-3.5 text-primary-container" />
-                        <span>Editor Naskah Penuh</span>
-                      </div>
-                      <span className="text-[10px] text-on-surface-variant/70">
-                        {(viewingContent.script_body || '').length} karakter
-                      </span>
-                    </div>
-                    <textarea
-                      ref={contentTextareaRef}
-                      value={viewingContent.script_body || ''}
-                      onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
-                      placeholder="Tuliskan breakdown adegan, poin-poin penjelasan, atau naskah lengkap di sini..."
-                      className="w-full flex-1 p-4 sm:p-5 font-sans text-xs sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none min-h-[300px] md:min-h-[380px] placeholder:text-on-surface-variant/40"
-                    />
-                  </div>
+                  <span className="italic text-on-surface-variant/50 font-normal">
+                    Klik untuk tambah hook pembuka...
+                  </span>
                 )}
-              </div>
+              </p>
+            )}
+          </div>
+
+          {isEditingContent ? (
+            <div className="flex flex-col flex-1 space-y-3">
+              <MarkdownFormatButtons
+                includeExtended={false}
+                wordCount={(viewingContent.script_body || '').split(/\s+/).filter(Boolean).length}
+                onFormat={(prefix, suffix, placeholder) =>
+                  handleInsertFormat('content', prefix, suffix, placeholder)
+                }
+              />
+              <textarea
+                ref={contentTextareaRef}
+                value={viewingContent.script_body || ''}
+                onChange={(e) => updateContentIdea(viewingContent.id, { script_body: e.target.value })}
+                onKeyDown={(e) => {
+                  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    setIsEditingContent(false);
+                  }
+                }}
+                placeholder="Tulis outline atau naskah lengkap di sini..."
+                className="w-full flex-1 min-h-[280px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+              />
+            </div>
+          ) : (
+            <div
+              onClick={(e) => {
+                if (shouldEnterEditFromReadClick(e.target)) {
+                  setIsEditingContent(true);
+                  setTimeout(() => contentTextareaRef.current?.focus(), 20);
+                }
+              }}
+              className="flex-1 min-h-[260px] cursor-text rounded-2xl transition-colors"
+              title="Klik untuk mengedit script"
+            >
+              {viewingContent.script_body?.trim() ? (
+                <MarkdownRenderer
+                  content={viewingContent.script_body}
+                  onToggleCheckbox={handleToggleContentCheckbox}
+                />
+              ) : (
+                <p className="text-sm text-on-surface-variant/50 italic py-4">
+                  Klik di sini untuk mulai menulis outline atau script...
+                </p>
+              )}
+            </div>
+          )}
         </DocumentModalShell>
       )}
     </section>
