@@ -38,6 +38,56 @@ import {
   Edit3,
 } from 'lucide-react';
 
+const FORMAT_ACTIONS = [
+  { icon: Bold, prefix: '**', suffix: '**', placeholder: 'teks tebal', title: 'Bold (**teks**)', showForContent: true },
+  { icon: Italic, prefix: '*', suffix: '*', placeholder: 'teks miring', title: 'Italic (*teks*)', showForContent: true },
+  { icon: Heading1, prefix: '\n# ', suffix: '', placeholder: 'Judul Bab', title: 'Heading 1 (# Judul)', showForContent: false },
+  { icon: Heading2, prefix: '\n## ', suffix: '', placeholder: 'Sub Judul', title: 'Heading 2 (## Sub Judul)', showForContent: false },
+  { icon: ListOrdered, prefix: '\n1. ', suffix: '', placeholder: 'Langkah pertama', title: 'Daftar Nomor (1. Langkah)', showForContent: true },
+  { icon: List, prefix: '\n- ', suffix: '', placeholder: 'Poin item', title: 'Daftar Poin (- Poin)', showForContent: true },
+  { icon: CheckSquare, prefix: '\n- [ ] ', suffix: '', placeholder: 'Tugas baru', title: 'Checklist (- [ ] Tugas)', showForContent: true },
+  { icon: Quote, prefix: '\n> ', suffix: '', placeholder: 'Kutipan / Catatan', title: 'Kutipan (> Catatan)', showForContent: true },
+  { icon: Code, prefix: '`', suffix: '`', placeholder: 'kode', title: 'Inline Code (`kode`)', showForContent: false },
+  { icon: Minus, prefix: '\n---\n', suffix: '', placeholder: '', title: 'Garis Pemisah (---)', showForContent: true },
+] as const;
+
+function toggleCheckboxLine(markdown: string, lineIndex: number, newChecked: boolean): string {
+  const lines = markdown.split('\n');
+  if (lineIndex < 0 || lineIndex >= lines.length) return markdown;
+  const line = lines[lineIndex];
+  lines[lineIndex] = newChecked
+    ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
+    : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
+  return lines.join('\n');
+}
+
+interface MarkdownFormatButtonsProps {
+  includeExtended: boolean;
+  onFormat: (prefix: string, suffix: string, placeholder: string) => void;
+}
+
+function MarkdownFormatButtons({ includeExtended, onFormat }: MarkdownFormatButtonsProps) {
+  const actions = includeExtended ? FORMAT_ACTIONS : FORMAT_ACTIONS.filter((a) => a.showForContent);
+  return (
+    <div className="flex items-center gap-0.5 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
+      {actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <button
+            key={action.title}
+            type="button"
+            onClick={() => onFormat(action.prefix, action.suffix, action.placeholder)}
+            className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition shrink-0"
+            title={action.title}
+          >
+            <Icon className="w-3.5 h-3.5" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function NotesAndContentStudio() {
   const {
     notes,
@@ -189,29 +239,17 @@ export function NotesAndContentStudio() {
   // Interactive checkbox toggling for Note Markdown Preview
   const handleToggleNoteCheckbox = (lineIndex: number, newChecked: boolean) => {
     if (!viewingNote) return;
-    const lines = viewingNote.content.split('\n');
-    if (lineIndex >= 0 && lineIndex < lines.length) {
-      const line = lines[lineIndex];
-      const updatedLine = newChecked
-        ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
-        : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
-      lines[lineIndex] = updatedLine;
-      updateNote(viewingNote.id, { content: lines.join('\n') });
-    }
+    updateNote(viewingNote.id, {
+      content: toggleCheckboxLine(viewingNote.content, lineIndex, newChecked),
+    });
   };
 
   // Interactive checkbox toggling for Content Studio Markdown Preview
   const handleToggleContentCheckbox = (lineIndex: number, newChecked: boolean) => {
     if (!viewingContent || !viewingContent.script_body) return;
-    const lines = viewingContent.script_body.split('\n');
-    if (lineIndex >= 0 && lineIndex < lines.length) {
-      const line = lines[lineIndex];
-      const updatedLine = newChecked
-        ? line.replace(/^([-*]\s+\[)[ ](\])/, '$1x$2')
-        : line.replace(/^([-*]\s+\[)[xX](\])/, '$1 $2');
-      lines[lineIndex] = updatedLine;
-      updateContentIdea(viewingContent.id, { script_body: lines.join('\n') });
-    }
+    updateContentIdea(viewingContent.id, {
+      script_body: toggleCheckboxLine(viewingContent.script_body, lineIndex, newChecked),
+    });
   };
 
   // Sort notes: pinned first
@@ -777,92 +815,12 @@ export function NotesAndContentStudio() {
 
               {/* QUICK FORMATTING TOOLBAR & VIEW MODE SWITCHER (OPTI 2) */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
-                {/* Format buttons bar */}
-                <div className="flex items-center gap-1 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '**', '**', 'teks tebal')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
-                    title="Bold / Tebal (**teks**)"
-                  >
-                    <Bold className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '*', '*', 'teks miring')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition italic"
-                    title="Italic / Miring (*teks*)"
-                  >
-                    <Italic className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n# ', '', 'Judul Bab')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
-                    title="Heading 1 (# Judul)"
-                  >
-                    <Heading1 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n## ', '', 'Sub Judul')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
-                    title="Heading 2 (## Sub Judul)"
-                  >
-                    <Heading2 className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n1. ', '', 'Langkah pertama')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Daftar Nomor (1. Langkah)"
-                  >
-                    <ListOrdered className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n- ', '', 'Poin item')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Daftar Poin (- Poin)"
-                  >
-                    <List className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n- [ ] ', '', 'Tugas baru')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Checklist To-Do (- [ ] Tugas)"
-                  >
-                    <CheckSquare className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n> ', '', 'Kutipan / Catatan penting')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Kutipan / Quote (> Catatan)"
-                  >
-                    <Quote className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '`', '`', 'kode')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-mono text-xs"
-                    title="Inline Code (`kode`)"
-                  >
-                    <Code className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('note', '\n---\n')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Garis Pemisah (---)"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                <MarkdownFormatButtons
+                  includeExtended
+                  onFormat={(prefix, suffix, placeholder) =>
+                    handleInsertFormat('note', prefix, suffix, placeholder)
+                  }
+                />
 
                 {/* Mode Selector Pill: Tulis (Edit) vs Split View vs Pratinjau (Preview) */}
                 <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
@@ -1165,65 +1123,12 @@ export function NotesAndContentStudio() {
 
               {/* SCRIPT FORMATTING TOOLBAR & VIEW MODE SWITCHER */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-1.5 bg-surface-container-low rounded-2xl border border-outline/25">
-                <div className="flex items-center gap-1 overflow-x-auto py-0.5 px-1 scrollbar-none text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '**', '**', 'teks tebal')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition font-bold"
-                    title="Bold (**teks**)"
-                  >
-                    <Bold className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '*', '*', 'teks miring')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition italic"
-                    title="Italic (*teks*)"
-                  >
-                    <Italic className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="w-px h-4 bg-outline/20 mx-0.5 shrink-0" />
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '\n1. ', '', 'Scene pertama')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Daftar Nomor"
-                  >
-                    <ListOrdered className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '\n- ', '', 'Talking point')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Bullet Point"
-                  >
-                    <List className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '\n- [ ] ', '', 'Adegan / asset')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Checklist Asset"
-                  >
-                    <CheckSquare className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '\n> ', '', 'Narasi audio')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Callout / Voiceover"
-                  >
-                    <Quote className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleInsertFormat('content', '\n---\n')}
-                    className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface hover:text-primary-container transition"
-                    title="Pemisah Adegan"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                <MarkdownFormatButtons
+                  includeExtended={false}
+                  onFormat={(prefix, suffix, placeholder) =>
+                    handleInsertFormat('content', prefix, suffix, placeholder)
+                  }
+                />
 
                 <div className="flex items-center gap-1 p-0.5 bg-surface-container-high rounded-xl shrink-0 self-end sm:self-auto border border-outline/20">
                   <button
