@@ -59,7 +59,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
       className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_3px_12px_rgba(24,24,27,0.03)] border border-outline/30 hover:border-outline hover:shadow-[0_4px_20px_rgba(24,24,27,0.06)] flex flex-col gap-3 group transition-all duration-200 cursor-grab active:cursor-grabbing"
     >
       {/* Category Tag & Platform Source */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-1.5">
         <span
           className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap shrink-0 ${
             isInternship
@@ -89,7 +89,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
               href={item.portal_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-on-surface-variant hover:text-primary-container p-0.5 transition sm:opacity-40 sm:group-hover:opacity-100"
+              className="text-on-surface-variant hover:text-primary-container p-0.5 transition lg:opacity-40 lg:group-hover:opacity-100"
               title="Open Job Link"
             >
               <ExternalLink className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
       {/* Metadata Pill Table */}
       <div className="bg-surface-container-low p-2.5 rounded-xl flex flex-col gap-1.5 text-xs">
         {item.applied_date && (
-          <div className="flex justify-between items-center text-on-surface-variant">
+          <div className="flex justify-between items-center gap-2 text-on-surface-variant">
             <span>Applied:</span>
             <span className="text-on-surface font-medium">
               {new Date(item.applied_date).toLocaleDateString('en-US', {
@@ -128,7 +128,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
         )}
 
         {item.resume_version && (
-          <div className="flex justify-between items-center text-on-surface-variant">
+          <div className="flex justify-between items-center gap-2 text-on-surface-variant">
             <span>CV:</span>
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface font-mono text-[11px] border border-outline/30 font-medium truncate max-w-[170px]">
               <FileText className="w-3 h-3 text-primary-container flex-shrink-0" />
@@ -138,7 +138,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
         )}
 
         {item.stipend_or_salary && (
-          <div className="flex justify-between items-center text-on-surface-variant">
+          <div className="flex justify-between items-center gap-2 text-on-surface-variant">
             <span>Compensation:</span>
             <span className="text-on-surface font-medium truncate max-w-[170px]">
               {item.stipend_or_salary}
@@ -147,7 +147,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
         )}
 
         {item.deadline && (
-          <div className="flex justify-between items-center text-on-surface-variant">
+          <div className="flex justify-between items-center gap-2 text-on-surface-variant">
             <span>Deadline:</span>
             <span className="text-on-surface font-medium">
               {new Date(item.deadline).toLocaleDateString('en-US', {
@@ -161,7 +161,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
 
       {/* Automated Radar Urgency Banner */}
       {radar.isUrgent && (
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-primary-fixed/40 border border-primary-container/30 text-xs">
+        <div className="flex items-center justify-between flex-wrap gap-2 p-2.5 rounded-xl bg-primary-fixed/40 border border-primary-container/30 text-xs">
           <div className="flex items-center gap-1.5 font-bold text-primary-container text-[11px]">
             <span className="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse" />
             <span>{radar.label}</span>
@@ -205,12 +205,12 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
       )}
 
       {/* Action Footer: Stage Select & Edit/Delete Controls */}
-      <div className="flex items-center justify-between pt-1 border-t border-outline/20 mt-0.5">
+      <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-outline/20 mt-0.5">
         <div className="relative">
           <select
             value={item.stage}
             onChange={(e) => onMoveStage(item.id, e.target.value as CareerStage)}
-            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface px-2.5 py-1.5 min-h-[32px] pr-6 rounded-xl cursor-pointer transition-colors outline-none border border-outline/30 focus:border-primary-container"
+            className="appearance-none bg-surface-container-high hover:bg-surface-dim text-[11px] font-semibold text-on-surface px-2.5 py-1.5 min-h-[36px] max-w-[145px] sm:max-w-none pr-6 rounded-xl cursor-pointer transition-colors outline-none border border-outline/30 focus:border-primary-container"
           >
             {stageOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -221,7 +221,7 @@ export function CareerCard({ item, onEdit, onMoveStage, onDelete, onOpenFollowUp
           <ChevronDown className="w-3 h-3 text-on-surface-variant absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
-        <div className="flex items-center gap-1 sm:opacity-40 sm:group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 lg:opacity-50 lg:group-hover:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={() => onOpenFollowUp?.(item)}

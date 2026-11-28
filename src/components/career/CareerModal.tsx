@@ -20,6 +20,15 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   const [formData, setFormData] = useState({
     entity_name: '',
     role_or_program: '',
@@ -110,8 +119,14 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
   const currentStepIndex = steps.findIndex((s) => s.stage === formData.stage);
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-xl w-full max-h-[90dvh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
+      >
         {/* Mobile drag handle */}
         <div className="pt-3 sm:hidden flex justify-center">
           <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full" />
@@ -157,7 +172,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                   key={step.stage}
                   type="button"
                   onClick={() => setFormData({ ...formData, stage: step.stage })}
-                  className="flex items-center gap-1.5 focus:outline-none group"
+                  className="flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 focus:outline-none group"
                 >
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
@@ -171,7 +186,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                     {isPassed ? <CheckCircle2 className="w-3.5 h-3.5" /> : idx + 1}
                   </div>
                   <span
-                    className={`text-xs transition-colors hidden sm:inline ${
+                    className={`text-[10px] sm:text-xs transition-colors ${
                       isCurrent
                         ? 'font-bold text-on-surface'
                         : 'text-on-surface-variant'
@@ -231,7 +246,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as CareerCategory })}
-                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                 >
                   <option value="internship">Internship</option>
                   <option value="job">Full-time</option>
@@ -248,7 +263,7 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
                 <select
                   value={formData.work_type}
                   onChange={(e) => setFormData({ ...formData, work_type: e.target.value as WorkType })}
-                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                  className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                 >
                   <option value="remote">Remote</option>
                   <option value="hybrid">Hybrid</option>
@@ -391,14 +406,14 @@ export function CareerModal({ isOpen, initialData, onClose, onSave }: CareerModa
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition"
+            className="min-h-[44px] flex-1 sm:flex-initial justify-center px-5 py-2 rounded-full border border-outline/40 text-xs font-medium text-on-surface-variant hover:bg-surface-container-high transition inline-flex items-center"
           >
             Cancel
           </button>
           <button
             type="submit"
             form="career-modal-form"
-            className="px-6 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95"
+            className="min-h-[44px] flex-1 sm:flex-initial justify-center px-6 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95 inline-flex items-center"
           >
             Save Application
           </button>

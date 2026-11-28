@@ -138,11 +138,11 @@ export function CareerKanban() {
           </div>
 
           {/* Action Controls */}
-          <div className="flex items-center flex-wrap gap-2.5">
+          <div className="w-full sm:w-auto flex items-center flex-wrap gap-2">
             <button
               type="button"
               onClick={handleExportJSON}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface border border-outline/30 shadow-sm hover:bg-surface-container-high transition text-xs font-semibold"
+              className="flex-1 sm:flex-initial justify-center min-h-[40px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface border border-outline/30 shadow-sm hover:bg-surface-container-high transition text-xs font-semibold"
             >
               <Download className="w-3.5 h-3.5 text-on-surface-variant" />
               <span>Export Data</span>
@@ -151,7 +151,7 @@ export function CareerKanban() {
             <button
               type="button"
               onClick={() => handleOpenAdd('applied')}
-              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white hover:bg-black dark:hover:bg-primary shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 sm:flex-initial justify-center min-h-[40px] inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white hover:bg-black dark:hover:bg-primary shadow-sm transition text-xs font-semibold hover:scale-[1.02] active:scale-[0.98]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Record Application</span>
@@ -231,8 +231,8 @@ export function CareerKanban() {
             <VaultMark active className="w-5 h-5 text-on-surface shrink-0" />
           </div>
           <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-2xl font-bold text-on-surface leading-none font-sans tabular-nums">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-lg sm:text-2xl font-bold text-on-surface leading-none font-sans tabular-nums truncate">
                 {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
               </span>
               <button
@@ -381,7 +381,7 @@ export function CareerKanban() {
                   moveStage(itemId, col.stage);
                 }
               }}
-              className={`flex-shrink-0 w-72 sm:w-80 max-w-[85vw] flex flex-col gap-3 p-3.5 rounded-2xl border min-h-[500px] snap-start transition-all ${
+              className={`flex-shrink-0 w-[272px] sm:w-80 max-w-[86vw] flex flex-col gap-3 p-3.5 rounded-2xl border min-h-[380px] sm:min-h-[480px] snap-start transition-all ${
                 isTargeted
                   ? 'bg-primary-fixed/30 border-primary-container ring-2 ring-primary-container/20'
                   : 'bg-surface-container-low/70 border-outline/20'
@@ -449,7 +449,7 @@ export function CareerKanban() {
       </div>
 
       {/* Bottom Bento Insight Bar */}
-      <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline/30 shadow-[0_4px_24px_rgba(24,24,27,0.02)] flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl border border-outline/30 shadow-[0_4px_24px_rgba(24,24,27,0.02)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary-container flex-shrink-0">
             <Lightbulb className="w-6 h-6" />
@@ -464,11 +464,11 @@ export function CareerKanban() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
           <button
             type="button"
             onClick={showEmailTemplate}
-            className="px-4 py-2 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
+            className="w-full md:w-auto min-h-[40px] px-4 py-2 rounded-full bg-surface-container-high hover:bg-surface-dim text-on-surface text-xs font-semibold transition"
           >
             Copy Follow-up Email Template
           </button>
@@ -477,7 +477,7 @@ export function CareerKanban() {
 
       {/* Toast Notice for template copy */}
       {templateNotice && (
-        <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 bg-inverse-surface dark:bg-surface-container-highest text-white dark:text-on-surface text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
+        <div className="fixed bottom-24 inset-x-3 sm:inset-x-auto sm:bottom-6 sm:right-6 z-50 text-center sm:text-left bg-inverse-surface dark:bg-surface-container-highest text-white dark:text-on-surface text-xs px-4 py-2.5 rounded-full shadow-lg border border-outline/30 animate-in fade-in">
           {templateNotice}
         </div>
       )}

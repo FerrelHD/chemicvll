@@ -47,6 +47,15 @@ export function CareerFollowUpModal({
   }, []);
 
   useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (item && isOpen) {
       const contact = item.contact_person || 'Tim Rekruter';
       setRecruiterName(contact);
@@ -134,24 +143,24 @@ export function CareerFollowUpModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
         transition={{ type: 'spring', damping: 26, stiffness: 350 }}
-        className="w-full sm:max-w-lg bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full sm:max-w-lg bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 overflow-hidden flex flex-col max-h-[92dvh]"
       >
         {/* Mobile drag handle */}
         <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-3" />
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-outline/20">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-primary-fixed/60 flex items-center justify-center text-primary-container">
+        <div className="flex items-center justify-between gap-2 pb-3 border-b border-outline/20">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-8 h-8 rounded-full bg-primary-fixed/60 flex items-center justify-center text-primary-container shrink-0">
               <Send className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface">
+            <div className="min-w-0">
+              <h3 className="font-bold text-sm sm:text-base text-on-surface truncate">
                 Follow-Up Generator
               </h3>
-              <p className="text-[11px] text-on-surface-variant flex items-center gap-1.5 mt-0.5">
-                <span className="font-semibold text-on-surface">{item.entity_name}</span>
-                <span>•</span>
+              <p className="text-[11px] text-on-surface-variant flex items-center gap-1.5 mt-0.5 min-w-0">
+                <span className="font-semibold text-on-surface shrink-0">{item.entity_name}</span>
+                <span className="shrink-0">•</span>
                 <span className="truncate">{item.role_or_program}</span>
               </p>
             </div>
@@ -159,7 +168,7 @@ export function CareerFollowUpModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+            className="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
@@ -170,39 +179,39 @@ export function CareerFollowUpModal({
           <button
             type="button"
             onClick={() => setChannel('whatsapp')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all ${
               channel === 'whatsapp'
                 ? 'bg-surface-container-lowest text-emerald-600 shadow-sm border border-outline/30'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <MessageSquare className="w-3.5 h-3.5" />
+            <MessageSquare className="w-3.5 h-3.5 shrink-0" />
             <span>WhatsApp</span>
           </button>
 
           <button
             type="button"
             onClick={() => setChannel('email')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all ${
               channel === 'email'
                 ? 'bg-surface-container-lowest text-primary-container shadow-sm border border-outline/30'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Mail className="w-3.5 h-3.5" />
+            <Mail className="w-3.5 h-3.5 shrink-0" />
             <span>Email</span>
           </button>
 
           <button
             type="button"
             onClick={() => setChannel('linkedin')}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all ${
               channel === 'linkedin'
                 ? 'bg-surface-container-lowest text-blue-600 shadow-sm border border-outline/30'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            <Linkedin className="w-3.5 h-3.5" />
+            <Linkedin className="w-3.5 h-3.5 shrink-0" />
             <span>LinkedIn</span>
           </button>
         </div>
@@ -221,7 +230,7 @@ export function CareerFollowUpModal({
                 generateText(channel, item, e.target.value || 'Tim Rekruter');
               }}
               placeholder="cth. Kak Sarah, Pak Budi, Hiring Team..."
-              className="w-full bg-surface-container-low border border-outline/40 rounded-xl px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container transition"
+              className="w-full bg-surface-container-low border border-outline/40 rounded-xl px-3.5 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container transition"
             />
           </div>
 
@@ -243,7 +252,7 @@ export function CareerFollowUpModal({
               rows={6}
               value={messageBody}
               onChange={(e) => setMessageBody(e.target.value)}
-              className="w-full flex-1 bg-surface-container-low border border-outline/40 rounded-2xl p-3 text-xs text-on-surface leading-relaxed focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/40 transition resize-none font-sans"
+              className="w-full flex-1 bg-surface-container-low border border-outline/40 rounded-2xl p-3 text-base sm:text-xs text-on-surface leading-relaxed focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/40 transition resize-none font-sans"
             />
           </div>
 
@@ -253,27 +262,27 @@ export function CareerFollowUpModal({
               <button
                 type="button"
                 onClick={handleOpenWhatsApp}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
+                className="w-full min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-2.5 sm:px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
               >
-                <MessageSquare className="w-3.5 h-3.5" />
+                <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                 <span>Kirim via WA</span>
               </button>
             ) : channel === 'email' ? (
               <button
                 type="button"
                 onClick={handleOpenMailto}
-                className="w-full bg-primary-container hover:bg-primary-container/90 text-white font-semibold py-2.5 px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
+                className="w-full min-h-[44px] bg-primary-container hover:bg-primary-container/90 text-white font-semibold py-2.5 px-2.5 sm:px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
               >
-                <Mail className="w-3.5 h-3.5" />
+                <Mail className="w-3.5 h-3.5 shrink-0" />
                 <span>Buka di Mail</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={handleCopy}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
+                className="w-full min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-2.5 sm:px-3 rounded-2xl shadow-sm flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
               >
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-3.5 h-3.5 shrink-0" />
                 <span>Salin untuk DM</span>
               </button>
             )}
@@ -281,9 +290,9 @@ export function CareerFollowUpModal({
             <button
               type="button"
               onClick={markAsFollowedUp}
-              className="w-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold py-2.5 px-3 rounded-2xl border border-outline/30 flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
+              className="w-full min-h-[44px] bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold py-2.5 px-2.5 sm:px-3 rounded-2xl border border-outline/30 flex items-center justify-center gap-1.5 text-xs active:scale-[0.99] transition-all"
             >
-              <CalendarCheck className="w-3.5 h-3.5 text-primary-container" />
+              <CalendarCheck className="w-3.5 h-3.5 text-primary-container shrink-0" />
               <span>Tandai Selesai</span>
             </button>
           </div>

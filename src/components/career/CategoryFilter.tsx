@@ -16,7 +16,7 @@ export function CategoryFilter({ activeFilter, counts, onFilterChange }: Categor
   ];
 
   return (
-    <div className="inline-flex items-center p-1 bg-surface-container-high rounded-full shadow-inner">
+    <div className="w-full sm:w-auto flex sm:inline-flex items-center p-1 bg-surface-container-high rounded-full shadow-inner overflow-x-auto scrollbar-none">
       {filters.map((f) => {
         const isActive = activeFilter === f.id;
         return (
@@ -24,7 +24,7 @@ export function CategoryFilter({ activeFilter, counts, onFilterChange }: Categor
             key={f.id}
             type="button"
             onClick={() => onFilterChange(f.id)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+            className={`flex-1 sm:flex-initial px-3 sm:px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap text-center transition-all ${
               isActive
                 ? 'bg-surface-container-lowest text-on-surface shadow-sm'
                 : 'text-on-surface-variant hover:text-on-surface'
