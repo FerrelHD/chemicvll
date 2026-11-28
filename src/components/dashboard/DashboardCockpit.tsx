@@ -57,6 +57,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
   const addCareerItem = useCareerStore((state) => state.addItem);
 
   const [feedbackId, setFeedbackId] = useState<string | null>(null);
+  const [selectedCashflowIdx, setSelectedCashflowIdx] = useState<number | null>(null);
 
   const budgetProgress = React.useMemo(() => {
     if (!budgetPlan) return null;
@@ -206,14 +207,19 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                   {budgetProgress.timeline.daysRemaining} hari ke gajian
                 </span>
               </div>
-              <p className="text-xs text-on-surface-variant mt-0.5 truncate">
-                Jatah harian:{' '}
-                <span className="font-semibold text-on-surface tabular-nums">
-                  Rp {budgetProgress.dailyAllowanceToday.toLocaleString('id-ID')}
-                </span>{' '}
-                • Terpakai hari ini:{' '}
-                <span className="tabular-nums font-medium">
-                  Rp {budgetProgress.todaySpent.toLocaleString('id-ID')}
+              <p className="text-xs text-on-surface-variant mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span>
+                  Jatah harian:{' '}
+                  <span className="font-semibold text-on-surface tabular-nums">
+                    Rp {budgetProgress.dailyAllowanceToday.toLocaleString('id-ID')}
+                  </span>
+                </span>
+                <span aria-hidden="true">•</span>
+                <span>
+                  Terpakai hari ini:{' '}
+                  <span className="tabular-nums font-medium">
+                    Rp {budgetProgress.todaySpent.toLocaleString('id-ID')}
+                  </span>
                 </span>
               </p>
             </div>
@@ -240,11 +246,11 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
       )}
 
       {/* Mobile 1-Tap Action Strip (hidden on desktop) */}
-      <div className="md:hidden grid grid-cols-4 gap-2">
+      <div className="md:hidden grid grid-cols-4 gap-1.5 sm:gap-2">
         <button
           type="button"
           onClick={() => openQuickTab('expense')}
-          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-[11px] font-semibold shadow-sm active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-[11px] font-semibold shadow-sm active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Jajan</span>
@@ -252,7 +258,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('task')}
-          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Task</span>
@@ -260,7 +266,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => openQuickTab('drop')}
-          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1 rounded-2xl bg-surface-container-lowest border border-outline/40 text-on-surface text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <PlusCircle className="w-3.5 h-3.5 text-primary-container shrink-0" />
           <span className="truncate">Drop</span>
@@ -268,7 +274,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
         <button
           type="button"
           onClick={() => onNavigate('dropzone')}
-          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1.5 rounded-2xl bg-primary-fixed/50 border border-primary-container/25 text-on-primary-fixed-variant text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="flex items-center justify-center gap-1 min-h-[44px] py-2 px-1 rounded-2xl bg-primary-fixed/50 border border-primary-container/25 text-on-primary-fixed-variant text-[11px] font-semibold active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <RelayMark active className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">Vault</span>
@@ -337,11 +343,11 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center flex-wrap gap-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => handleCopyDrop(item.id, item.content)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
                     >
                       {feedbackId === `copy-${item.id}` ? (
                         <>
@@ -358,7 +364,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                     <button
                       type="button"
                       onClick={() => handlePromoteDropToTask(item.id, item.content)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
                     >
                       {feedbackId === `task-${item.id}` ? (
                         <>
@@ -372,7 +378,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                     <button
                       type="button"
                       onClick={() => handlePromoteDropToCareer(item.id, item.content, item.type)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded-full bg-surface-container hover:bg-surface-container-high text-[10px] font-semibold text-on-surface transition"
                     >
                       {feedbackId === `career-${item.id}` ? (
                         <>
@@ -386,7 +392,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                     <button
                       type="button"
                       onClick={() => deleteDropzoneItem(item.id)}
-                      className="p-1 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition"
+                      className="min-w-[32px] min-h-[32px] p-1 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition flex items-center justify-center"
                       title="Hapus dari Dropzone"
                       aria-label="Hapus dari Dropzone"
                     >
@@ -416,7 +422,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           <div className="my-2 sm:my-3">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-x-1.5 sm:gap-x-2 gap-y-0.5">
               <span className="text-lg sm:text-xl xl:text-2xl font-bold text-on-surface font-sans tabular-nums">
                 {activeCareerCount}
               </span>
@@ -449,16 +455,16 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
           </div>
 
           <div className="my-2 sm:my-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-baseline gap-1">
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex items-baseline gap-1 min-w-0 flex-1">
                 {isPrivacyMode ? (
-                  <span className="text-base sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface">
+                  <span className="text-sm sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
                     Rp •••••••
                   </span>
                 ) : (
                   <>
-                    <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant">Rp</span>
-                    <span className="text-base sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
+                    <span className="text-[10px] sm:text-xs font-bold text-on-surface-variant shrink-0">Rp</span>
+                    <span className="text-sm sm:text-xl xl:text-2xl font-bold font-sans tabular-nums text-on-surface truncate">
                       {totalBalance.toLocaleString('id-ID')}
                     </span>
                   </>
@@ -476,7 +482,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 {isPrivacyMode ? <EyeOff className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
               </button>
             </div>
-            <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
+            <div className="mt-1.5 sm:mt-2 flex items-center flex-wrap gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-container text-on-surface tabular-nums text-[10px] font-semibold whitespace-nowrap shrink-0">
                 {wallets.length} Wallets
               </span>
@@ -549,7 +555,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                 {runningServers > 0 ? `${runningServers} Running` : 'Standby'}
               </span>
             </div>
-            <div className="mt-1.5 sm:mt-2 flex items-center gap-1 font-mono text-[10px]">
+            <div className="mt-1.5 sm:mt-2 flex items-center flex-wrap gap-1 font-mono text-[10px]">
               <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-semibold whitespace-nowrap shrink-0">
                 :3000
               </span>
@@ -619,11 +625,30 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               {cashflowMonths.map((m, idx) => {
                 const inHeight = `${Math.max(4, (m.in / maxVal) * 100)}%`;
                 const outHeight = `${Math.max(4, (m.out / maxVal) * 100)}%`;
+                const isFirst = idx === 0;
+                const isLast = idx === cashflowMonths.length - 1;
+                const isSelected = selectedCashflowIdx === idx;
 
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group relative">
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedCashflowIdx((prev) => (prev === idx ? null : idx))}
+                    className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 h-full justify-end group relative cursor-pointer"
+                  >
                     {/* Floating Interactive Tooltip */}
-                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-30 flex flex-col items-center group-hover:-translate-y-1">
+                    <div
+                      className={`absolute -top-20 pointer-events-none transition-all duration-200 z-30 flex flex-col ${
+                        isFirst
+                          ? 'left-0 translate-x-0 sm:left-1/2 sm:-translate-x-1/2 items-start sm:items-center'
+                          : isLast
+                          ? 'right-0 translate-x-0 sm:left-1/2 sm:-translate-x-1/2 items-end sm:items-center'
+                          : 'left-1/2 -translate-x-1/2 items-center'
+                      } ${
+                        isSelected
+                          ? 'opacity-100 -translate-y-1'
+                          : 'opacity-0 group-hover:opacity-100 group-hover:-translate-y-1'
+                      }`}
+                    >
                       <div className="bg-zinc-900 dark:bg-zinc-950 text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 dark:border-primary-container/30 whitespace-nowrap flex flex-col gap-0.5">
                         <div className="flex items-center justify-between gap-3 font-semibold pb-1 border-b border-white/15">
                           <span className="font-bold text-primary-container">{m.month}</span>
@@ -642,7 +667,11 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
                           <span className="font-medium text-white">Rp {m.rawOut.toLocaleString('id-ID')}</span>
                         </div>
                       </div>
-                      <div className="w-2 h-2 bg-zinc-900 dark:bg-zinc-950 rotate-45 -mt-1" />
+                      <div
+                        className={`w-2 h-2 bg-zinc-900 dark:bg-zinc-950 rotate-45 -mt-1 ${
+                          isFirst ? 'ml-3 sm:ml-0' : isLast ? 'mr-3 sm:mr-0' : ''
+                        }`}
+                      />
                     </div>
 
                     <div className="w-full flex items-end justify-center gap-1 sm:gap-1.5 h-full">
@@ -692,12 +721,12 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               <CreditCard className="w-5 h-5 text-white/90" />
             </div>
 
-            <div className="pt-2 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] text-white/80 block uppercase font-medium tracking-wider">
+            <div className="pt-2 flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] text-white/80 block uppercase font-medium tracking-wider truncate">
                   {activeWallet?.card_label || 'MAIN BALANCE'}
                 </span>
-                <span className="text-xl font-bold tabular-nums tracking-tight text-white block">
+                <span className="text-lg sm:text-xl font-bold tabular-nums tracking-tight text-white block truncate">
                   {isPrivacyMode ? 'Rp •••••••' : `Rp ${(activeWallet?.balance || 0).toLocaleString('id-ID')}`}
                 </span>
               </div>
@@ -752,7 +781,7 @@ export function DashboardCockpit({ onNavigate, onOpenCommand }: DashboardCockpit
               {unifiedAgenda.length} agenda
             </span>
           </div>
-          <span className="text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">
+          <span className="hidden sm:inline text-xs text-on-surface-variant font-mono whitespace-nowrap shrink-0">
             WIB Timezone
           </span>
         </div>
