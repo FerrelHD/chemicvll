@@ -73,6 +73,18 @@ export function DevMissionControl() {
   const [projPort, setProjPort] = useState(3000);
   const [projPath, setProjPath] = useState('');
 
+  useEffect(() => {
+    if (!vaultProjectId && !isAddProjOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setVaultProjectId(null);
+        setIsAddProjOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [vaultProjectId, isAddProjOpen]);
+
   const activeLogProject = projects.find((p) => p.id === activeLogProjectId);
   const vaultProject = projects.find((p) => p.id === vaultProjectId);
 
@@ -264,16 +276,13 @@ export function DevMissionControl() {
     <section className="space-y-6">
       
       {/* Welcome & Top Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2.5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2.5 min-w-0">
             <ConsoleMark active className="w-6 h-6 text-on-surface shrink-0" />
-            <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
-              Local Environment
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+              Local Environment <span className="text-primary-container">Manager</span>
             </h1>
-            <span className="text-2xl md:text-3xl font-bold text-primary-container tracking-tight">
-              Manager
-            </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-1">
             {isDaemonOnline
@@ -366,8 +375,8 @@ export function DevMissionControl() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {runningServers}
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 whitespace-nowrap shrink-0">
@@ -389,8 +398,8 @@ export function DevMissionControl() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans truncate">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
+              <span className="text-lg sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans truncate tabular-nums">
                 {systemMetrics ? systemMetrics.usedGB : '4.8'} <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ {systemMetrics ? systemMetrics.totalGB : '16'}GB</span>
               </span>
               <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 whitespace-nowrap shrink-0">
@@ -415,7 +424,7 @@ export function DevMissionControl() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-3xl font-bold text-on-surface tracking-tight font-sans">
                 3 Up
               </span>
@@ -438,7 +447,7 @@ export function DevMissionControl() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
               <span className="text-lg sm:text-xl font-bold text-on-surface tracking-tight font-mono">
                 main
               </span>
@@ -605,7 +614,7 @@ export function DevMissionControl() {
         </div>
 
         {/* Right: Live Streaming Console Terminal (6 Cols) */}
-        <div className="lg:col-span-6 bg-[#18181b] rounded-3xl p-5 border border-zinc-800 shadow-xl flex flex-col h-[500px] max-h-[500px] overflow-hidden font-mono text-xs">
+        <div className="lg:col-span-6 bg-[#18181b] rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-zinc-800 shadow-xl flex flex-col h-[320px] sm:h-[420px] lg:h-[500px] overflow-hidden font-mono text-xs">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800 flex-shrink-0 gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="flex items-center gap-1.5 shrink-0">
@@ -641,7 +650,7 @@ export function DevMissionControl() {
             <div ref={terminalEndRef} />
           </div>
 
-          <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 flex-shrink-0">
+          <div className="pt-3 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-1 text-[11px] text-zinc-500 flex-shrink-0">
             <span>Daemon: Supabase Relay (127.0.0.1)</span>
             <span className="text-zinc-400">Auto-scrolling</span>
           </div>
@@ -650,8 +659,14 @@ export function DevMissionControl() {
 
       {/* Modal .env Vault (Client-Side Encrypted) */}
       {vaultProjectId && vaultProject && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+        <div
+          onClick={() => setVaultProjectId(null)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -697,20 +712,20 @@ export function DevMissionControl() {
                     placeholder="Masukkan master passphrase brankas..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
                   <button
                     type="button"
                     onClick={handleExportVault}
-                    className="text-xs text-primary-container hover:underline flex items-center gap-1.5"
+                    className="text-xs text-primary-container hover:underline flex items-center gap-1.5 self-start sm:self-auto"
                     title="Salin kode terenkripsi untuk dipindahkan ke perangkat lain"
                   >
                     <Copy className="w-3.5 h-3.5" />
                     <span>Ekspor Brankas</span>
                   </button>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 w-full sm:w-auto">
                     <button
                       type="button"
                       onClick={() => setVaultProjectId(null)}
@@ -738,7 +753,7 @@ export function DevMissionControl() {
                     value={rawEnv}
                     onChange={(e) => setRawEnv(e.target.value)}
                     placeholder="DATABASE_URL=postgres://...&#10;NEXT_PUBLIC_API_KEY=secret_xyz"
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-3 text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container resize-none"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl p-3 text-base sm:text-xs font-mono text-on-surface focus:outline-none focus:border-primary-container resize-none"
                   />
                 </div>
                 <div>
@@ -753,20 +768,20 @@ export function DevMissionControl() {
                     placeholder="Masukkan kata sandi brankas..."
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
                   {!vaultProject.encryptedEnv && (
                     <button
                       type="button"
                       onClick={() => setShowImport(!showImport)}
-                      className="text-xs text-primary-container hover:underline flex items-center gap-1"
+                      className="text-xs text-primary-container hover:underline flex items-center gap-1 self-start sm:self-auto"
                     >
                       <span>{showImport ? 'Tutup form impor' : 'Atau impor brankas dari PC'}</span>
                     </button>
                   )}
-                  <div className="flex justify-end gap-2 ml-auto">
+                  <div className="flex justify-end gap-2 ml-auto w-full sm:w-auto">
                     <button
                       type="button"
                       onClick={() => setVaultProjectId(null)}
@@ -813,8 +828,14 @@ export function DevMissionControl() {
 
       {/* Modal Tambah Port / Project */}
       {isAddProjOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+        <div
+          onClick={() => setIsAddProjOpen(false)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90dvh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -843,10 +864,10 @@ export function DevMissionControl() {
                       setProjCommand('php artisan serve');
                       setProjPath('E:\\College Stuff\\Career\\Website Kopi');
                     }}
-                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group min-w-0"
                   >
-                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Laravel Backend</div>
-                    <div className="text-[10px] text-on-surface-variant font-mono">:8000 &bull; artisan serve</div>
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container truncate">Laravel Backend</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono truncate">:8000 &bull; artisan serve</div>
                   </button>
                   <button
                     type="button"
@@ -856,10 +877,10 @@ export function DevMissionControl() {
                       setProjCommand('npm run dev');
                       setProjPath('E:\\College Stuff\\Career\\Website Kopi');
                     }}
-                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group min-w-0"
                   >
-                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Vite Assets</div>
-                    <div className="text-[10px] text-on-surface-variant font-mono">:5173 &bull; npm run dev</div>
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container truncate">Vite Assets</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono truncate">:5173 &bull; npm run dev</div>
                   </button>
                   <button
                     type="button"
@@ -868,10 +889,10 @@ export function DevMissionControl() {
                       setProjPort(3001);
                       setProjCommand('npm run dev');
                     }}
-                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group min-w-0"
                   >
-                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">Next.js App</div>
-                    <div className="text-[10px] text-on-surface-variant font-mono">:3001 &bull; npm run dev</div>
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container truncate">Next.js App</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono truncate">:3001 &bull; npm run dev</div>
                   </button>
                   <button
                     type="button"
@@ -880,10 +901,10 @@ export function DevMissionControl() {
                       setProjPort(8000);
                       setProjCommand('uvicorn main:app --reload');
                     }}
-                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group"
+                    className="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline/20 text-left transition group min-w-0"
                   >
-                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container">FastAPI Backend</div>
-                    <div className="text-[10px] text-on-surface-variant font-mono">:8000 &bull; uvicorn</div>
+                    <div className="text-xs font-semibold text-on-surface group-hover:text-primary-container truncate">FastAPI Backend</div>
+                    <div className="text-[10px] text-on-surface-variant font-mono truncate">:8000 &bull; uvicorn</div>
                   </button>
                 </div>
               </div>
@@ -896,7 +917,7 @@ export function DevMissionControl() {
                   placeholder="e.g. Go Gin API, AI Sandbox"
                   value={projName}
                   onChange={(e) => setProjName(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
@@ -908,7 +929,7 @@ export function DevMissionControl() {
                     required
                     value={projPort}
                     onChange={(e) => setProjPort(Number(e.target.value))}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
                 <div>
@@ -918,7 +939,7 @@ export function DevMissionControl() {
                     required
                     value={projCommand}
                     onChange={(e) => setProjCommand(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                   />
                 </div>
               </div>
@@ -930,7 +951,7 @@ export function DevMissionControl() {
                   placeholder="E:/College Stuff/Career/..."
                   value={projPath}
                   onChange={(e) => setProjPath(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container font-mono"
                 />
               </div>
 

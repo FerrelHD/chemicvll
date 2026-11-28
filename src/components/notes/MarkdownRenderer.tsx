@@ -96,7 +96,7 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   };
 
   return (
-    <div className="my-3 rounded-2xl bg-surface-container-low border border-outline/30 overflow-hidden shadow-sm">
+    <div className="my-3 max-w-full min-w-0 rounded-2xl bg-surface-container-low border border-outline/30 overflow-hidden shadow-sm">
       <div className="flex items-center justify-between px-4 py-1.5 bg-surface-container border-b border-outline/20 text-[11px] font-mono text-on-surface-variant">
         <span className="font-semibold uppercase tracking-wider">{language || 'code'}</span>
         <button
@@ -108,7 +108,7 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
           <span>{copied ? 'Tersalin' : 'Salin'}</span>
         </button>
       </div>
-      <pre className="p-4 font-mono text-xs sm:text-sm leading-relaxed text-on-surface overflow-x-auto whitespace-pre">
+      <pre className="p-3 sm:p-4 font-mono text-xs sm:text-sm leading-relaxed text-on-surface overflow-x-auto whitespace-pre">
         <code>{code}</code>
       </pre>
     </div>
@@ -144,7 +144,7 @@ export function MarkdownRenderer({
       elements.push(
         <ol
           key={`ol-${key}`}
-          className="list-decimal list-outside ml-6 space-y-1.5 my-2.5 text-on-surface text-sm sm:text-base leading-relaxed"
+          className="list-decimal list-outside ml-5 sm:ml-6 space-y-1.5 my-2.5 text-on-surface text-sm sm:text-base leading-relaxed"
         >
           {listItems}
         </ol>
@@ -153,7 +153,7 @@ export function MarkdownRenderer({
       elements.push(
         <ul
           key={`ul-${key}`}
-          className="list-disc list-outside ml-6 space-y-1.5 my-2.5 text-on-surface text-sm sm:text-base leading-relaxed"
+          className="list-disc list-outside ml-5 sm:ml-6 space-y-1.5 my-2.5 text-on-surface text-sm sm:text-base leading-relaxed"
         >
           {listItems}
         </ul>
@@ -256,7 +256,7 @@ export function MarkdownRenderer({
           <button
             type="button"
             onClick={() => onToggleCheckbox?.(lineIdx, !isChecked)}
-            className={`mt-0.5 w-4 h-4 rounded-md border flex items-center justify-center transition-all shrink-0 ${
+            className={`mt-0.5 w-5 h-5 sm:w-4 sm:h-4 rounded-md border flex items-center justify-center transition-all shrink-0 ${
               isChecked
                 ? 'bg-primary-container border-primary-container text-white shadow-xs'
                 : 'border-outline/60 hover:border-primary-container bg-surface-container-high'

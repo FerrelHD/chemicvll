@@ -144,16 +144,16 @@ function DocumentModalShell({
     >
       <div
         className={`bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl w-full flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-0 transition-all ${
-          isMaximized ? 'max-w-[98vw] h-[96vh]' : 'max-w-4xl h-[94vh] sm:h-[88vh]'
+          isMaximized ? 'max-w-[98vw] h-[96dvh]' : 'max-w-4xl h-[94dvh] sm:h-[88dvh]'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden mt-2.5 mb-1 shrink-0" />
 
         {/* Clean Top Toolbar */}
-        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-3 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3 border-b border-outline/20 shrink-0 bg-surface-container-low/40">
           <div className="flex items-center gap-2 flex-wrap min-w-0">{leftControls}</div>
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
             {rightControls}
             <div className="w-px h-4 bg-outline/20 mx-0.5 hidden sm:block" />
             <button
@@ -176,7 +176,7 @@ function DocumentModalShell({
         </div>
 
         {/* Single-Column Editorial Body */}
-        <div className="flex-1 overflow-y-auto px-5 sm:px-8 md:px-12 py-6">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-12 py-4 sm:py-6">
           <div className="max-w-3xl mx-auto w-full flex flex-col min-h-full space-y-5">
             {children}
           </div>
@@ -393,7 +393,7 @@ export function NotesAndContentStudio() {
         <div className="flex items-center gap-3">
           <LedgerNoteMark active className="w-6 h-6 text-on-surface shrink-0" />
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-on-surface">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-on-surface">
               Second Brain &amp; Content Studio
             </h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
@@ -402,7 +402,7 @@ export function NotesAndContentStudio() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+        <div className="w-full sm:w-auto flex items-center gap-2 flex-wrap sm:flex-nowrap">
           {/* Tab Switcher */}
           <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-2xl border border-outline/30 flex-1 sm:flex-initial">
             <button
@@ -434,7 +434,7 @@ export function NotesAndContentStudio() {
           <button
             type="button"
             onClick={activeTab === 'notes' ? handleOpenNewNote : handleOpenNewContent}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all shrink-0"
+            className="w-full sm:w-auto min-h-[40px] flex items-center justify-center gap-1.5 px-4 py-2 rounded-2xl bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white font-semibold shadow-sm text-xs active:scale-95 transition-all shrink-0"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{activeTab === 'notes' ? 'Catatan Baru' : 'Ide Konten'}</span>
@@ -465,7 +465,7 @@ export function NotesAndContentStudio() {
               <div
                 key={n.id}
                 onClick={() => handleOpenExistingNote(n.id)}
-                className={`cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border shadow-bento space-y-3 transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5 ${
+                className={`min-w-0 cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border shadow-bento space-y-3 transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5 ${
                   n.is_pinned ? 'border-primary-container/40 ring-1 ring-primary-container/20' : 'border-outline/30'
                 }`}
               >
@@ -528,7 +528,7 @@ export function NotesAndContentStudio() {
                 </h4>
 
                 <div className="text-xs text-on-surface-variant bg-surface-container-low p-3 rounded-2xl max-h-32 overflow-hidden border border-outline/20 leading-relaxed relative font-sans">
-                  <p className="line-clamp-4 whitespace-pre-wrap">
+                  <p className="line-clamp-4 whitespace-pre-wrap break-words">
                     {stripMarkdown(n.content) || '(Belum ada isi catatan)'}
                   </p>
                   <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none" />
@@ -572,10 +572,10 @@ export function NotesAndContentStudio() {
             <div
               key={idea.id}
               onClick={() => handleOpenExistingContent(idea.id)}
-              className="cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border border-outline/30 shadow-bento space-y-3 flex flex-col justify-between transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5"
+              className="min-w-0 cursor-pointer group bg-surface-container-lowest p-4 rounded-3xl border border-outline/30 shadow-bento space-y-3 flex flex-col justify-between transition-all hover:shadow-bentoHover hover:border-primary-container/50 hover:-translate-y-0.5"
             >
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between text-xs pb-2 border-b border-outline/10">
+              <div className="space-y-2.5 min-w-0">
+                <div className="flex items-center justify-between flex-wrap gap-1.5 text-xs pb-2 border-b border-outline/10">
                   <span className="font-bold text-[11px] uppercase tracking-wider text-purple-600 bg-purple-500/10 px-2.5 py-0.5 rounded-full">
                     {idea.platform}
                   </span>
@@ -756,7 +756,7 @@ export function NotesAndContentStudio() {
               value={activeNote.title}
               onChange={(e) => commitOrUpdateNote({ title: e.target.value })}
               placeholder="Judul catatan..."
-              className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+              className="w-full text-xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
             />
 
             {/* Compact Metadata Line (Date + Tags) */}
@@ -808,7 +808,7 @@ export function NotesAndContentStudio() {
                       setNewTagInput('');
                     }
                   }}
-                  className="px-1.5 py-0.5 text-[11px] bg-transparent border-b border-transparent focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-24"
+                  className="px-1.5 py-0.5 text-base sm:text-[11px] bg-transparent border-b border-transparent focus:border-primary-container outline-none placeholder:text-on-surface-variant/40 w-28"
                 />
               </div>
             </div>
@@ -834,7 +834,7 @@ export function NotesAndContentStudio() {
                     }
                   }}
                   placeholder="Mulai tulis catatan... (Mendukung markdown: # Heading, **bold**, - [ ] checklist, ```code```)"
-                  className="w-full flex-1 min-h-[340px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+                  className="w-full flex-1 min-h-[340px] py-2 font-sans text-base sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
                 />
               </div>
             ) : (
@@ -985,7 +985,7 @@ export function NotesAndContentStudio() {
               value={activeContent.title}
               onChange={(e) => commitOrUpdateContent({ title: e.target.value })}
               placeholder="Judul topik video / konten..."
-              className="w-full text-2xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
+              className="w-full text-xl sm:text-3xl font-bold tracking-tight text-on-surface bg-transparent focus:outline-none placeholder:text-outline-variant/60"
             />
 
             {/* Compact Metadata */}
@@ -1018,7 +1018,7 @@ export function NotesAndContentStudio() {
                   value={activeContent.hook_text || ''}
                   onChange={(e) => commitOrUpdateContent({ hook_text: e.target.value })}
                   placeholder="Kalimat pembuka 3 detik pertama..."
-                  className="w-full bg-transparent text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
+                  className="w-full bg-transparent text-base sm:text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant/40 leading-relaxed"
                 />
               ) : (
                 <p
@@ -1057,7 +1057,7 @@ export function NotesAndContentStudio() {
                     }
                   }}
                   placeholder="Tulis outline atau naskah lengkap di sini..."
-                  className="w-full flex-1 min-h-[280px] py-2 font-sans text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
+                  className="w-full flex-1 min-h-[280px] py-2 font-sans text-base sm:text-sm leading-relaxed bg-transparent text-on-surface focus:outline-none resize-none placeholder:text-on-surface-variant/40"
                 />
               </div>
             ) : (

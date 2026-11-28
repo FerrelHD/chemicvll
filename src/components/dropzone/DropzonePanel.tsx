@@ -85,7 +85,7 @@ export function DropzonePanel() {
           </div>
           <div className="flex items-center gap-2.5">
             <RelayMark active className="w-6 h-6 text-on-surface shrink-0" />
-            <h1 className="text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
               Dropzone <span className="text-primary-container">&amp; Staging Vault</span>
             </h1>
           </div>
@@ -124,8 +124,8 @@ export function DropzonePanel() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans truncate tabular-nums">
+            <div className="flex items-baseline justify-between flex-wrap gap-1">
+              <span className="text-lg sm:text-2xl xl:text-3xl font-bold text-on-surface font-sans truncate tabular-nums">
                 {usedDisplay} <span className="text-[10px] sm:text-xs text-on-surface-variant font-normal">/ 5 MB</span>
               </span>
               <span className="bg-surface-container-high px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] text-primary-container font-bold shrink-0 tabular-nums">
@@ -150,7 +150,7 @@ export function DropzonePanel() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
                 {items.filter((i) => i.type === 'link').length}
               </span>
@@ -172,7 +172,7 @@ export function DropzonePanel() {
             <Timer className="w-4 h-4 text-error shrink-0" />
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans tabular-nums">
                 {items.filter((i) => !i.is_pinned).length}
               </span>
@@ -195,7 +195,7 @@ export function DropzonePanel() {
             </div>
           </div>
           <div className="mt-2.5 sm:mt-4 flex flex-col gap-1">
-            <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2">
               <span className="text-xl sm:text-3xl font-bold text-on-surface font-sans">
                 {items.filter((i) => i.type === 'code').length}
               </span>
@@ -217,18 +217,18 @@ export function DropzonePanel() {
         <div className="lg:col-span-8 space-y-4">
           
           {/* Quick Input Bar */}
-          <div className="bg-surface-container-lowest p-4 rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
+          <div className="bg-surface-container-lowest p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)]">
             <form onSubmit={handleAdd} className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type or paste text, URLs, cURL commands, or code snippets..."
-                className="flex-1 px-4 py-2.5 rounded-2xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="min-w-0 flex-1 min-h-[44px] px-3.5 sm:px-4 py-2.5 rounded-2xl bg-surface-container-low border border-outline/30 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
               <button
                 type="submit"
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shadow-sm active:scale-95"
+                className="shrink-0 min-h-[44px] flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shadow-sm active:scale-95"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Save</span>
@@ -237,13 +237,13 @@ export function DropzonePanel() {
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-surface-container-high p-1 rounded-full w-fit text-xs font-semibold">
+          <div className="flex items-center gap-1 bg-surface-container-high p-1 rounded-full w-fit max-w-full overflow-x-auto scrollbar-none text-xs font-semibold">
             {(['all', 'code', 'links'] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1 rounded-full capitalize transition ${
+                className={`px-3 py-1 rounded-full capitalize whitespace-nowrap transition ${
                   activeTab === tab
                     ? 'bg-surface-container-lowest text-on-surface shadow-sm'
                     : 'text-on-surface-variant hover:text-on-surface'
@@ -257,7 +257,7 @@ export function DropzonePanel() {
           {/* Items Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {sortedItems.length === 0 ? (
-              <div className="col-span-2 p-8 text-center bg-surface-container-lowest rounded-3xl border border-dashed border-outline/30 text-xs text-on-surface-variant">
+              <div className="md:col-span-2 p-8 text-center bg-surface-container-lowest rounded-3xl border border-dashed border-outline/30 text-xs text-on-surface-variant">
                 Dropzone is empty. Paste links or snippets above.
               </div>
             ) : (
@@ -269,7 +269,7 @@ export function DropzonePanel() {
                 return (
                   <div
                     key={item.id}
-                    className={`p-4 rounded-3xl border bg-surface-container-lowest shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition flex flex-col justify-between gap-3 ${
+                    className={`min-w-0 overflow-hidden p-4 rounded-3xl border bg-surface-container-lowest shadow-[0_1px_3px_rgba(24,24,27,0.03)] hover:shadow-md transition flex flex-col justify-between gap-3 ${
                       item.is_pinned ? 'border-primary-container/40 ring-1 ring-primary-container/20' : 'border-outline/30'
                     }`}
                   >
@@ -359,8 +359,8 @@ export function DropzonePanel() {
         </div>
 
         {/* Right: Quick Code Scratchpad (4 Cols) */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
+        <div className="lg:col-span-4 space-y-4 min-w-0">
+          <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
             <div className="flex items-center gap-2">
               <Terminal className="w-4 h-4 text-primary-container" />
               <h3 className="text-sm font-bold text-on-surface">Quick Code Scratchpad</h3>
@@ -378,11 +378,11 @@ export function DropzonePanel() {
                     setCopiedId(snip.title);
                     setTimeout(() => setCopiedId(null), 1500);
                   }}
-                  className="p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer group"
+                  className="p-3 rounded-2xl bg-surface-container-low border border-outline/20 hover:border-outline/40 transition cursor-pointer group min-w-0"
                 >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-on-surface">{snip.title}</span>
-                    <span className="text-[10px] text-on-surface-variant font-mono group-hover:text-primary-container transition">
+                  <div className="flex items-center justify-between gap-2 text-xs min-w-0">
+                    <span className="font-semibold text-on-surface truncate">{snip.title}</span>
+                    <span className="text-[10px] text-on-surface-variant font-mono group-hover:text-primary-container transition shrink-0">
                       {copiedId === snip.title ? 'Copied!' : 'Click to copy'}
                     </span>
                   </div>
