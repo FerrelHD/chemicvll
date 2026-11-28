@@ -77,6 +77,7 @@ export function FinanceManager() {
 
   const [chartMode, setChartMode] = useState<'weekly' | 'monthly'>('weekly');
   const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [selectedWeekIdx, setSelectedWeekIdx] = useState<number | null>(null);
 
   // Quick transaction form state
   const [txType, setTxType] = useState<'expense' | 'income' | 'transfer'>('expense');
@@ -326,7 +327,7 @@ export function FinanceManager() {
         </div>
 
         {/* Quick Toolbars Matching Reference */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scroll-container sm:pb-0 sm:flex-wrap">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scroll-container scrollbar-none sm:pb-0 sm:flex-wrap">
           <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium whitespace-nowrap shrink-0">
             <Calendar className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
             <span>{now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
@@ -335,7 +336,7 @@ export function FinanceManager() {
           <button
             type="button"
             onClick={() => handleOpenBudgetSetup(!budgetPlan)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container-high border border-outline/30 text-on-surface text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 min-h-[40px] sm:min-h-0 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-surface-container-lowest hover:bg-surface-container-high border border-outline/30 text-on-surface text-xs font-semibold shadow-sm transition active:scale-95 whitespace-nowrap shrink-0"
           >
             <PaydayMark className="w-3.5 h-3.5 shrink-0" />
             <span>{budgetPlan ? 'Payday Budget' : 'Atur Budget Gajian'}</span>
@@ -344,7 +345,7 @@ export function FinanceManager() {
           <button
             type="button"
             onClick={() => setIsLoggingOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95 whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 min-h-[40px] sm:min-h-0 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold shadow-md hover:bg-black dark:hover:bg-primary transition active:scale-95 whitespace-nowrap shrink-0"
           >
             <Plus className="w-3.5 h-3.5 shrink-0" />
             <span>Record Transaction</span>
@@ -371,16 +372,16 @@ export function FinanceManager() {
             </div>
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-sm sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${totalBalance.toLocaleString('id-ID')}`}
             </span>
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
               {transactions.length === 0 ? (
                 <>
                   <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                     0%
                   </span>
-                  <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">No activity</span>
+                  <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">No activity</span>
                 </>
               ) : (
                 <>
@@ -405,10 +406,10 @@ export function FinanceManager() {
             <PiggyBank className="w-4 h-4 text-on-surface-variant shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-sm sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               {isPrivacyMode ? 'Rp •••••••' : `Rp ${displaySavings.toLocaleString('id-ID')}`}
             </span>
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
               <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 {investmentBalance > 0
                   ? 'Investment Vault'
@@ -416,7 +417,7 @@ export function FinanceManager() {
                   ? 'Payday Target'
                   : 'Cash Allocation'}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Ready</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">Ready</span>
             </div>
           </div>
         </div>
@@ -428,14 +429,14 @@ export function FinanceManager() {
             <ArrowDownLeft className="w-4 h-4 text-emerald-700 shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-sm sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalIncome.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
               <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Inflow
               </span>
-              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Active</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">Active</span>
             </div>
           </div>
         </div>
@@ -447,14 +448,14 @@ export function FinanceManager() {
             <ArrowUpRight className="w-4 h-4 text-error shrink-0" />
           </div>
           <div className="mt-2 sm:mt-3 flex flex-col gap-1 sm:gap-1.5">
-            <span className="text-base sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
+            <span className="text-sm sm:text-xl xl:text-2xl font-bold text-on-surface tracking-tight font-sans tabular-nums truncate">
               Rp {totalExpense.toLocaleString('id-ID')}
             </span>
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
               <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[10px] sm:text-[11px] font-semibold whitespace-nowrap shrink-0">
                 Total Outflow
               </span>
-              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0">Controlled</span>
+              <span className="text-[10px] sm:text-[11px] text-on-surface-variant whitespace-nowrap shrink-0 hidden sm:inline">Controlled</span>
             </div>
           </div>
         </div>
@@ -486,7 +487,7 @@ export function FinanceManager() {
           </div>
 
           {/* Mobile Horizontal Snap Carousel (< sm) */}
-          <div className="sm:hidden flex gap-3 overflow-x-auto pb-2 snap-x scroll-container">
+          <div className="sm:hidden flex gap-3 overflow-x-auto py-1 px-0.5 pb-2 snap-x scroll-container scrollbar-none">
             {wallets.map((w) => {
               const isCurr = w.id === activeWalletId;
               return (
@@ -636,10 +637,10 @@ export function FinanceManager() {
                   </div>
                 </div>
 
-                <div className="mt-4 mb-2 flex items-center justify-between">
-                  <div>
+                <div className="mt-4 mb-2 flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
                     <span className="text-[11px] text-white/80 block">Saldo Aktif</span>
-                    <div className="text-2xl font-bold tracking-tight text-white font-sans">
+                    <div className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans tabular-nums truncate">
                       {isPrivacyMode ? 'Rp •••••••' : `Rp ${activeWallet.balance.toLocaleString('id-ID')}`}
                     </div>
                   </div>
@@ -780,16 +781,25 @@ export function FinanceManager() {
                   {weeklyCapsules.map((cap, idx) => {
                     const isFirst = idx === 0;
                     const isLast = idx === 3;
+                    const isSelected = selectedWeekIdx === idx;
                     return (
-                      <div key={cap.label} className="flex flex-col items-center gap-2 h-full justify-end group relative">
+                      <div
+                        key={cap.label}
+                        onClick={() => setSelectedWeekIdx((prev) => (prev === idx ? null : idx))}
+                        className="flex flex-col items-center gap-2 h-full justify-end group relative cursor-pointer"
+                      >
                         {/* Floating Interactive Tooltip */}
                         <div
-                          className={`absolute -top-16 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-30 flex flex-col group-hover:-translate-y-1 ${
+                          className={`absolute -top-16 pointer-events-none transition-all duration-200 z-30 flex flex-col ${
                             isFirst
                               ? 'left-0 translate-x-0 sm:left-1/2 sm:-translate-x-1/2 items-start sm:items-center'
                               : isLast
                               ? 'right-0 translate-x-0 sm:left-1/2 sm:-translate-x-1/2 items-end sm:items-center'
                               : 'left-1/2 -translate-x-1/2 items-center'
+                          } ${
+                            isSelected
+                              ? 'opacity-100 -translate-y-1'
+                              : 'opacity-0 group-hover:opacity-100 group-hover:-translate-y-1'
                           }`}
                         >
                           <div className="bg-zinc-900 dark:bg-zinc-950 text-white text-[10px] py-1.5 px-2.5 rounded-xl shadow-xl border border-white/10 dark:border-primary-container/30 whitespace-nowrap flex flex-col gap-0.5">
@@ -987,7 +997,7 @@ export function FinanceManager() {
                 return (
                   <div
                     key={sub.id}
-                    className="flex items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
+                    className="flex items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-surface-container-low border border-outline/20 text-xs"
                   >
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
                       <SubscriptionIcon name={sub.name} />
@@ -1049,8 +1059,14 @@ export function FinanceManager() {
 
       {/* Modal Quick Transaction */}
       {isLoggingOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+        <div
+          onClick={() => setIsLoggingOpen(false)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/40 shadow-2xl max-w-md w-full max-h-[90dvh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -1099,7 +1115,7 @@ export function FinanceManager() {
                     placeholder="e.g. 50.000"
                     value={amount}
                     onChange={(e) => setAmount(formatRupiahInput(e.target.value))}
-                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
               </div>
@@ -1128,7 +1144,7 @@ export function FinanceManager() {
                   type="text"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
@@ -1138,7 +1154,7 @@ export function FinanceManager() {
                   <select
                     value={walletId}
                     onChange={(e) => setWalletId(e.target.value)}
-                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                   >
                     {wallets.map((w) => (
                       <option key={w.id} value={w.id}>
@@ -1157,7 +1173,7 @@ export function FinanceManager() {
                     <select
                       value={toWalletId}
                       onChange={(e) => setToWalletId(e.target.value)}
-                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       {wallets
                         .filter((w) => w.id !== walletId)
@@ -1179,7 +1195,7 @@ export function FinanceManager() {
                   placeholder="Transaction description..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
@@ -1206,8 +1222,14 @@ export function FinanceManager() {
 
       {/* Modal: Kelola Rekening & Kartu (Add / Edit) */}
       {isWalletModalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm p-0 sm:p-4">
-          <div className="bg-surface-container-lowest border border-outline/30 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div
+          onClick={() => setIsWalletModalOpen(false)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm p-0 sm:p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/30 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 w-full max-w-md max-h-[90dvh] overflow-y-auto shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -1235,11 +1257,11 @@ export function FinanceManager() {
                   placeholder="e.g. Bank BCA, Jenius, Bank Jago"
                   value={walletForm.name}
                   onChange={(e) => setWalletForm({ ...walletForm, name: e.target.value })}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-on-surface mb-1">
                     Account Type
@@ -1248,7 +1270,7 @@ export function FinanceManager() {
                     <select
                       value={walletForm.type}
                       onChange={(e) => setWalletForm({ ...walletForm, type: e.target.value as any })}
-                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       <option value="bank">Bank</option>
                       <option value="ewallet">E-Wallet</option>
@@ -1267,7 +1289,7 @@ export function FinanceManager() {
                     placeholder="e.g. Main Pocket"
                     value={walletForm.card_label}
                     onChange={(e) => setWalletForm({ ...walletForm, card_label: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                   />
                 </div>
               </div>
@@ -1283,7 +1305,7 @@ export function FinanceManager() {
                     placeholder="8492"
                     value={walletForm.account_number}
                     onChange={(e) => setWalletForm({ ...walletForm, account_number: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
                 <div>
@@ -1294,7 +1316,7 @@ export function FinanceManager() {
                     type="text"
                     value={walletForm.holder_name}
                     onChange={(e) => setWalletForm({ ...walletForm, holder_name: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                   />
                 </div>
                 <div>
@@ -1307,7 +1329,7 @@ export function FinanceManager() {
                     placeholder="11/28"
                     value={walletForm.expiry}
                     onChange={(e) => setWalletForm({ ...walletForm, expiry: e.target.value })}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
               </div>
@@ -1329,7 +1351,7 @@ export function FinanceManager() {
                     onChange={(e) =>
                       setWalletForm({ ...walletForm, balance: formatRupiahInput(e.target.value) })
                     }
-                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                   />
                 </div>
               </div>
@@ -1397,8 +1419,14 @@ export function FinanceManager() {
 
       {/* Modal Add Subscription */}
       {isAddSubOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+        <div
+          onClick={() => setIsAddSubOpen(false)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-md w-full max-h-[90dvh] overflow-y-auto p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -1428,7 +1456,7 @@ export function FinanceManager() {
                     placeholder="e.g. Netflix, Spotify, ChatGPT Plus, iCloud"
                     value={subName}
                     onChange={(e) => setSubName(e.target.value)}
-                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-10 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                    className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-10 pr-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                   />
                 </div>
               </div>
@@ -1449,7 +1477,7 @@ export function FinanceManager() {
                       placeholder="e.g. 54.000"
                       value={subCost}
                       onChange={(e) => setSubCost(formatRupiahInput(e.target.value))}
-                      className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
+                      className="w-full min-h-[42px] bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums font-semibold"
                     />
                   </div>
                 </div>
@@ -1462,7 +1490,7 @@ export function FinanceManager() {
                     <select
                       value={subCycle}
                       onChange={(e) => setSubCycle(e.target.value as 'monthly' | 'yearly')}
-                      className="w-full min-h-[42px] appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full min-h-[42px] appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="yearly">Yearly</option>
@@ -1482,7 +1510,7 @@ export function FinanceManager() {
                     required
                     value={subDate}
                     onChange={(e) => setSubDate(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums"
+                    className="w-full bg-surface-container-low border border-outline/30 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container tabular-nums"
                   />
                 </div>
 
@@ -1494,7 +1522,7 @@ export function FinanceManager() {
                     <select
                       value={subWalletId}
                       onChange={(e) => setSubWalletId(e.target.value)}
-                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2 pr-8 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       {wallets.map((w) => (
                         <option key={w.id} value={w.id}>
@@ -1529,8 +1557,14 @@ export function FinanceManager() {
       )}
       {/* Modal All Transactions History */}
       {isAllTxOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4">
+        <div
+          onClick={() => setIsAllTxOpen(false)}
+          className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline/30 shadow-2xl max-w-2xl w-full max-h-[90dvh] flex flex-col p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4"
+          >
             {/* Mobile drag handle */}
             <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-1" />
 
@@ -1559,12 +1593,12 @@ export function FinanceManager() {
                   placeholder="Cari kategori, catatan, nominal..."
                   value={allTxSearch}
                   onChange={(e) => setAllTxSearch(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                  className="w-full bg-surface-container-low border border-outline/30 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
                 />
               </div>
 
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {(['all', 'expense', 'income', 'transfer'] as const).map((t) => (
                     <button
                       key={t}
@@ -1581,11 +1615,11 @@ export function FinanceManager() {
                   ))}
                 </div>
 
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <select
                     value={allTxFilterWallet}
                     onChange={(e) => setAllTxFilterWallet(e.target.value)}
-                    className="appearance-none bg-surface-container-low border border-outline/30 rounded-lg px-2.5 py-1 pr-6 text-xs font-medium text-on-surface outline-none focus:border-primary-container"
+                    className="w-full sm:w-auto appearance-none bg-surface-container-low border border-outline/30 rounded-lg px-2.5 py-1.5 sm:py-1 pr-6 text-base sm:text-xs font-medium text-on-surface outline-none focus:border-primary-container"
                   >
                     <option value="all">Semua Dompet</option>
                     {wallets.map((w) => (

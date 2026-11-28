@@ -257,7 +257,7 @@ export function PaydayBudgetModal({
         aria-modal="true"
         aria-labelledby="payday-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
+        className="bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl max-w-2xl w-full max-h-[90dvh] flex flex-col overflow-hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
       >
         {/* Mobile drag handle */}
         <div className="pt-3 sm:hidden flex justify-center">
@@ -315,7 +315,7 @@ export function PaydayBudgetModal({
                     placeholder="cth. 8.000.000"
                     value={salaryInput}
                     onChange={(e) => setSalaryInput(formatRupiahInput(e.target.value))}
-                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-9 pr-3 py-2 text-sm tabular-nums font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                    className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl pl-9 pr-3 py-2 text-base sm:text-sm tabular-nums font-bold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                   />
                 </div>
               </div>
@@ -329,7 +329,7 @@ export function PaydayBudgetModal({
                   required
                   value={cycleStartDate}
                   onChange={(e) => setCycleStartDate(e.target.value)}
-                  className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                  className="w-full min-h-[44px] bg-surface-container-low border border-outline rounded-xl px-3 py-2 text-base sm:text-xs tabular-nums font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                 />
                 <span className="text-[11px] text-on-surface-variant mt-1 block tabular-nums">
                   Periode: {formatCycleDateLabel(cyclePreview.cycleStartDate)} s/d{' '}
@@ -353,7 +353,7 @@ export function PaydayBudgetModal({
                 <select
                   value={targetWalletId}
                   onChange={(e) => setTargetWalletId(e.target.value)}
-                  className="min-h-[38px] bg-surface-container-lowest border border-outline rounded-xl px-3 py-1.5 text-xs font-semibold text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                  className="min-h-[38px] bg-surface-container-lowest border border-outline rounded-xl px-3 py-1.5 text-base sm:text-xs font-semibold text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                 >
                   {wallets.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -444,7 +444,7 @@ export function PaydayBudgetModal({
                           prev.map((f) => (f.id === item.id ? { ...f, name: e.target.value } : f))
                         )
                       }
-                      className="flex-1 min-w-[140px] min-h-[36px] bg-transparent text-xs font-semibold text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded px-1"
+                      className="flex-1 min-w-[140px] min-h-[36px] bg-transparent text-base sm:text-xs font-semibold text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded px-1"
                     />
                     <div className="flex items-center gap-2 ml-auto shrink-0">
                       <span className="text-[11px] text-on-surface-variant">Rp</span>
@@ -454,7 +454,7 @@ export function PaydayBudgetModal({
                         placeholder="0"
                         value={item.amount > 0 ? formatRupiahInput(item.amount) : ''}
                         onChange={(e) => handleUpdateFixedAmount(item.id, e.target.value)}
-                        className="w-28 sm:w-32 min-h-[36px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs tabular-nums font-semibold text-right text-on-surface focus:outline-none focus:border-primary-container"
+                        className="w-28 sm:w-32 min-h-[36px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-base sm:text-xs tabular-nums font-semibold text-right text-on-surface focus:outline-none focus:border-primary-container"
                       />
                       <button
                         type="button"
@@ -566,11 +566,11 @@ export function PaydayBudgetModal({
                         type="text"
                         value={rule.name}
                         onChange={(e) => handleUpdateRule(rule.id, { name: e.target.value })}
-                        className="flex-1 min-w-0 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
+                        className="flex-1 min-w-0 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2.5 py-1 text-base sm:text-xs font-semibold text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed"
                       />
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center flex-wrap sm:flex-nowrap gap-2 ml-auto shrink-0">
                       <div className="flex items-center gap-1 min-h-[38px] bg-surface-container-low border border-outline rounded-lg px-2 py-1 focus-within:border-primary-container focus-within:ring-2 focus-within:ring-primary-fixed">
                         <input
                           type="number"
@@ -583,12 +583,12 @@ export function PaydayBudgetModal({
                               percentage: Math.max(0, Number(e.target.value) || 0),
                             })
                           }
-                          className="w-11 text-xs tabular-nums font-bold text-right text-on-surface bg-transparent focus:outline-none"
+                          className="w-11 text-base sm:text-xs tabular-nums font-bold text-right text-on-surface bg-transparent focus:outline-none"
                         />
                         <span className="text-xs font-semibold text-on-surface-variant">%</span>
                       </div>
 
-                      <span className="text-xs tabular-nums font-bold text-on-surface min-w-[105px] text-right">
+                      <span className="text-xs tabular-nums font-bold text-on-surface min-w-[90px] sm:min-w-[105px] text-right">
                         Rp {allocatedAmount.toLocaleString('id-ID')}
                       </span>
 
@@ -618,7 +618,7 @@ export function PaydayBudgetModal({
                             .filter(Boolean),
                         })
                       }
-                      className="flex-1 min-h-[32px] bg-transparent rounded px-1.5 text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                      className="flex-1 min-h-[32px] bg-transparent rounded px-1.5 text-base sm:text-[11px] text-on-surface-variant focus:text-on-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                     />
 
                     <label className="inline-flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant cursor-pointer shrink-0 select-none">
@@ -660,11 +660,11 @@ export function PaydayBudgetModal({
               : 'Siap diterapkan.'}
           </span>
 
-          <div className="flex items-center gap-2.5 ml-auto">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto sm:ml-auto">
             <button
               type="button"
               onClick={onClose}
-              className="min-h-[44px] px-5 py-2 rounded-full border border-outline text-xs font-medium text-on-surface-variant hover:bg-surface-container-low transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+              className="flex-1 sm:flex-initial min-h-[44px] px-4 sm:px-5 py-2 rounded-full border border-outline text-xs font-medium text-on-surface-variant hover:bg-surface-container-low transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
             >
               Cancel
             </button>
@@ -672,7 +672,7 @@ export function PaydayBudgetModal({
               type="submit"
               form="payday-budget-form"
               disabled={!canSubmit}
-              className={`min-h-[44px] px-6 py-2 rounded-full text-xs font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
+              className={`flex-1 sm:flex-initial min-h-[44px] px-4 sm:px-6 py-2 rounded-full text-xs font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
                 canSubmit
                   ? 'bg-inverse-surface dark:bg-primary-container text-white hover:bg-black dark:hover:bg-primary active:scale-95'
                   : 'bg-surface-container text-on-surface-variant cursor-not-allowed'

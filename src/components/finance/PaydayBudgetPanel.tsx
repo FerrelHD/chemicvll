@@ -100,7 +100,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
 
   if (!budgetPlan || !progress) {
     return (
-      <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento space-y-4">
+      <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
             <PaydayMark className="w-6 h-6 text-on-surface mt-0.5 shrink-0" />
@@ -137,7 +137,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
     allocation.fixedTotal > 0 ? Math.min(100, (allocation.fixedTotal / salaryTotal) * 100) : 0;
 
   return (
-    <div className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 border border-outline shadow-bento space-y-6">
+    <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline shadow-bento space-y-6">
       {/* Header Strip */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-outline">
         <div className="flex items-start gap-3">
@@ -239,7 +239,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
           </div>
 
           {/* Inline Scannable Summary Strip (Replaces Duplicate 4-Box Grid) */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs border-t lg:border-t-0 pt-3 lg:pt-0 border-outline">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-6 gap-y-2.5 text-xs border-t lg:border-t-0 pt-3 lg:pt-0 border-outline">
             <div>
               <span className="text-on-surface-variant block text-[11px]">Gaji Siklus</span>
               <span className="font-bold text-on-surface tabular-nums">
@@ -386,13 +386,13 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                     </div>
 
                     {isPickingWallet && !item.isPaid && (
-                      <div className="mb-2 p-2.5 rounded-xl bg-surface-container-low border border-outline flex items-center justify-between gap-2">
+                      <div className="mb-2 p-2.5 rounded-xl bg-surface-container-low border border-outline flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
                           <Wallet className="w-3.5 h-3.5 text-on-surface-variant shrink-0" />
                           <select
                             value={selectedWalletId}
                             onChange={(e) => setSelectedWalletId(e.target.value)}
-                            className="flex-1 min-w-0 bg-surface-container-lowest border border-outline rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                            className="flex-1 min-w-0 bg-surface-container-lowest border border-outline rounded-lg px-2.5 py-1.5 text-base sm:text-xs font-medium text-on-surface outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                           >
                             {wallets.map((w) => (
                               <option key={w.id} value={w.id}>
@@ -407,7 +407,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                             toggleFixedItemPaid(item.id, selectedWalletId);
                             setPayingItemId(null);
                           }}
-                          className="min-h-[36px] px-3 py-1 rounded-lg bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+                          className="w-full sm:w-auto min-h-[36px] px-3 py-1 rounded-lg bg-inverse-surface dark:bg-primary-container text-white text-xs font-semibold hover:bg-black dark:hover:bg-primary transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
                         >
                           Potong Saldo
                         </button>
@@ -466,7 +466,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
                       )}
                     </div>
 
-                    <div className="text-right tabular-nums text-xs">
+                    <div className="text-left sm:text-right tabular-nums text-xs">
                       <span
                         className={`font-bold ${
                           bucket.remaining < 0 ? 'text-error' : 'text-on-surface'
@@ -525,7 +525,7 @@ export function PaydayBudgetPanel({ onOpenSetup }: PaydayBudgetPanelProps) {
               aria-modal="true"
               aria-labelledby="reset-budget-title"
               onClick={(e) => e.stopPropagation()}
-              className="w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
+              className="w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl border border-outline shadow-2xl overflow-y-auto max-h-[90dvh] animate-in fade-in zoom-in-95 duration-150 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-0"
             >
               {/* Mobile drag handle */}
               <div className="pt-3 sm:hidden flex justify-center">

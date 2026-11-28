@@ -72,8 +72,8 @@ export function SplitBillPanel() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="text-right">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-2.5 sm:pt-0 border-t sm:border-t-0 border-outline/20">
+          <div className="text-left sm:text-right">
             <span className="text-[10px] uppercase font-semibold text-on-surface-variant block">
               Total Piutang
             </span>
@@ -84,7 +84,7 @@ export function SplitBillPanel() {
           <button
             type="button"
             onClick={() => setIsAddOpen((prev) => !prev)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-xs transition active:scale-95 ml-2"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white text-xs font-semibold shadow-xs transition active:scale-95"
           >
             {isAddOpen ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
             <span>{isAddOpen ? 'Batal' : 'Catat Talangan'}</span>
@@ -172,7 +172,7 @@ export function SplitBillPanel() {
 
       {/* Tabs Filter: Belum Lunas vs Riwayat */}
       <div className="flex items-center justify-between border-b border-outline/20 pb-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setShowSettled(false)}
@@ -230,7 +230,7 @@ export function SplitBillPanel() {
                 <p className="text-xs text-on-surface-variant mt-0.5 truncate">{debt.description}</p>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+              <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0">
                 <span className="text-xs sm:text-sm font-bold font-sans tabular-nums text-on-surface">
                   {isPrivacyMode ? 'Rp •••••••' : `Rp ${debt.amount.toLocaleString('id-ID')}`}
                 </span>
