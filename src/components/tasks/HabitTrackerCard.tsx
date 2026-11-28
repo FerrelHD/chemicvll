@@ -27,17 +27,17 @@ export function HabitTrackerCard() {
   return (
     <div className="bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-outline/30 shadow-[0_1px_3px_rgba(24,24,27,0.03)] space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container shrink-0">
             <Flame className="w-4 h-4 text-primary-container stroke-[2.2]" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-on-surface">Daily Habits &amp; Streaks</h3>
-            <p className="text-xs text-on-surface-variant">Rutinitas harian &amp; streak tracking</p>
+          <div className="min-w-0">
+            <h3 className="text-sm font-bold text-on-surface truncate">Daily Habits &amp; Streaks</h3>
+            <p className="text-xs text-on-surface-variant truncate">Rutinitas harian &amp; streak tracking</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs font-semibold tabular-nums text-on-surface-variant">
             {completedTodayCount}/{totalHabits} selesai
           </span>
@@ -71,7 +71,7 @@ export function HabitTrackerCard() {
             onChange={(e) => setNewTitle(e.target.value)}
             className="w-full bg-surface-container-lowest border border-outline/40 rounded-xl px-3 py-2 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
           />
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex gap-1.5">
               {['coding', 'health', 'learning'].map((cat) => (
                 <button
@@ -149,7 +149,7 @@ export function HabitTrackerCard() {
                 <button
                   type="button"
                   onClick={() => deleteHabit(habit.id)}
-                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                  className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 p-1.5 rounded-full text-on-surface-variant hover:text-error hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
                   title="Hapus habit"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

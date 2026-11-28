@@ -78,13 +78,13 @@ export function TaskManager() {
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center flex-wrap gap-2">
-          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium">
+        <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 bg-surface-container-lowest px-3.5 py-1.5 rounded-full border border-outline/30 shadow-sm text-on-surface text-xs font-medium shrink-0">
             <Calendar className="w-3.5 h-3.5 text-primary-container" />
             <span>Today</span>
           </div>
 
-          <div className="flex items-center gap-1 bg-surface-container-high p-1 rounded-full shadow-inner text-xs font-semibold">
+          <div className="flex items-center gap-1 bg-surface-container-high p-1 rounded-full shadow-inner text-xs font-semibold overflow-x-auto scrollbar-none max-w-full">
             {(['all', 'p1', 'p2', 'p3'] as const).map((mode) => (
               <button
                 key={mode}
@@ -115,7 +115,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {activeTasks}
               </span>
               <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium">Pending</span>
@@ -143,7 +143,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {p1Remaining}
               </span>
               <span className="text-[10px] sm:text-xs text-rose-600 font-semibold">Left</span>
@@ -197,7 +197,7 @@ export function TaskManager() {
           </div>
           <div className="mt-2.5 sm:mt-3 flex flex-col">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans">
+              <span className="text-xl sm:text-2xl xl:text-3xl font-bold text-on-surface tracking-tight font-sans tabular-nums">
                 {activeStreak}
               </span>
               <span className="text-[10px] sm:text-xs text-primary-container font-semibold">Days</span>
@@ -208,7 +208,8 @@ export function TaskManager() {
                 <span className="truncate">Rekor: <strong className="text-on-surface font-semibold">{bestStreak} Hari</strong></span>
               </span>
               <span className="font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full text-[10px] shrink-0">
-                All-Time Peak
+                <span className="sm:hidden">Peak</span>
+                <span className="hidden sm:inline">All-Time Peak</span>
               </span>
             </div>
             <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-2 sm:mt-3 overflow-hidden">
@@ -274,14 +275,14 @@ export function TaskManager() {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Write next target task... (Press Enter to save)"
-                className="w-full sm:flex-1 px-4 py-2.5 rounded-xl bg-surface-container-low border border-outline/30 text-xs text-on-surface focus:outline-none focus:border-primary-container"
+                className="w-full sm:flex-1 px-4 py-2.5 rounded-xl bg-surface-container-low border border-outline/30 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container"
               />
               <div className="flex items-center gap-2">
                 <div className="relative flex-1 sm:flex-none">
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(Number(e.target.value) as 1 | 2 | 3)}
-                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2.5 pr-7 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                    className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3 py-2.5 pr-7 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                   >
                     <option value={1}>P1: Urgent</option>
                     <option value={2}>P2: Scheduled</option>
@@ -333,17 +334,17 @@ export function TaskManager() {
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface truncate">{t.title}</span>
+                        <span className="font-medium text-on-surface break-words line-clamp-2 sm:line-clamp-none">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
-                          className={`p-1 rounded-full transition ${
+                          className={`p-1.5 rounded-full transition ${
                             t.is_daily_focus
                               ? 'text-primary-container opacity-100'
-                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
+                              : 'text-on-surface-variant lg:opacity-40 lg:group-hover:opacity-100 hover:text-on-surface'
                           }`}
                           title="Toggle Daily Focus"
                         >
@@ -352,7 +353,7 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          className="text-on-surface-variant hover:text-error p-1.5 lg:opacity-0 lg:group-hover:opacity-100 transition"
                           title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -395,17 +396,17 @@ export function TaskManager() {
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface truncate">{t.title}</span>
+                        <span className="font-medium text-on-surface break-words line-clamp-2 sm:line-clamp-none">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
-                          className={`p-1 rounded-full transition ${
+                          className={`p-1.5 rounded-full transition ${
                             t.is_daily_focus
                               ? 'text-primary-container opacity-100'
-                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
+                              : 'text-on-surface-variant lg:opacity-40 lg:group-hover:opacity-100 hover:text-on-surface'
                           }`}
                           title="Toggle Daily Focus"
                         >
@@ -414,7 +415,7 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          className="text-on-surface-variant hover:text-error p-1.5 lg:opacity-0 lg:group-hover:opacity-100 transition"
                           title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -457,17 +458,17 @@ export function TaskManager() {
                         >
                           <Circle className="w-4 h-4" />
                         </button>
-                        <span className="font-medium text-on-surface truncate">{t.title}</span>
+                        <span className="font-medium text-on-surface break-words line-clamp-2 sm:line-clamp-none">{t.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => toggleDailyFocus(t.id)}
-                          className={`p-1 rounded-full transition ${
+                          className={`p-1.5 rounded-full transition ${
                             t.is_daily_focus
                               ? 'text-primary-container opacity-100'
-                              : 'text-on-surface-variant sm:opacity-40 sm:group-hover:opacity-100 hover:text-on-surface'
+                              : 'text-on-surface-variant lg:opacity-40 lg:group-hover:opacity-100 hover:text-on-surface'
                           }`}
                           title="Toggle Daily Focus"
                         >
@@ -476,7 +477,7 @@ export function TaskManager() {
                         <button
                           type="button"
                           onClick={() => deleteTask(t.id)}
-                          className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition"
+                          className="text-on-surface-variant hover:text-error p-1.5 lg:opacity-0 lg:group-hover:opacity-100 transition"
                           title="Delete Task"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -501,22 +502,22 @@ export function TaskManager() {
                   {doneTasks.map((t) => (
                     <div
                       key={t.id}
-                      className="group flex items-center justify-between p-2.5 rounded-2xl bg-surface-container-low text-xs line-through text-on-surface-variant"
+                      className="group flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-surface-container-low text-xs line-through text-on-surface-variant"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <button
                           type="button"
                           onClick={() => toggleDone(t.id)}
-                          className="text-emerald-600 transition"
+                          className="text-emerald-600 transition shrink-0"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                         </button>
-                        <span>{t.title}</span>
+                        <span className="break-words">{t.title}</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => deleteTask(t.id)}
-                        className="text-on-surface-variant hover:text-error p-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        className="text-on-surface-variant hover:text-error p-1.5 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
                         title="Delete Task"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
