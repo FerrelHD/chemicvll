@@ -152,7 +152,7 @@ export function QuickCaptureModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
         transition={{ type: 'spring', damping: 26, stiffness: 350 }}
-        className="w-full sm:max-w-md bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 overflow-hidden flex flex-col max-h-[90vh]"
+        className="w-full sm:max-w-md bg-surface-container-lowest border border-outline/40 shadow-2xl rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6 overflow-hidden flex flex-col max-h-[90dvh]"
       >
         {/* Mobile drag handle */}
         <div className="w-12 h-1.5 bg-outline-variant/60 rounded-full mx-auto sm:hidden -mt-1 mb-3" />
@@ -314,7 +314,7 @@ export function QuickCaptureModal({
                     <select
                       value={expenseWalletId}
                       onChange={(e) => setExpenseWalletId(e.target.value)}
-                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2.5 pr-9 text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
+                      className="w-full appearance-none bg-surface-container-low hover:bg-surface-container-lowest border border-outline/30 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-3.5 py-2.5 pr-9 text-base sm:text-xs font-semibold text-on-surface transition-all cursor-pointer outline-none"
                     >
                       {wallets.map((w) => (
                         <option key={w.id} value={w.id}>
@@ -365,39 +365,39 @@ export function QuickCaptureModal({
                   <button
                     type="button"
                     onClick={() => setTaskPriority(1)}
-                    className={`py-2 px-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`min-h-[40px] py-2 px-1.5 sm:px-2.5 rounded-xl border text-[11px] sm:text-xs font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 transition-all ${
                       taskPriority === 1
                         ? 'bg-rose-500/10 border-rose-500/40 text-rose-600 shadow-xs'
                         : 'bg-surface-container-low text-on-surface-variant border-outline/20 hover:border-outline/40'
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
                     <span>P1 High</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTaskPriority(2)}
-                    className={`py-2 px-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`min-h-[40px] py-2 px-1.5 sm:px-2.5 rounded-xl border text-[11px] sm:text-xs font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 transition-all ${
                       taskPriority === 2
                         ? 'bg-amber-500/10 border-amber-500/40 text-amber-600 shadow-xs'
                         : 'bg-surface-container-low text-on-surface-variant border-outline/20 hover:border-outline/40'
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
                     <span>P2 Medium</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTaskPriority(3)}
-                    className={`py-2 px-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`min-h-[40px] py-2 px-1.5 sm:px-2.5 rounded-xl border text-[11px] sm:text-xs font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 transition-all ${
                       taskPriority === 3
                         ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-600 shadow-xs'
                         : 'bg-surface-container-low text-on-surface-variant border-outline/20 hover:border-outline/40'
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                     <span>P3 Low</span>
                   </button>
                 </div>
@@ -446,7 +446,7 @@ export function QuickCaptureModal({
                   placeholder="Paste link artikel, potongan kode curl, atau draft ide cepat..."
                   value={dropContent}
                   onChange={(e) => setDropContent(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline/40 rounded-2xl p-3.5 text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition resize-none font-mono"
+                  className="w-full bg-surface-container-low border border-outline/40 rounded-2xl p-3.5 text-base sm:text-xs text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-fixed/50 transition resize-none font-mono"
                 />
                 <span className="text-[10px] text-on-surface-variant mt-1 block">
                   Otomatis mendeteksi tipe Link URL atau Code Snippet. Disimpan aman dengan auto-purge 24 jam.

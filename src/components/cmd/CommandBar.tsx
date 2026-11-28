@@ -133,8 +133,14 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start justify-center pt-6 sm:pt-20 px-3 sm:px-4 pb-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2.5rem)] sm:max-h-[82vh] flex flex-col overflow-hidden space-y-0">
+    <div
+      onClick={close}
+      className="fixed inset-0 z-[70] flex items-start justify-center pt-6 sm:pt-20 px-3 sm:px-4 pb-4 bg-black/40 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface-container-lowest rounded-3xl border border-outline/30 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2.5rem)] sm:max-h-[82vh] flex flex-col overflow-hidden space-y-0"
+      >
         
         {/* Input Bar */}
         <form onSubmit={handleExecute} className="flex items-center px-3.5 sm:px-5 py-3.5 sm:py-4 border-b border-outline/20 gap-2 sm:gap-3 shrink-0">
@@ -150,7 +156,7 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
               setFeedback(null);
             }}
             placeholder="Type a command or shortcut... (e.g. /apply Google - SWE)"
-            className="flex-1 min-w-0 bg-transparent text-xs text-on-surface focus:outline-none placeholder:text-on-surface-variant font-sans"
+            className="flex-1 min-w-0 bg-transparent text-base sm:text-sm text-on-surface focus:outline-none placeholder:text-on-surface-variant font-sans"
           />
           <button
             type="submit"
@@ -194,9 +200,9 @@ export function CommandBar({ onNavigate, onShowNotice }: CommandBarProps) {
               <span className="font-mono text-xs text-on-surface font-medium group-hover:text-primary-container truncate max-w-full">
                 {item.cmd}
               </span>
-              <span className="text-[11px] sm:text-xs text-on-surface-variant flex items-center gap-1 shrink-0">
+              <span className="text-[11px] sm:text-xs text-on-surface-variant flex items-center gap-1 sm:shrink-0 break-words">
                 {item.desc}
-                <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </span>
             </button>
           ))}

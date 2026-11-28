@@ -106,7 +106,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
   };
 
   return (
-    <div className="md:hidden fixed bottom-5 inset-x-0 z-40 flex justify-center pointer-events-none px-4 pb-[env(safe-area-inset-bottom,0px)]">
+    <div className="md:hidden fixed bottom-3 sm:bottom-5 inset-x-0 z-40 flex justify-center pointer-events-none px-2.5 sm:px-4 pb-[env(safe-area-inset-bottom,0px)]">
       {/* Tap-dismiss backdrop when Popover is open */}
       <AnimatePresence>
         {isMoreOpen && (
@@ -129,7 +129,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 bg-surface-container-lowest/98 backdrop-blur-xl border border-outline/50 shadow-2xl rounded-3xl p-2.5 flex flex-col gap-1 min-w-[220px] z-40"
+            className="pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 bg-surface-container-lowest/98 backdrop-blur-xl border border-outline/50 shadow-2xl rounded-3xl p-2.5 flex flex-col gap-1 min-w-[220px] max-w-[calc(100vw-2rem)] max-h-[60dvh] overflow-y-auto z-40"
           >
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-outline/20">
               <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
@@ -168,7 +168,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
         )}
       </AnimatePresence>
 
-      <nav className="relative z-40 pointer-events-auto w-full max-w-[340px] sm:max-w-[380px] bg-surface-container-lowest/95 backdrop-blur-md border border-outline/60 px-2 py-1.5 rounded-[28px] shadow-[0_12px_36px_rgba(24,24,27,0.10),0_2px_8px_rgba(24,24,27,0.04)] flex items-center justify-between gap-1">
+      <nav className="relative z-40 pointer-events-auto w-full max-w-[360px] sm:max-w-[400px] bg-surface-container-lowest/95 backdrop-blur-md border border-outline/60 px-2 py-1.5 rounded-[28px] shadow-[0_12px_36px_rgba(24,24,27,0.10),0_2px_8px_rgba(24,24,27,0.04)] flex items-center justify-between gap-1">
         {/* Left 2 Tabs: Dash & Tasks */}
         {leftTabs.map((t) => renderTabButton(t, () => setIsMoreOpen(false)))}
 
@@ -193,6 +193,7 @@ export function MobileNav({ activeTab, onTabChange, onOpenQuickCapture }: Mobile
         <button
           type="button"
           aria-label="More modules"
+          aria-expanded={isMoreOpen}
           onClick={() => setIsMoreOpen((prev) => !prev)}
           className={`relative flex-1 min-h-[48px] flex flex-col items-center justify-center gap-1 py-1 px-1 rounded-full transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container ${
             isSecondaryActive

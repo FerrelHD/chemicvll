@@ -153,14 +153,14 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between px-3.5 sm:px-6 lg:px-8 shrink-0 md:rounded-tl-3xl">
+    <header className="sticky top-0 z-30 w-full h-16 bg-surface-container-lowest border-b border-outline flex items-center justify-between gap-2 px-3 sm:px-5 lg:px-8 shrink-0 md:rounded-tl-3xl">
       {/* Left section: Hamburger (Mobile) + Search Bar (Cmd+K) */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <button
           type="button"
           aria-label="Menu"
           onClick={onOpenMobileMenu}
-          className="md:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+          className="md:hidden w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
         >
           <Menu className="w-4 h-4" />
         </button>
@@ -170,7 +170,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
           type="button"
           aria-label="Search"
           onClick={triggerCommand}
-          className="sm:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+          className="sm:hidden w-10 h-10 rounded-full bg-surface-container-lowest border border-outline flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
           title="Search (⌘K)"
         >
           <Search className="w-4 h-4 text-on-surface-variant" />
@@ -180,7 +180,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         <button
           type="button"
           onClick={triggerCommand}
-          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3.5 py-2 rounded-full border border-outline shadow-sm hover:border-zinc-400 transition cursor-pointer text-left max-w-[210px] md:max-w-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3.5 py-2 rounded-full border border-outline shadow-sm hover:border-zinc-400 transition cursor-pointer text-left min-w-0 flex-1 max-w-[200px] md:max-w-[220px] lg:max-w-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
         >
           <Search className="w-3.5 h-3.5 text-on-surface-variant flex-shrink-0" />
           <span className="text-xs text-on-surface-variant pr-2 truncate">
@@ -195,24 +195,24 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent('open-quick-capture'))}
-          className="hidden md:flex items-center gap-1.5 bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white px-3.5 py-2 rounded-full shadow-sm text-xs font-semibold active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="hidden md:flex shrink-0 items-center gap-1.5 bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white px-3.5 py-2 rounded-full shadow-sm text-xs font-semibold active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           title="Quick Capture (Q)"
         >
           <QuickCaptureMark className="w-3.5 h-3.5" />
           <span>Quick Add</span>
-          <kbd className="bg-white/15 text-white text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold ml-0.5">
+          <kbd className="hidden lg:inline-block bg-white/15 text-white text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold ml-0.5">
             Q
           </kbd>
         </button>
       </div>
 
       {/* Right section: Cloud Sync + Notif + Avatar Ferrel */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 shrink-0">
         {/* Cloud Sync Status Pill (Desktop/Tablet) */}
         <button
           type="button"
           onClick={handleSyncClick}
-          className="hidden sm:flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
+          className="hidden md:flex shrink-0 items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline shadow-sm text-xs hover:bg-surface-container-high transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container"
           title={
             syncStatus === 'synced'
               ? `Synced at ${lastSyncedAt || 'just now'} WIB. Click to sync now.`
@@ -233,7 +233,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             }`}
           />
           <span className="font-semibold text-on-surface text-xs">Cloud Sync</span>
-          <span className="text-on-surface-variant hidden md:inline text-[11px]">
+          <span className="text-on-surface-variant hidden xl:inline text-[11px]">
             {syncStatus === 'syncing'
               ? 'Syncing...'
               : syncStatus === 'synced'
@@ -282,7 +282,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
                 onClick={() => setIsNotifOpen(false)}
               />
 
-              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3.5 z-50 space-y-2.5 text-xs max-h-[75vh] flex flex-col">
+              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3.5 z-50 space-y-2.5 text-xs max-h-[75dvh] flex flex-col">
                 <div className="flex items-center justify-between pb-2 border-b border-outline shrink-0">
                   <span className="font-bold text-on-surface">Radar Notifikasi</span>
                   <span className="text-[11px] font-semibold tabular-nums text-on-surface-variant">
@@ -347,7 +347,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             </div>
             {/* Mobile-only Mini Cloud Sync LED dot */}
             <span
-              className={`sm:hidden absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-surface-container-lowest ${
+              className={`md:hidden absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-surface-container-lowest ${
                 syncStatus === 'syncing'
                   ? 'bg-amber-500 animate-pulse'
                   : syncStatus === 'synced'
@@ -359,16 +359,16 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             />
           </button>
 
-          <span className="text-xs font-semibold text-on-surface hidden sm:inline">
+          <span className="text-xs font-semibold text-on-surface hidden lg:inline">
             Ferrel
           </span>
 
-          {/* Desktop-only quick action buttons (kept hidden on mobile to prevent header overflow) */}
+          {/* Desktop-only quick action buttons (kept hidden below lg to prevent tablet header overflow) */}
           <button
             type="button"
             aria-label="Backup Data JSON"
             onClick={exportAllDataAsJson}
-            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden lg:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Export & Download All Data (JSON Backup)"
           >
             <Download className="w-3.5 h-3.5" />
@@ -377,7 +377,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Restore Data JSON"
             onClick={() => fileInputRef.current?.click()}
-            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden lg:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Import & Restore Data (JSON Backup)"
           >
             <Upload className="w-3.5 h-3.5" />
@@ -393,7 +393,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
             type="button"
             aria-label="Lock Workspace"
             onClick={() => window.dispatchEvent(new CustomEvent('personal_os_lock'))}
-            className="hidden sm:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
+            className="hidden lg:flex w-7 h-7 rounded-full hover:bg-surface-container-high items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-container shrink-0"
             title="Lock Personal OS (Master PIN)"
           >
             <Lock className="w-3.5 h-3.5" />
@@ -408,7 +408,7 @@ export function Header({ onOpenMobileMenu, onOpenCommandBar }: HeaderProps) {
                 onClick={() => setIsProfileOpen(false)}
               />
 
-              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-64 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3 z-50 space-y-2 text-xs">
+              <div className="fixed inset-x-3 top-[4.25rem] sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-64 bg-surface-container-lowest border border-outline rounded-3xl shadow-xl p-3 z-50 space-y-2 text-xs max-h-[75dvh] overflow-y-auto">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-outline/30 px-1">
                   <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs shrink-0">
                     F

@@ -106,6 +106,15 @@ export const MobileSidebar = ({
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, setOpen]);
+
   // Edge-zone swipe from left (<= 56px) opens drawer on mobile without fighting vertical/horizontal scroll
   useEffect(() => {
     if (open) return;
@@ -184,7 +193,7 @@ export const MobileSidebar = ({
               }
             }}
             className={cn(
-              "fixed inset-y-0 left-0 w-72 max-w-[85vw] h-full bg-surface-container-low p-5 z-[100] flex flex-col justify-between md:hidden shadow-2xl border-r border-outline/30 select-none touch-pan-y",
+              "fixed inset-y-0 left-0 w-72 max-w-[85vw] h-full bg-surface-container-low px-5 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] z-[100] flex flex-col justify-between md:hidden shadow-2xl border-r border-outline/30 select-none touch-pan-y",
               className
             )}
           >
