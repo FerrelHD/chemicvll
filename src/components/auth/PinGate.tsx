@@ -149,7 +149,7 @@ export function PinGate({ children }: PinGateProps) {
   // Prevent flash while checking localStorage
   if (isUnlocked === null) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-surface-container-low">
+      <div className="h-[100dvh] w-full flex items-center justify-center bg-surface-container-low">
         <div className="w-8 h-8 rounded-full border-2 border-primary-container border-t-transparent animate-spin" />
       </div>
     );
@@ -161,12 +161,12 @@ export function PinGate({ children }: PinGateProps) {
 
   return (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-container-low p-4 font-sans">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-container-low p-4 overflow-y-auto font-sans">
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, transition: { duration: 0.2 } }}
-          className="w-full max-w-[340px] bg-surface-container-lowest p-6 sm:p-7 rounded-2xl border border-outline/40 flex flex-col gap-6"
+          className="w-full max-w-[340px] my-auto bg-surface-container-lowest p-6 sm:p-7 rounded-2xl border border-outline/40 flex flex-col gap-6"
         >
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
@@ -259,7 +259,7 @@ export function PinGate({ children }: PinGateProps) {
             <button
               type="submit"
               disabled={isSuccess || pin.length === 0}
-              className={`w-full h-10 px-4 rounded-xl text-xs font-semibold transition-colors duration-150 flex items-center justify-center gap-1.5 ${
+              className={`w-full min-h-[44px] px-4 rounded-xl text-xs font-semibold transition-colors duration-150 flex items-center justify-center gap-1.5 ${
                 isSuccess
                   ? 'bg-emerald-600 text-white cursor-default'
                   : 'bg-inverse-surface dark:bg-primary-container hover:bg-black dark:hover:bg-primary text-white disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]'
